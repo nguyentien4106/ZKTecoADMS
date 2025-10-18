@@ -1,0 +1,45 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ZKTeco.Domain.Entities;
+
+namespace ZKTecoADMS.Domain.Entities;
+
+public class AttendanceLog
+{
+    [Key]
+    public long Id { get; set; }
+
+    public int DeviceId { get; set; }
+    public int? UserId { get; set; }
+
+    [Required]
+    [MaxLength(20)]
+    public string PIN { get; set; } = string.Empty;
+
+    public int? VerifyType { get; set; }
+    public int VerifyState { get; set; } = 0;
+
+    public DateTime AttendanceTime { get; set; }
+
+    [MaxLength(10)]
+    public string? WorkCode { get; set; }
+
+    public decimal? Temperature { get; set; }
+    public bool? MaskStatus { get; set; }
+
+    public string? RawData { get; set; }
+
+    public bool IsProcessed { get; set; } = false;
+    public DateTime? ProcessedAt { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    // Navigation Properties
+    public virtual Device Device { get; set; } = null!;
+    public virtual User? User { get; set; }
+}
+
