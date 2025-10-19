@@ -58,25 +58,3 @@ node_modules/
 **/node_modules/
 package-lock.json
 **/package-lock.json
-
-# Frontend (React/Vite) specific
-zkteco-client/node_modules/
-zkteco-client/dist/
-zkteco-client/build/
-zkteco-client/.env
-zkteco-client/.env.local
-zkteco-client/.env.*.local
-zkteco-client/coverage/
-zkteco-client/.DS_Store
-zkteco-client/npm-debug.log*
-zkteco-client/yarn-debug.log*
-zkteco-client/yarn-error.log*
-zkteco-client/.pnpm-debug.log*
-zkteco-client/.vscode/*
-zkteco-client/!.vscode/extensions.json
-zkteco-client/.idea/
-zkteco-client/*.suo
-zkteco-client/*.ntvs*
-zkteco-client/*.njsproj
-zkteco-client/*.sln
-zkteco-client/*.sw?
