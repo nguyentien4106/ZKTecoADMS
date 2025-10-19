@@ -54,5 +54,4 @@ public class Device : AuditableEntity<Guid>
     public virtual ICollection<DeviceCommand> DeviceCommands { get; set; } = new List<DeviceCommand>();
     public virtual ICollection<SyncLog> SyncLogs { get; set; } = new List<SyncLog>();
     public virtual ICollection<DeviceSetting> DeviceSettings { get; set; } = new List<DeviceSetting>();
-    public virtual ICollection<UserDeviceMapping> UserDeviceMappings { get; set; } = new List<UserDeviceMapping>();
 }

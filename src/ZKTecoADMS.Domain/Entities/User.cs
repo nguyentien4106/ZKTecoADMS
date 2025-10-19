@@ -55,6 +55,5 @@ public class User : Entity<Guid>
     public virtual ICollection<FingerprintTemplate> FingerprintTemplates { get; set; } = new List<FingerprintTemplate>();
     public virtual ICollection<FaceTemplate> FaceTemplates { get; set; } = new List<FaceTemplate>();
     public virtual ICollection<AttendanceLog> AttendanceLogs { get; set; } = new List<AttendanceLog>();
-    public virtual ICollection<UserDeviceMapping> UserDeviceMappings { get; set; } = new List<UserDeviceMapping>();
 }
 

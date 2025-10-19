@@ -120,10 +120,4 @@ public class UsersController(IUserService userService, ILogger<UsersController> 
         }
     }
 
-    [HttpGet("{id}/device-mappings")]
-    public async Task<ActionResult<IEnumerable<UserDeviceMapping>>> GetUserDeviceMappings(Guid id)
-    {
-        var mappings = await userService.GetUserDeviceMappingsAsync(id);
-        return Ok(mappings);
-    }
 }

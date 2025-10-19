@@ -12,7 +12,6 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
     public DbSet<UserRefreshToken> UserRefreshTokens => Set<UserRefreshToken>();
     public DbSet<User> UserDevices => Set<User>();
     public DbSet<Device> Devices => Set<Device>();
-    public DbSet<UserDeviceMapping> UserDeviceMappings => Set<UserDeviceMapping>();
     public DbSet<FingerprintTemplate> FingerprintTemplates => Set<FingerprintTemplate>();
     public DbSet<FaceTemplate> FaceTemplates => Set<FaceTemplate>();
     public DbSet<AttendanceLog> AttendanceLogs => Set<AttendanceLog>();

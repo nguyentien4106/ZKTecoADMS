@@ -69,24 +69,7 @@ public class UserService : IUserService
         var user = await GetUserByIdAsync(userId);
         if (user != null)
         {
-            // Create delete commands for all devices this user is synced to
-            var mappings = await _context.UserDeviceMappings
-                .Where(m => m.UserId == userId && m.IsSynced)
-                .ToListAsync();
-
-            foreach (var mapping in mappings)
-            {
-                var command = new DeviceCommand
-                {
-                    DeviceId = mapping.DeviceId,
-                    Command = $"DATA DELETE USERINFO PIN={user.PIN}",
-                    Priority = 5
-                };
-                await _deviceService.CreateCommandAsync(command);
-            }
-
-            _context.UserDevices.Remove(user);
-            await _context.SaveChangesAsync();
+           
             
             _logger.LogInformation("Deleted user: {UserName} (PIN: {PIN})", user.FullName, user.PIN);
         }
@@ -104,22 +87,7 @@ public class UserService : IUserService
             throw new ArgumentException("User not found", nameof(userId));
         }
 
-        // Check or create mapping
-        var mapping = await _context.UserDeviceMappings
-            .FirstOrDefaultAsync(m => m.UserId == userId && m.DeviceId == deviceId);
-
-        if (mapping == null)
-        {
-            mapping = new UserDeviceMapping
-            {
-                UserId = userId,
-                DeviceId = deviceId,
-                SyncStatus = "Pending"
-            };
-            await _context.UserDeviceMappings.AddAsync(mapping);
-            await _context.SaveChangesAsync();
-        }
-
+       
         // Create command to sync user info
         var userCommand = new DeviceCommand
         {
@@ -171,11 +139,5 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<IEnumerable<UserDeviceMapping>> GetUserDeviceMappingsAsync(Guid userId)
-    {
-        return await _context.UserDeviceMappings
-            .Include(m => m.Device)
-            .Where(m => m.UserId == userId)
-            .ToListAsync();
-    }
+
 }

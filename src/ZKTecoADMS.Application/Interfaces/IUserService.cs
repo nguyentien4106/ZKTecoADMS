@@ -12,5 +12,4 @@ public interface IUserService
     Task DeleteUserAsync(Guid userId);
     Task SyncUserToDeviceAsync(Guid userId, Guid deviceId);
     Task SyncUserToAllDevicesAsync(Guid userId);
-    Task<IEnumerable<UserDeviceMapping>> GetUserDeviceMappingsAsync(Guid userId);
 }
