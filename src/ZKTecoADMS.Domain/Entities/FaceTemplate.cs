@@ -10,7 +10,6 @@ namespace ZKTecoADMS.Domain.Entities;
 // ZKTecoADMS.Domain/Entities/FaceTemplate.cs
 public class FaceTemplate : Entity<Guid>
 {
-
     public Guid UserId { get; set; }
     public int FaceIndex { get; set; } = 0;
 

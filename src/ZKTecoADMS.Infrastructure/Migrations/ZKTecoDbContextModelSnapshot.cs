@@ -460,6 +460,8 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CommandId");
+
                     b.HasIndex("DeviceId");
 
                     b.HasIndex("Status");
@@ -716,6 +718,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<Guid>("DeviceId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Email")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -770,59 +775,12 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeviceId");
+
                     b.HasIndex("PIN")
                         .IsUnique();
 
                     b.ToTable("UserDevices");
-                });
-
-            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.UserDeviceMapping", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("DeviceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsSynced")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastSyncedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SyncStatus")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeviceId");
-
-                    b.HasIndex("UserId", "DeviceId")
-                        .IsUnique();
-
-                    b.ToTable("UserDeviceMappings");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.UserRefreshToken", b =>
@@ -982,23 +940,15 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("Device");
                 });
 
-            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.UserDeviceMapping", b =>
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.User", b =>
                 {
                     b.HasOne("ZKTecoADMS.Domain.Entities.Device", "Device")
-                        .WithMany("UserDeviceMappings")
+                        .WithMany("Users")
                         .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ZKTecoADMS.Domain.Entities.User", "User")
-                        .WithMany("UserDeviceMappings")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Device");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.UserRefreshToken", b =>
@@ -1027,7 +977,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.Navigation("SyncLogs");
 
-                    b.Navigation("UserDeviceMappings");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.User", b =>
@@ -1037,8 +987,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("FaceTemplates");
 
                     b.Navigation("FingerprintTemplates");
-
-                    b.Navigation("UserDeviceMappings");
                 });
 #pragma warning restore 612, 618
         }

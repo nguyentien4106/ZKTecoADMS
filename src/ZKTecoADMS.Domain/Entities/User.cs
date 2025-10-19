@@ -11,7 +11,6 @@ namespace ZKTecoADMS.Domain.Entities;
 // ZKTecoADMS.Domain/Entities/User.cs
 public class User : Entity<Guid>
 {
-
     [Required]
     [MaxLength(20)]
     public string PIN { get; set; } = string.Empty;
@@ -48,8 +47,7 @@ public class User : Entity<Guid>
     public string? Position { get; set; }
     
     public Guid DeviceId { get; set; }
-    
-    public virtual Device Device { get; set; }
+    public virtual Device Device { get; set; } = null!;
 
     // Navigation Properties
     public virtual ICollection<FingerprintTemplate> FingerprintTemplates { get; set; } = new List<FingerprintTemplate>();

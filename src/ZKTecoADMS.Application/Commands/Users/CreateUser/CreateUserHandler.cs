@@ -1,3 +1,4 @@
+using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.CQRS;
 using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Domain.Entities;
@@ -7,10 +8,10 @@ namespace ZKTecoADMS.Application.Commands.Users.CreateUser;
 
 public class CreateUserHandler(
     IDeviceService deviceService, 
-    IRepository<User> userRepository
-    ) : ICommandHandler<CreateUserCommand, User>
+    IRepository<User> userRepository,
+    IRepository<DeviceCommand> deviceCmdRepository) : ICommandHandler<CreateUserCommand, List<User>>
 {
-    public async Task<User> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<List<User>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var users = request.DeviceIds.Select(deviceId => new User
             {
@@ -31,10 +32,20 @@ public class CreateUserHandler(
 
         foreach (var user in users)
         {
-            var result = await userRepository.AddAsync(user);
-            
+            var result = await userRepository.AddAsync(user, cancellationToken);
+            if (result != null)
+            {
+                var cmd = new DeviceCommand
+                {
+                    DeviceId = result.DeviceId,
+                    Command = ClockCommandBuilder.BuildAddUserCommand(result),
+                    Priority = 10
+                };
+                await deviceCmdRepository.AddAsync(cmd, cancellationToken);
+                
+            }
         }
         
-        return users.FirstOrDefault();
+        return users;
     }
 }

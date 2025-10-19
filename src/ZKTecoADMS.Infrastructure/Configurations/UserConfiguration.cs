@@ -13,6 +13,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
         builder.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()");
         
-        builder.HasAlternateKey(e => new { e.DeviceId, e.PIN });
+        builder.HasOne(i => i.Device)
+            .WithMany(i => i.Users)
+            .HasForeignKey(i => i.DeviceId)
+            .OnDelete(DeleteBehavior.Restrict); // Change to Restrict to prevent deletion of Device when Users exist
+        
     }
 }

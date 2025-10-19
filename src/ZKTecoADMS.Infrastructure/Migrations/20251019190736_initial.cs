@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -66,7 +66,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     Port = table.Column<int>(type: "int", nullable: true),
                     Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Timezone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     LastOnline = table.Column<DateTime>(type: "datetime2", nullable: true),
                     FirmwareVersion = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Platform = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
@@ -75,10 +74,11 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     MaxFingerprints = table.Column<int>(type: "int", nullable: true),
                     MaxFaces = table.Column<int>(type: "int", nullable: true),
                     SupportsPushSDK = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "GETDATE()"),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Deleted = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -105,35 +105,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SystemConfigurations", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserDevices",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PIN = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    CardNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    GroupId = table.Column<int>(type: "int", nullable: false),
-                    Privilege = table.Column<int>(type: "int", nullable: false),
-                    VerifyMode = table.Column<int>(type: "int", nullable: false),
-                    StartDatetime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EndDatetime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    Department = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Position = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserDevices", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -272,8 +243,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DeviceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CommandId = table.Column<long>(type: "bigint", nullable: false),
-                    CommandType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CommandData = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Command = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Priority = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", maxLength: 20, nullable: false),
                     ResponseData = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -351,6 +321,42 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserDevices",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PIN = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    CardNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    GroupId = table.Column<int>(type: "int", nullable: false),
+                    Privilege = table.Column<int>(type: "int", nullable: false),
+                    VerifyMode = table.Column<int>(type: "int", nullable: false),
+                    StartDatetime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndDatetime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Department = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Position = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DeviceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "GETDATE()"),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserDevices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserDevices_Devices_DeviceId",
+                        column: x => x.DeviceId,
+                        principalTable: "Devices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AttendanceLogs",
                 columns: table => new
                 {
@@ -362,7 +368,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     VerifyState = table.Column<int>(type: "int", nullable: false),
                     AttendanceTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     WorkCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    Temperature = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Temperature = table.Column<decimal>(type: "decimal(4,1)", precision: 4, scale: 1, nullable: true),
                     MaskStatus = table.Column<bool>(type: "bit", nullable: true),
                     RawData = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsProcessed = table.Column<bool>(type: "bit", nullable: false),
@@ -380,12 +386,13 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         column: x => x.DeviceId,
                         principalTable: "Devices",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AttendanceLogs_UserDevices_UserId",
                         column: x => x.UserId,
                         principalTable: "UserDevices",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -442,39 +449,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "UserDeviceMappings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DeviceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IsSynced = table.Column<bool>(type: "bit", nullable: false),
-                    LastSyncedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    SyncStatus = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    ErrorMessage = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserDeviceMappings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserDeviceMappings_Devices_DeviceId",
-                        column: x => x.DeviceId,
-                        principalTable: "Devices",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserDeviceMappings_UserDevices_UserId",
-                        column: x => x.UserId,
-                        principalTable: "UserDevices",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -515,9 +489,19 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AttendanceLogs_AttendanceTime",
+                table: "AttendanceLogs",
+                column: "AttendanceTime");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AttendanceLogs_DeviceId",
                 table: "AttendanceLogs",
                 column: "DeviceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AttendanceLogs_PIN",
+                table: "AttendanceLogs",
+                column: "PIN");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AttendanceLogs_UserId",
@@ -525,24 +509,48 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DeviceCommands_CommandId",
+                table: "DeviceCommands",
+                column: "CommandId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DeviceCommands_DeviceId",
                 table: "DeviceCommands",
                 column: "DeviceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeviceSettings_DeviceId",
+                name: "IX_DeviceCommands_Status",
+                table: "DeviceCommands",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Devices_SerialNumber",
+                table: "Devices",
+                column: "SerialNumber",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeviceSettings_DeviceId_SettingKey",
                 table: "DeviceSettings",
-                column: "DeviceId");
+                columns: new[] { "DeviceId", "SettingKey" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_FaceTemplates_UserId",
+                name: "IX_FaceTemplates_UserId_FaceIndex",
                 table: "FaceTemplates",
-                column: "UserId");
+                columns: new[] { "UserId", "FaceIndex" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_FingerprintTemplates_UserId",
+                name: "IX_FingerprintTemplates_UserId_FingerIndex",
                 table: "FingerprintTemplates",
-                column: "UserId");
+                columns: new[] { "UserId", "FingerIndex" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SyncLogs_CreatedAt",
+                table: "SyncLogs",
+                column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SyncLogs_DeviceId",
@@ -550,14 +558,21 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                 column: "DeviceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserDeviceMappings_DeviceId",
-                table: "UserDeviceMappings",
+                name: "IX_SystemConfigurations_ConfigKey",
+                table: "SystemConfigurations",
+                column: "ConfigKey",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserDevices_DeviceId",
+                table: "UserDevices",
                 column: "DeviceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserDeviceMappings_UserId",
-                table: "UserDeviceMappings",
-                column: "UserId");
+                name: "IX_UserDevices_PIN",
+                table: "UserDevices",
+                column: "PIN",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRefreshTokens_ApplicationUserId",
@@ -606,22 +621,19 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                 name: "SystemConfigurations");
 
             migrationBuilder.DropTable(
-                name: "UserDeviceMappings");
-
-            migrationBuilder.DropTable(
                 name: "UserRefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Devices");
-
-            migrationBuilder.DropTable(
                 name: "UserDevices");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Devices");
         }
     }
 }

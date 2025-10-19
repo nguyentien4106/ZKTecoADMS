@@ -8,13 +8,6 @@ public class LoggingBehaviour<TRequest, TResponse>(ILogger<TRequest> logger) : I
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        // Skip logging for iclock/getrequest
-        var requestTypeName = typeof(TRequest).Name.ToLower();
-        if (requestTypeName.Contains("senddevicecommands"))
-        {
-            return await next();
-        }
-
         logger.LogInformation("[START] Handle request={Request} - Response={Response} - RequestData={RequestData}",
             typeof(TRequest).Name, typeof(TResponse).Name, request);
 

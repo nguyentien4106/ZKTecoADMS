@@ -182,8 +182,8 @@ export const CreateUserDialog = ({
             <div className="space-y-2">
               <Label htmlFor="devices">Devices *</Label>
               <Select 
-                defaultValue={formData.deviceSNs?.toString()} 
-                onValueChange={(value) => setFormData({ ...formData, deviceSNs: [value] })}
+                defaultValue={formData.DeviceIds?.toString()} 
+                onValueChange={(value) => setFormData({ ...formData, DeviceIds: [value] })}
                 required>
                 <SelectTrigger className="">
                   <SelectValue />

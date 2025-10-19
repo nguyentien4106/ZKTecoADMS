@@ -121,7 +121,6 @@ public class UserService : IUserService
             await _deviceService.CreateCommandAsync(faceCommand);
         }
 
-        mapping.SyncStatus = "Syncing";
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Initiated sync for user {UserName} to device {DeviceId}", user.FullName, deviceId);

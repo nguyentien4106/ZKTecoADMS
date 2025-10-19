@@ -83,7 +83,7 @@ export interface CreateUserRequest {
   phoneNumber?: string;
   department?: string;
   position?: string;
-  deviceSNs?: string[];
+  DeviceIds?: string[];
 }
 
 export interface CreateDeviceRequest {

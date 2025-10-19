@@ -12,8 +12,8 @@ using ZKTecoADMS.Infrastructure;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     [DbContext(typeof(ZKTecoDbContext))]
-    [Migration("20251019045657_Initial")]
-    partial class Initial
+    [Migration("20251019190736_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -274,7 +274,8 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("Temperature")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(4, 1)
+                        .HasColumnType("decimal(4,1)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -297,7 +298,11 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AttendanceTime");
+
                     b.HasIndex("DeviceId");
+
+                    b.HasIndex("PIN");
 
                     b.HasIndex("UserId");
 
@@ -311,7 +316,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -390,12 +397,17 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SerialNumber")
+                        .IsUnique();
 
                     b.ToTable("Devices");
                 });
@@ -406,16 +418,13 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CommandData")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Command")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<long>("CommandId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("CommandType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
@@ -454,7 +463,11 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CommandId");
+
                     b.HasIndex("DeviceId");
+
+                    b.HasIndex("Status");
 
                     b.ToTable("DeviceCommands");
                 });
@@ -495,7 +508,8 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeviceId");
+                    b.HasIndex("DeviceId", "SettingKey")
+                        .IsUnique();
 
                     b.ToTable("DeviceSettings");
                 });
@@ -539,7 +553,8 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "FaceIndex")
+                        .IsUnique();
 
                     b.ToTable("FaceTemplates");
                 });
@@ -583,7 +598,8 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "FingerIndex")
+                        .IsUnique();
 
                     b.ToTable("FingerprintTemplates");
                 });
@@ -637,6 +653,8 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt");
+
                     b.HasIndex("DeviceId");
 
                     b.ToTable("SyncLogs");
@@ -675,6 +693,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ConfigKey")
+                        .IsUnique();
+
                     b.ToTable("SystemConfigurations");
                 });
 
@@ -689,7 +710,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -697,6 +720,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<string>("Department")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("DeviceId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .HasMaxLength(100)
@@ -740,7 +766,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -750,55 +778,12 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserDevices");
-                });
-
-            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.UserDeviceMapping", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("DeviceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsSynced")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastSyncedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SyncStatus")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
                     b.HasIndex("DeviceId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("PIN")
+                        .IsUnique();
 
-                    b.ToTable("UserDeviceMappings");
+                    b.ToTable("UserDevices");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.UserRefreshToken", b =>
@@ -890,12 +875,13 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.HasOne("ZKTecoADMS.Domain.Entities.Device", "Device")
                         .WithMany("AttendanceLogs")
                         .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ZKTecoADMS.Domain.Entities.User", "User")
                         .WithMany("AttendanceLogs")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Device");
 
@@ -957,23 +943,15 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("Device");
                 });
 
-            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.UserDeviceMapping", b =>
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.User", b =>
                 {
                     b.HasOne("ZKTecoADMS.Domain.Entities.Device", "Device")
-                        .WithMany("UserDeviceMappings")
+                        .WithMany("Users")
                         .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ZKTecoADMS.Domain.Entities.User", "User")
-                        .WithMany("UserDeviceMappings")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Device");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.UserRefreshToken", b =>
@@ -1002,7 +980,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.Navigation("SyncLogs");
 
-                    b.Navigation("UserDeviceMappings");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.User", b =>
@@ -1012,8 +990,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("FaceTemplates");
 
                     b.Navigation("FingerprintTemplates");
-
-                    b.Navigation("UserDeviceMappings");
                 });
 #pragma warning restore 612, 618
         }

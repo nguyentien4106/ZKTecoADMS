@@ -29,8 +29,6 @@ public class Device : AuditableEntity<Guid>
     [MaxLength(50)]
     public string Timezone { get; set; } = "UTC";
 
-    public bool IsActive { get; set; }
-
     public DateTime? LastOnline { get; set; }
 
     [MaxLength(50)]

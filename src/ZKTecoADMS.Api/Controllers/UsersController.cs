@@ -44,7 +44,7 @@ public class UsersController(IUserService userService, ILogger<UsersController> 
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> CreateUser([FromBody] CreateUserRequest request)
+    public async Task<ActionResult<List<User>>> CreateUser([FromBody] CreateUserRequest request)
     {
         var command = new CreateUserCommand(
             request.PIN, 
@@ -60,8 +60,8 @@ public class UsersController(IUserService userService, ILogger<UsersController> 
             true, 
             request.DeviceIds);
         var created = await _bus.Send(command);
-            
-        return CreatedAtAction(nameof(GetUser), new { id = created.Id }, created);
+
+        return Ok(created);
     }
 
     [HttpPut("{id}")]
