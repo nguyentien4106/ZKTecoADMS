@@ -1,0 +1,46 @@
+﻿version: '3.8'
+
+services:
+  zktecoadms.api:
+    image: zktecoadms.api
+    build:
+      context: .
+      dockerfile: ZKTecoADMS.API/Dockerfile
+    ports:
+      - "6000:6000"
+      - "6001:6001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=6000
+      - ASPNETCORE_HTTPS_PORTS=6001
+      - ConnectionStrings__DefaultConnection=Server=db;Database=ZKTecoDB;User=sa;Password=YourStrong!Password123;TrustServerCertificate=True
+
+    volumes:
+      - $HOME/.aspnet/https:/home/app/.aspnet/https:ro
+      - $HOME/.microsoft/usersecrets:/home/app/.microsoft/usersecrets:ro
+    depends_on:
+      - db
+    networks:
+      - zkteconet
+    restart: unless-stopped
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Password123
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - zkteconet
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
+    driver: local
+
+networks:
+  zkteconet:
+    driver: bridge

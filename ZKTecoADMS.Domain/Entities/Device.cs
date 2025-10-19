@@ -4,11 +4,8 @@ using ZKTecoADMS.Domain.Entities;
 
 namespace ZKTeco.Domain.Entities;
 
-public class Device
+public class Device : BaseEntity
 {
-    [Key]
-    public int Id { get; set; }
-
     [Required]
     [MaxLength(50)]
     public string SerialNumber { get; set; } = string.Empty;
@@ -31,7 +28,7 @@ public class Device
     [MaxLength(50)]
     public string Timezone { get; set; } = "UTC";
 
-    public bool IsActive { get; set; } = true;
+    public bool IsActive { get; set; }
 
     public DateTime? LastOnline { get; set; }
 
@@ -49,9 +46,6 @@ public class Device
     public int? MaxFaces { get; set; }
 
     public bool SupportsPushSDK { get; set; } = true;
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation Properties
     public virtual ICollection<AttendanceLog> AttendanceLogs { get; set; } = new List<AttendanceLog>();

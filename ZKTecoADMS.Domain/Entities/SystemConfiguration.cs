@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace ZKTecoADMS.Domain.Entities;
 // ZKTeco.Domain/Entities/SystemConfiguration.cs
-public class SystemConfiguration
+public class SystemConfiguration : BaseEntity
 {
-    [Key]
-    public int Id { get; set; }
-
     [Required]
     [MaxLength(100)]
     public string ConfigKey { get; set; } = string.Empty;
@@ -22,5 +19,4 @@ public class SystemConfiguration
     [MaxLength(200)]
     public string? Description { get; set; }
 
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

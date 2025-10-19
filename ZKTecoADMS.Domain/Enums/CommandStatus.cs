@@ -1,6 +1,9 @@
 namespace ZKTecoADMS.Domain.Enums;
 
-public class CommandStatus
+public enum CommandStatus
 {
-    
+    Created,
+    Sent,
+    Success,
+    Failed
 }

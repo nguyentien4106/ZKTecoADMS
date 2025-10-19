@@ -8,13 +8,10 @@ using ZKTeco.Domain.Entities;
 
 namespace ZKTecoADMS.Domain.Entities;
 
-public class AttendanceLog
+public class AttendanceLog : BaseEntity
 {
-    [Key]
-    public long Id { get; set; }
-
-    public int DeviceId { get; set; }
-    public int? UserId { get; set; }
+    public Guid DeviceId { get; set; }
+    public Guid? UserId { get; set; }
 
     [Required]
     [MaxLength(20)]
@@ -35,8 +32,6 @@ public class AttendanceLog
 
     public bool IsProcessed { get; set; } = false;
     public DateTime? ProcessedAt { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation Properties
     public virtual Device Device { get; set; } = null!;

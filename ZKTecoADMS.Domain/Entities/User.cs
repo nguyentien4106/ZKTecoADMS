@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 namespace ZKTecoADMS.Domain.Entities;
 
 // ZKTeco.Domain/Entities/User.cs
-public class User
+public class User : BaseEntity
 {
-    [Key]
-    public int Id { get; set; }
 
     [Required]
     [MaxLength(20)]
@@ -47,9 +45,6 @@ public class User
 
     [MaxLength(100)]
     public string? Position { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation Properties
     public virtual ICollection<FingerprintTemplate> FingerprintTemplates { get; set; } = new List<FingerprintTemplate>();

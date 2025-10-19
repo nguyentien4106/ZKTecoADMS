@@ -4,8 +4,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 6000
+EXPOSE 6001
 
 
 # This stage is used to build the service project
@@ -13,6 +13,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["ZKTecoADMS.API/ZKTecoADMS.API.csproj", "ZKTecoADMS.API/"]
+COPY ["ZKTecoADMS.Core/ZKTecoADMS.Core.csproj", "ZKTecoADMS.Core/"]
+COPY ["ZKTecoADMS.Infrastructure/ZKTecoADMS.Infrastructure.csproj", "ZKTecoADMS.Infrastructure/"]
+COPY ["ZKTecoADMS.Domain/ZKTecoADMS.Domain.csproj", "ZKTecoADMS.Domain/"]
 RUN dotnet restore "./ZKTecoADMS.API/ZKTecoADMS.API.csproj"
 COPY . .
 WORKDIR "/src/ZKTecoADMS.API"

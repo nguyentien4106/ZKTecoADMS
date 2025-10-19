@@ -8,12 +8,10 @@ using ZKTeco.Domain.Entities;
 
 namespace ZKTecoADMS.Domain.Entities
 ;
-public class DeviceSetting
+public class DeviceSetting : BaseEntity
 {
-    [Key]
-    public int Id { get; set; }
 
-    public int DeviceId { get; set; }
+    public Guid DeviceId { get; set; }
 
     [Required]
     [MaxLength(100)]
@@ -25,7 +23,6 @@ public class DeviceSetting
     [MaxLength(200)]
     public string? Description { get; set; }
 
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation Properties
     public virtual Device Device { get; set; } = null!;

@@ -1,6 +1,11 @@
+using ZKTeco.Domain.Entities;
+
 namespace ZKTecoADMS.Infrastructure.Repositories;
 
-public class IDeviceRepository
+public interface IDeviceRepository : IRepository<Device>
 {
-    
+    Task<Device?> GetBySerialNumberAsync(string serialNumber);
+    Task<IEnumerable<Device>> GetActiveDevicesAsync();
+    Task<IEnumerable<Device>> GetDevicesWithPendingCommandsAsync();
+    Task UpdateLastOnlineAsync(Guid deviceId, DateTime timestamp);
 }

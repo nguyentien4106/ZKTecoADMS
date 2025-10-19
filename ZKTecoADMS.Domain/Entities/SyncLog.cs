@@ -8,12 +8,9 @@ using ZKTeco.Domain.Entities;
 
 namespace ZKTecoADMS.Domain.Entities;
 // ZKTeco.Domain/Entities/SyncLog.cs
-public class SyncLog
+public class SyncLog : BaseEntity
 {
-    [Key]
-    public long Id { get; set; }
-
-    public int DeviceId { get; set; }
+    public Guid DeviceId { get; set; }
 
     [Required]
     [MaxLength(50)]
@@ -32,8 +29,6 @@ public class SyncLog
     public string? ErrorMessage { get; set; }
 
     public int? DurationMs { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation Properties
     public virtual Device Device { get; set; } = null!;

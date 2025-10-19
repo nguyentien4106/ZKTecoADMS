@@ -53,6 +53,12 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 
+# Node.js dependencies
+node_modules/
+**/node_modules/
+package-lock.json
+**/package-lock.json
+
 # Frontend (React/Vite) specific
 zkteco-client/node_modules/
 zkteco-client/dist/

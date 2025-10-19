@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace ZKTecoADMS.Domain.Entities;
 // ZKTeco.Domain/Entities/FaceTemplate.cs
-public class FaceTemplate
+public class FaceTemplate : BaseEntity
 {
-    [Key]
-    public int Id { get; set; }
 
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
     public int FaceIndex { get; set; } = 0;
 
     [Required]
@@ -21,9 +19,6 @@ public class FaceTemplate
     public int? TemplateSize { get; set; }
     public byte[]? PhotoData { get; set; }
     public int Version { get; set; } = 50;
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation Properties
     public virtual User User { get; set; } = null!;

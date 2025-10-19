@@ -4,14 +4,10 @@ using ZKTeco.Domain.Entities;
 namespace ZKTecoADMS.Domain.Entities;
 
 // ZKTeco.Domain/Entities/UserDeviceMapping.cs
-public class UserDeviceMapping
+public class UserDeviceMapping : BaseEntity
 {
-    [Key]
-    public int Id { get; set; }
-
-    public int UserId { get; set; }
-    public int DeviceId { get; set; }
-
+    public Guid UserId { get; set; }
+    public Guid DeviceId { get; set; }
     public bool IsSynced { get; set; } = false;
     public DateTime? LastSyncedAt { get; set; }
 
@@ -20,8 +16,6 @@ public class UserDeviceMapping
 
     [MaxLength(500)]
     public string? ErrorMessage { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation Properties
     public virtual User User { get; set; } = null!;
