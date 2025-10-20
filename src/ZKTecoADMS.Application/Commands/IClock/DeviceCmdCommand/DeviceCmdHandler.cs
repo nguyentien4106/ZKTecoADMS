@@ -1,19 +1,16 @@
 using System.Text;
-using System.Text.Json;
 using ZKTecoADMS.Application.Constants;
-using ZKTecoADMS.Application.CQRS;
 using ZKTecoADMS.Application.Extensions;
 using ZKTecoADMS.Application.Interfaces;
-using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
 
-namespace ZKTecoADMS.Application.Commands.IClock.ClockCmdResponse;
+namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand;
 
-public class ResultCommandHandler(IDeviceService deviceService) : ICommandHandler<ResultCommand, string>
+public class DeviceCmdHandler(IDeviceService deviceService) : ICommandHandler<DeviceCmdCommand, string>
 {
-    public async Task<string> Handle(ResultCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(DeviceCmdCommand request, CancellationToken cancellationToken)
     {
-        var SN = request.SN;
+        var sn = request.SN;
         
         using var reader = new StreamReader(request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync(cancellationToken);

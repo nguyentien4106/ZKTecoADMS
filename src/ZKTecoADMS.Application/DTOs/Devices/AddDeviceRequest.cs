@@ -6,4 +6,5 @@ public record AddDeviceRequest(
     string? Model,
     string? IpAddress,
     int? Port,
-    string? Location);
+    string? Location,
+    Guid ApplicationUserId);

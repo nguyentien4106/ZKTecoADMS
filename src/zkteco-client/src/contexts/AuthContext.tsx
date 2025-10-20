@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import type { AuthUser, AuthContextType } from '@/types/auth';
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
-import { parse } from 'path';
 
 const ACCESSTOKEN_KEY = "access_token";
 const REFRESHTOKEN_KEY = "refresh_token";
@@ -73,6 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         logout,
+        applicationUserId: user?.id || null,
       }}
     >
       {children}

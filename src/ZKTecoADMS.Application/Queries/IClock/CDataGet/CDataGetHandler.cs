@@ -1,25 +1,24 @@
 using ZKTecoADMS.Application.Constants;
-using ZKTecoADMS.Application.CQRS;
 using ZKTecoADMS.Application.Interfaces;
 
-namespace ZKTecoADMS.Application.Queries.IClock;
+namespace ZKTecoADMS.Application.Queries.IClock.CDataGet;
 
-public class HandshakeHandler(IDeviceService deviceService) : IQueryHandler<HandshakeQuery, string>
+public class CDataGetHandler(IDeviceService deviceService) : IQueryHandler<CDataGetQuery, string>
 {
-    public async Task<string> Handle(HandshakeQuery request, CancellationToken cancellationToken)
+    public async Task<string> Handle(CDataGetQuery request, CancellationToken cancellationToken)
     {
-        var SN = request.SN;
+        var sn = request.SN;
         
-        var device = await deviceService.GetDeviceBySerialNumberAsync(SN);
+        var device = await deviceService.GetDeviceBySerialNumberAsync(sn);
 
-        if (device == null)
+        if (device is not { IsActive: true })
         {
             return ClockResponses.Fail;
         }
             
-        await deviceService.UpdateDeviceHeartbeatAsync(SN);
+        await deviceService.UpdateDeviceHeartbeatAsync(sn);
 
-        var response = $"GET OPTION FROM: {SN}\r\n" +
+        var response = $"GET OPTION FROM: {sn}\r\n" +
                        "ATTLOGStamp=9999\r\n" + 
                        "OPERLOGStamp=9999\r\n" + 
                        "ErrorDelay=60\r\n" +
@@ -35,6 +34,5 @@ public class HandshakeHandler(IDeviceService deviceService) : IQueryHandler<Hand
                        "Encrypt=0";
 
         return response;
-        return "OK";
     }
 }

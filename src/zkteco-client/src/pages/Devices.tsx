@@ -16,23 +16,30 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { EmptyState } from '@/components/EmptyState'
-import { useDevices, useDeleteDevice } from '@/hooks/useDevices'
+import { useDeleteDevice, useActiveDevice, useDevicesByUser } from '@/hooks/useDevices'
 import { Monitor, Plus, Trash2, Settings } from 'lucide-react'
 import { format } from 'date-fns'
 import { CreateDeviceDialog } from '@/components/dialogs/CreateDeviceDialog'
+import { useAuth } from '@/contexts/AuthContext'
 
 export const Devices = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
-  const { data: devices, isLoading } = useDevices()
+  const { applicationUserId } = useAuth()
+  const { data: devices, isFetching } = useDevicesByUser(applicationUserId)
   const deleteDevice = useDeleteDevice()
+  const activeDevice = useActiveDevice()
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this device?')) {
       await deleteDevice.mutateAsync(id)
     }
   }
 
-  if (isLoading) {
+  const toggleActiveDevice = async (id: string) => {
+    await activeDevice.mutateAsync(id)
+  }
+
+  if (isFetching) {
     return <LoadingSpinner />
   }
 
@@ -51,7 +58,7 @@ export const Devices = () => {
 
       <Card>
         <CardContent className="p-0">
-          {!devices || !devices.items || devices.items.length === 0 ? (
+          {!devices || devices.length === 0 ? (
             <EmptyState
               icon={Monitor}
               title="No devices found"
@@ -79,7 +86,7 @@ export const Devices = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {devices.items.map((device) => (
+                {devices.map((device) => (
                   <TableRow key={device.id}>
                     <TableCell className="font-medium">
                       {device.deviceName}
@@ -94,7 +101,7 @@ export const Devices = () => {
                       <Badge
                         variant={
                           device.deviceStatus === 'Online'
-                            ? 'success'
+                            ? 'default'
                             : device.deviceStatus === 'Offline'
                             ? 'secondary'
                             : 'destructive'
@@ -105,15 +112,9 @@ export const Devices = () => {
                     </TableCell>
                     <TableCell>
                       <Badge
-                        variant={
-                          device.deviceStatus === 'Online'
-                            ? 'success'
-                            : device.deviceStatus === 'Offline'
-                            ? 'secondary'
-                            : 'destructive'
-                        }
+                        variant={device.isActive ? 'default' : 'secondary'}
                       >
-                        {device.isActive ? "Actived" : "Deactived"}
+                        {device.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
@@ -125,6 +126,13 @@ export const Devices = () => {
                       <div className="flex justify-end gap-2">
                         <Button variant="ghost" size="icon">
                           <Settings className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => toggleActiveDevice(device.id)}
+                        >
+                          <Monitor className={`w-4 h-4 text-${device.isActive ? 'green' : 'black'}-500`} />
                         </Button>
                         <Button
                           variant="ghost"

@@ -10,6 +10,8 @@ public static class DependencyInjectionExtensions
 {
     public static void AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
+        TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
+        
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         services.AddMediatR(cfg =>

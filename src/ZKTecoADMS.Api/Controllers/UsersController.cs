@@ -1,24 +1,26 @@
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using ZKTecoADMS.Api.Models.Requests;
 using ZKTecoADMS.Application.Commands.Users.CreateUser;
+using ZKTecoADMS.Application.DTOs.Users;
 using ZKTecoADMS.Application.Interfaces;
-using ZKTecoADMS.Core.Services;
+using ZKTecoADMS.Application.Queries.Users.GetUserDevices;
 using ZKTecoADMS.Domain.Entities;
 
 namespace ZKTecoADMS.API.Controllers;
 
-
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(IUserService userService, ILogger<UsersController> logger, IMediator _bus) : ControllerBase
+public class UsersController(IUserService userService, ILogger<UsersController> logger, IMediator bus) : ControllerBase
 {
     private readonly ILogger<UsersController> _logger = logger;
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+    [HttpPost("devices")]
+    public async Task<ActionResult<IEnumerable<User>>> GetUsersByDevices([FromBody] GetUsersByDevicesRequest request)
     {
-        var users = await userService.GetAllUsersAsync();
-        return Ok(users);
+        var query = request.Adapt<GetUserDevicesQuery>();
+        
+        return Ok(await bus.Send(query));
     }
 
     [HttpGet("{id}")]
@@ -59,7 +61,7 @@ public class UsersController(IUserService userService, ILogger<UsersController> 
             request.Department, 
             true, 
             request.DeviceIds);
-        var created = await _bus.Send(command);
+        var created = await bus.Send(command);
 
         return Ok(created);
     }

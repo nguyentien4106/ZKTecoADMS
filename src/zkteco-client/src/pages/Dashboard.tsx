@@ -4,7 +4,7 @@
 import { PageHeader } from '@/components/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { useDevices } from '@/hooks/useDevices'
+import { useDevices, useDevicesOnline } from '@/hooks/useDevices'
 import { useUsers } from '@/hooks/useUsers'
 import { useUnprocessedAttendance } from '@/hooks/useAttendance'
 import { Monitor, Users, Clock, AlertCircle } from 'lucide-react'
@@ -21,13 +21,13 @@ import {
 
 export const Dashboard = () => {
   const { data: devices, isLoading: devicesLoading } = useDevices()
+  const { data: onlineDevices, isLoading : onlineDeviceLoading } = useDevicesOnline()
   const { data: users, isLoading: usersLoading } = useUsers()
 
   if (devicesLoading || usersLoading) {
     return <LoadingSpinner />
   }
 
-  const activeDevices = devices?.filter((d) => d.isActive && d.deviceStatus === 'Online').length || 0
   const totalDevices = devices?.length || 0
   const totalUsers = users?.length || 0
   const activeUsers = users?.filter((u) => u.isActive).length || 0
@@ -60,10 +60,10 @@ export const Dashboard = () => {
           <CardContent>
             <div className="text-2xl font-bold">{totalDevices}</div>
             <div className="flex items-center gap-2 mt-2">
-              <Badge variant="success">{activeDevices} Online</Badge>
-              {totalDevices - activeDevices > 0 && (
+              <Badge variant="success">{onlineDevices?.length} Online</Badge>
+              {totalDevices - onlineDevices?.length > 0 && (
                 <Badge variant="secondary">
-                  {totalDevices - activeDevices} Offline
+                  {totalDevices - onlineDevices?.length} Offline
                 </Badge>
               )}
             </div>
@@ -130,7 +130,7 @@ export const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {devices?.slice(0, 5).map((device) => (
+              {devices?.items?.slice(0, 5).map((device) => (
                 <div
                   key={device.id}
                   className="flex items-center justify-between"

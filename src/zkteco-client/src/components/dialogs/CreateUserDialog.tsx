@@ -25,7 +25,8 @@ import {
 import { UserPrivileges } from '@/constants'
 import { defaultNewUser } from '@/constants/defaultValue'
 import { Button } from '../ui/button'
-import { useDevices } from '@/hooks/useDevices'
+import { useDevicesByUser } from '@/hooks/useDevices'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface CreateUserDialogProps {
   open: boolean
@@ -38,11 +39,10 @@ export const CreateUserDialog = ({
   onOpenChange,
   user
 }: CreateUserDialogProps) => {
-  console.log('user', user)
   const createUser = useCreateUser()
   const [formData, setFormData] = useState<CreateUserRequest>(user ?? defaultNewUser)
-  const { data: devices, isLoading } = useDevices()
-
+  const { applicationUserId } = useAuth()
+  const { data: devices, isFetching } = useDevicesByUser(applicationUserId)
 
   useEffect(() => {
     if (user) {
@@ -191,7 +191,7 @@ export const CreateUserDialog = ({
                 <SelectContent>
                   <SelectGroup>
                     {
-                      devices?.map(device => {
+                      isFetching ? null : devices?.map(device => {
                         return <SelectItem key={device.id} value={device.id}>{device.deviceName}</SelectItem>
                       })
                     }

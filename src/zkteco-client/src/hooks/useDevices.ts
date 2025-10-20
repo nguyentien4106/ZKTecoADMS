@@ -13,7 +13,43 @@ export const useDevices = () => {
   });
 };
 
-export const useDevice = (id: number) => {
+export const useDevicesByUser = (userId: string | null) => {
+  return useQuery({
+    queryKey: ['devices', 'user', userId],
+    queryFn: () => {
+      if (!userId) throw new Error('User ID is required');
+      return deviceService.getByUserId(userId);
+    },
+    enabled: Boolean(userId),
+  });
+}
+
+export const useDevicesOnline = () => {
+  return useQuery({
+    queryKey: ['devices', 'online'],
+    queryFn: async () => {
+      const allDevices = await deviceService.getAll();
+      return allDevices.items.filter(device => device.deviceStatus === 'Online');
+    },
+  });
+}
+
+export const useActiveDevice = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (deviceId: string) => deviceService.activeDevice(deviceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['devices'] });
+      toast.success('Device created successfully');
+    },
+    onError: (error: any) => {
+      toast.error('Failed to activate device', { description: error.message });
+    }
+  });
+}
+
+export const useDevice = (id: string) => {
   return useQuery({
     queryKey: ['device', id],
     queryFn: () => deviceService.getById(id),
@@ -30,6 +66,9 @@ export const useCreateDevice = () => {
       queryClient.invalidateQueries({ queryKey: ['devices'] });
       toast.success('Device created successfully');
     },
+    onError: (error: any) => {
+      toast.error('Add device failed!', { description: error.message });
+    }
   });
 };
 
@@ -37,7 +76,7 @@ export const useDeleteDevice = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => deviceService.delete(id),
+    mutationFn: (id: string) => deviceService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['devices'] });
       toast.success('Device deleted successfully');
@@ -49,7 +88,7 @@ export const useSendCommand = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ deviceId, data }: { deviceId: number; data: SendCommandRequest }) =>
+    mutationFn: ({ deviceId, data }: { deviceId: string; data: SendCommandRequest }) =>
       deviceService.sendCommand(deviceId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['commands'] });
@@ -58,7 +97,7 @@ export const useSendCommand = () => {
   });
 };
 
-export const useDeviceCommands = (deviceId: number) => {
+export const useDeviceCommands = (deviceId: string) => {
   return useQuery({
     queryKey: ['commands', deviceId],
     queryFn: () => deviceService.getPendingCommands(deviceId),

@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { CreateDeviceRequest } from '@/types'
+import { defaultNewDevice } from '@/constants/defaultValue'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface CreateDeviceDialogProps {
   open: boolean
@@ -26,27 +28,14 @@ export const CreateDeviceDialog = ({
   onOpenChange,
 }: CreateDeviceDialogProps) => {
   const createDevice = useCreateDevice()
-  const [formData, setFormData] = useState<CreateDeviceRequest>({
-    serialNumber: '',
-    deviceName: '',
-    model: '',
-    ipAddress: '',
-    port: 4370,
-    location: '',
-  })
+  const { user } = useAuth()
+  const [formData, setFormData] = useState<CreateDeviceRequest>(defaultNewDevice)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await createDevice.mutateAsync(formData)
+    await createDevice.mutateAsync({ ...formData, applicationUserId: user?.id || '' })
     onOpenChange(false)
-    setFormData({
-      serialNumber: '',
-      deviceName: '',
-      model: '',
-      ipAddress: '',
-      port: 4370,
-      location: '',
-    })
+    setFormData(defaultNewDevice)
   }
 
   return (

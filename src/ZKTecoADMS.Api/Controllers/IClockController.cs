@@ -1,21 +1,15 @@
-using System.Text;
+using ZKTecoADMS.Application.Commands.GetRequest;
 using ZKTecoADMS.Application.Commands.IClock.CDataPost;
-using ZKTecoADMS.Application.Commands.IClock.ClockCmdResponse;
-using ZKTecoADMS.Application.Commands.SendDeviceCommand;
-using ZKTecoADMS.Domain.Entities;
-using ZKTecoADMS.Application.Interfaces;
-using ZKTecoADMS.Application.Queries.IClock;
+using ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand;
+using ZKTecoADMS.Application.Queries.IClock.CDataGet;
 
 namespace ZKTecoADMS.API.Controllers;
 
-
 [ApiController]
 [Route("iclock")]
-public class IClockController(
-    IDeviceService deviceService,
-    IAttendanceService attendanceService,
-    ILogger<IClockController> logger,
-    IMediator _bus)
+public class ClockController(
+    ILogger<ClockController> logger,
+    IMediator bus)
     : ControllerBase
 {
     /// <summary>
@@ -26,8 +20,8 @@ public class IClockController(
     public async Task<IActionResult> CData([FromQuery] string SN, [FromQuery] string? options, 
         [FromQuery] string? pushver, [FromQuery] string? language)
     {
-        var query = new HandshakeQuery(SN, options, pushver, language);
-        var response = await _bus.Send(query);
+        var query = new CDataGetQuery(SN, options, pushver, language);
+        var response = await bus.Send(query);
         
         return Content(response, "text/plain");
     }
@@ -47,7 +41,7 @@ public class IClockController(
                 SN, table, Stamp);
 
             var command = new CDataPostCommand(SN, table, Stamp, Request.Body);
-            var response = await _bus.Send(command);
+            var response = await bus.Send(command);
             
             return Content(response, "text/plain");
 
@@ -69,8 +63,8 @@ public class IClockController(
     [HttpGet("getrequest")]
     public async Task<IActionResult> GetRequest([FromQuery] string SN)
     {
-        var command = new SendDeviceCommands(SN);
-        var response = await _bus.Send(command);    
+        var command = new GetRequestQuery(SN);
+        var response = await bus.Send(command);    
         return Content(response, "text/plain");
     }
 
@@ -81,66 +75,9 @@ public class IClockController(
     [HttpPost("devicecmd")]
     public async Task<IActionResult> DeviceCmd([FromQuery] string SN)
     {
-        var response = await _bus.Send(new ResultCommand(SN, Request.Body));
+        var response = await bus.Send(new DeviceCmdCommand(SN, Request.Body));
             
         return Content(response, "text/plain");
     }
 
-    #region Private Helper Methods
-
-    private async Task ProcessAttendanceData(Device device, string data)
-    {
-        // Parse attendance data format: PIN\tDateTime\tVerifyType\tVerifyState\tWorkCode\n
-        var lines = data.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-        var logs = new List<AttendanceLog>();
-
-        foreach (var line in lines)
-        {
-            try
-            {
-                var parts = line.Split('\t');
-                if (parts.Length < 4) continue;
-
-                var attendanceLog = new AttendanceLog
-                {
-                    DeviceId = device.Id,
-                    PIN = parts[0].Trim(),
-                    AttendanceTime = DateTime.Parse(parts[1].Trim()),
-                    VerifyType = int.TryParse(parts[2].Trim(), out var vt) ? vt : 0,
-                    VerifyState = int.TryParse(parts[3].Trim(), out var vs) ? vs : 0,
-                    WorkCode = parts.Length > 4 ? parts[4].Trim() : null,
-                    RawData = line
-                };
-
-                logs.Add(attendanceLog);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error parsing attendance line: {Line}", line);
-            }
-        }
-
-        if (logs.Any())
-        {
-            await attendanceService.SaveAttendanceLogsAsync(logs);
-            logger.LogInformation("Saved {Count} attendance logs from device {DeviceId}", 
-                logs.Count, device.Id);
-        }
-    }
-
-    private async Task ProcessOperationLog(Device device, string data)
-    {
-        // Operation logs - can be stored separately or logged
-        logger.LogInformation("Operation log from device {DeviceId}: {Data}", device.Id, data);
-        await Task.CompletedTask;
-    }
-
-    private async Task ProcessUserData(Device device, string data)
-    {
-        // User synchronization data
-        logger.LogInformation("User data from device {DeviceId}: {Data}", device.Id, data);
-        await Task.CompletedTask;
-    }
-
-    #endregion
 }

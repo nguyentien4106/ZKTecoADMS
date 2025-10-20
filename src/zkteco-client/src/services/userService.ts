@@ -3,29 +3,36 @@
 // src/services/usersService.ts
 // ==========================================
 import { apiService } from './api';
-import type { User, CreateUserRequest, UserDeviceMapping } from '@/types';
+import type { User, CreateUserRequest, UserDeviceMapping, AppResponse } from '@/types';
 
 export const userService = {
-  getAll: () => apiService.get<User[]>('/api/users'),
+  getUsersByDevices: async (deviceIds?: string[]) => {
+    const response = await apiService.post<AppResponse<User[]>>('/api/users/devices', { deviceIds })
+    if(response.isSuccess){
+      return response.data;
+    }
+
+    return Promise.reject(new Error(response.errors.join(', ')));
+  },
   
-  getById: (id: number) => apiService.get<User>(`/api/users/${id}`),
+  getById: (id: string) => apiService.get<User>(`/api/users/${id}`),
   
   getByPin: (pin: string) => apiService.get<User>(`/api/users/pin/${pin}`),
   
   create: (data: CreateUserRequest) => 
     apiService.post<User>('/api/users', data),
   
-  update: (id: number, data: Partial<User>) => 
+  update: (id: string, data: Partial<User>) => 
     apiService.put<void>(`/api/users/${id}`, data),
   
-  delete: (id: number) => apiService.delete(`/api/users/${id}`),
+  delete: (id: string) => apiService.delete(`/api/users/${id}`),
   
-  syncToDevice: (userId: number, deviceId: number) => 
+  syncToDevice: (userId: string, deviceId: string) => 
     apiService.post(`/api/users/${userId}/sync-to-device/${deviceId}`),
   
-  syncToAllDevices: (userId: number) => 
+  syncToAllDevices: (userId: string) => 
     apiService.post(`/api/users/${userId}/sync-to-all-devices`),
   
-  getDeviceMappings: (userId: number) => 
+  getDeviceMappings: (userId: string) => 
     apiService.get<UserDeviceMapping[]>(`/api/users/${userId}/device-mappings`),
 };

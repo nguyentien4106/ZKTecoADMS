@@ -1,17 +1,16 @@
 using System.Text;
 using ZKTecoADMS.Application.Constants;
-using ZKTecoADMS.Application.CQRS;
 using ZKTecoADMS.Application.Interfaces;
 
-namespace ZKTecoADMS.Application.Commands.SendDeviceCommand;
+namespace ZKTecoADMS.Application.Commands.GetRequest;
 
-public class SendDeviceCommandsHandler(IDeviceService deviceService) : ICommandHandler<SendDeviceCommands, string>
+public class GetRequestHandler(IDeviceService deviceService) : ICommandHandler<GetRequestQuery, string>
 {
-    public async Task<string> Handle(SendDeviceCommands request, CancellationToken cancellationToken)
+    public async Task<string> Handle(GetRequestQuery request, CancellationToken cancellationToken)
     {
-        var SN = request.SN;
+        var sn = request.SN;
         
-        var device = await deviceService.GetDeviceBySerialNumberAsync(SN);
+        var device = await deviceService.GetDeviceBySerialNumberAsync(sn);
         if (device == null)
         {
             return ClockResponses.Ok;

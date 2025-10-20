@@ -2,7 +2,7 @@
 
 public class AuditableEntity<T> : Entity<T>
 {
-    public bool IsActive { get; set; } = true;
+    public bool IsActive { get; set; }
 
     public DateTime? LastModified { get; set; }
 

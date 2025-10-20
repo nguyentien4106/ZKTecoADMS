@@ -28,6 +28,8 @@ export interface User {
   verifyMode: number;
   createdAt: string;
   updatedAt: string;
+  deviceId: string;
+  deviceName?: string;
 }
 
 export interface AttendanceLog {
@@ -93,6 +95,7 @@ export interface CreateDeviceRequest {
   ipAddress?: string;
   port?: number;
   location?: string;
+  applicationUserId: string
 }
 
 export interface SendCommandRequest {
@@ -103,7 +106,7 @@ export interface SendCommandRequest {
 
 export interface AppResponse<T> {
   data: T;
-  errors: string;
+  errors: string[];
   isSuccess: boolean;
 }
 

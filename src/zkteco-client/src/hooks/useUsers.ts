@@ -7,14 +7,14 @@ import { userService } from '@/services/userService';
 import { toast } from 'sonner';
 import type { CreateUserRequest, User } from '@/types';
 
-export const useUsers = () => {
+export const useUsers = (deviceIds: string[]) => {
   return useQuery({
-    queryKey: ['users'],
-    queryFn: userService.getAll,
+    queryKey: ['users', deviceIds],
+    queryFn: () => userService.getUsersByDevices(deviceIds),
   });
 };
 
-export const useUser = (id: number) => {
+export const useUser = (id: string) => {
   return useQuery({
     queryKey: ['user', id],
     queryFn: () => userService.getById(id),
@@ -38,7 +38,7 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<User> }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<User> }) =>
       userService.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -51,7 +51,7 @@ export const useDeleteUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => userService.delete(id),
+    mutationFn: (id: string) => userService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('User deleted successfully');
@@ -63,7 +63,7 @@ export const useSyncUserToDevice = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, deviceId }: { userId: number; deviceId: number }) =>
+    mutationFn: ({ userId, deviceId }: { userId: string; deviceId: string }) =>
       userService.syncToDevice(userId, deviceId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-mappings'] });
@@ -76,7 +76,7 @@ export const useSyncUserToAllDevices = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (userId: number) => userService.syncToAllDevices(userId),
+    mutationFn: (userId: string) => userService.syncToAllDevices(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-mappings'] });
       toast.success('User sync to all devices initiated');
@@ -84,7 +84,7 @@ export const useSyncUserToAllDevices = () => {
   });
 };
 
-export const useUserDeviceMappings = (userId: number) => {
+export const useUserDeviceMappings = (userId: string) => {
   return useQuery({
     queryKey: ['user-mappings', userId],
     queryFn: () => userService.getDeviceMappings(userId),
