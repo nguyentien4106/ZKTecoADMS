@@ -1,5 +1,4 @@
-namespace ZKTecoADMS.Api.Models.Responses;
-
+﻿namespace ZKTecoADMS.Application.DTOs.Devices;
 public class DeviceResponse
 {
     public Guid Id { get; set; }

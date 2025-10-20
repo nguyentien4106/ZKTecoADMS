@@ -9,4 +9,7 @@ public class ApplicationUser : IdentityUser<Guid>
     public UserRefreshToken? RefreshToken { get; set; } = null!;
     public DateTime Created { get; set; }
     public string? CreatedBy { get; set; }
+
+    // Navigation Properties
+    public virtual ICollection<Device> Devices { get; set; } = [];
 }

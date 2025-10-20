@@ -39,4 +39,12 @@ public class AuthController(IMediator _bus) : ControllerBase
         
         return Ok(await _bus.Send(new LogoutCommand(User), cancellationToken));
     }
+
+    [Authorize]
+    [HttpGet("me")]
+    public Task<ActionResult> Me(CancellationToken cancellationToken = new())
+    {
+
+        return Task.FromResult<ActionResult>(Ok(User));
+    }
 }

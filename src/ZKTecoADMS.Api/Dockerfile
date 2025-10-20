@@ -18,7 +18,7 @@ COPY ["src/ZKTecoADMS.Domain/ZKTecoADMS.Domain.csproj", "src/ZKTecoADMS.Domain/"
 COPY ["src/ZKTecoADMS.Infrastructure/ZKTecoADMS.Infrastructure.csproj", "src/ZKTecoADMS.Infrastructure/"]
 RUN dotnet restore "./src/ZKTecoADMS.Api/ZKTecoADMS.Api.csproj"
 COPY . .
-WORKDIR "/src/src/ZKTecoADMS.Api"
+WORKDIR "/src/ZKTecoADMS.Api"
 RUN dotnet build "./ZKTecoADMS.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

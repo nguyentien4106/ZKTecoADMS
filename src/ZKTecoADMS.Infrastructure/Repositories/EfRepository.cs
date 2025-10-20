@@ -147,8 +147,8 @@ public class EfRepository<TEntity>(
         {
             logger.LogError(ex, "Error inserting entity of type {EntityType} with ID: {Id}",
                 typeof(TEntity).Name, entity.Id);
-                
-            return null!;
+
+            throw ex;
         }
     }
 

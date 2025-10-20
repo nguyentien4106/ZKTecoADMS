@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="DTOs\Responses\" />
+    <Folder Include="DTOs\Requests\" />
+    <Folder Include="Queries\Devices\GetCommandsByDevice\" />
     <Folder Include="Settings\" />
   </ItemGroup>
 

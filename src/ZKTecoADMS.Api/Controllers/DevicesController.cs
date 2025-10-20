@@ -1,100 +1,60 @@
 using ZKTecoADMS.Api.Models.Requests;
-using ZKTecoADMS.Api.Models.Responses;
+using ZKTecoADMS.Application.DTOs.Devices;
 using ZKTecoADMS.Application.Interfaces;
-using ZKTecoADMS.Core.Services;
+using ZKTecoADMS.Application.Models;
+using ZKTecoADMS.Application.Queries.Devices.GetDevicesByUser;
+using ZKTecoADMS.Application.Queries.Devices.GetCommandsByDevice;
+using ZKTecoADMS.Application.Queries.Devices.GetAllDevices;
+using ZKTecoADMS.Application.Queries.Devices.GetDeviceById;
+using ZKTecoADMS.Domain.Exceptions;
 using ZKTecoADMS.Domain.Entities;
+using Mapster;
+using ZKTecoADMS.Application.Commands.Devices.AddDevice;
 
 namespace ZKTecoADMS.API.Controllers;
 
     [ApiController]
     [Route("api/[controller]")]
-    public class DevicesController(IDeviceService deviceService, ILogger<DevicesController> logger)
-        : ControllerBase
+    public class DevicesController(
+        IDeviceService deviceService, 
+        ILogger<DevicesController> logger, 
+        IMediator _bus
+        ) : ControllerBase
     {
-        [HttpGet("{id}/commands")]
-        public async Task<ActionResult<IEnumerable<DeviceCommand>>> GetAllDeviceCommands(Guid deviceId)
+        [HttpGet("users/{userId}")]
+        public async Task<ActionResult<AppResponse<DeviceResponse>>> GetDevicesByUser(Guid userId)
         {
-            var commands = await deviceService.GetAllDeviceCommandsAsync(deviceId);
-            return Ok(commands);
+            var query = new GetDevicesByUserQuery(userId);
+            return Ok(await _bus.Send(query));
+        }
+
+        [HttpGet("{id}/commands")]
+        public async Task<ActionResult<AppResponse<IEnumerable<DeviceCmdResponse>>>> GetCommandsByDevice(Guid deviceId)
+        {
+            var query = new GetCommandsByDeviceQuery(deviceId);
+            return Ok(await _bus.Send(query));
         }
         
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DeviceResponse>>> GetAllDevices()
+        public async Task<ActionResult<AppResponse<PagedResult<DeviceResponse>>>> GetAllDevices([FromQuery] PaginationRequest request)
         {
-            var devices = await deviceService.GetAllDevicesAsync();
-            var response = devices.Select(d => new DeviceResponse
-            {
-                Id = d.Id,
-                SerialNumber = d.SerialNumber,
-                DeviceName = d.DeviceName,
-                Model = d.Model,
-                IpAddress = d.IpAddress,
-                DeviceStatus = d.DeviceStatus,
-                LastOnline = d.LastOnline,
-                IsActive = d.IsActive
-            });
-            
-            return Ok(response);
+            var query = new GetAllDevicesQuery(request);
+            return Ok(await _bus.Send(query));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<DeviceResponse>> GetDevice(Guid id)
+        public async Task<ActionResult<AppResponse<DeviceResponse>>> GetDeviceById(Guid id)
         {
-            var device = await deviceService.GetDeviceByIdAsync(id);
-            if (device == null)
-            {
-                return NotFound();
-            }
-
-            var response = new DeviceResponse
-            {
-                Id = device.Id,
-                SerialNumber = device.SerialNumber,
-                DeviceName = device.DeviceName,
-                Model = device.Model,
-                IpAddress = device.IpAddress,
-                DeviceStatus = device.DeviceStatus,
-                LastOnline = device.LastOnline,
-                IsActive = device.IsActive
-            };
-
-            return Ok(response);
+            var query = new GetDeviceByIdQuery(id);
+            return Ok(await _bus.Send(query));
         }
 
         [HttpPost]
-        public async Task<ActionResult<DeviceResponse>> RegisterDevice([FromBody] DeviceRegisterRequest request)
+        public async Task<ActionResult<DeviceResponse>> AddDevice([FromBody] AddDeviceRequest request)
         {
-            try
-            {
-                var device = new Device
-                {
-                    SerialNumber = request.SerialNumber,
-                    DeviceName = request.DeviceName,
-                    Model = request.Model,
-                    IpAddress = request.IpAddress,
-                    Port = request.Port,
-                    Location = request.Location,
-                    IsActive = false
-                };
-
-                var created = await deviceService.RegisterDeviceAsync(device);
-                var response = new DeviceResponse
-                {
-                    Id = created.Id,
-                    SerialNumber = created.SerialNumber,
-                    DeviceName = created.DeviceName,
-                    Model = created.Model,
-                    IpAddress = created.IpAddress,
-                    DeviceStatus = created.DeviceStatus,
-                    IsActive = created.IsActive
-                };
-
-                return CreatedAtAction(nameof(GetDevice), new { id = created.Id }, response);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new { message = ex.Message });
-            }
+            var cmd = request.Adapt<AddDeviceCommand>();
+            
+            return Ok(await _bus.Send(cmd));
         }
 
         [HttpDelete("{id}")]

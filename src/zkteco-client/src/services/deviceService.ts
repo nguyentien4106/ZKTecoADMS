@@ -2,11 +2,20 @@
 // ==========================================
 // src/services/deviceService.ts
 // ==========================================
+import { toast } from 'sonner';
 import { apiService } from './api';
-import type { Device, CreateDeviceRequest, DeviceCommand, SendCommandRequest } from '@/types';
+import type { Device, CreateDeviceRequest, DeviceCommand, SendCommandRequest, AppResponse, PaginatedResponse } from '@/types';
 
 export const deviceService = {
-  getAll: () => apiService.get<Device[]>('/api/devices'),
+  getAll: async () => {
+    const response = await apiService.get<AppResponse<PaginatedResponse<Device>>>('/api/devices')
+    if(response.isSuccess){
+      return response.data;
+    }
+    
+    toast.error('Failed to fetch devices', { description: response.errors.join(', ') });
+    return Promise.reject(new Error(response.errors));
+  },
   
   getById: (id: number) => apiService.get<Device>(`/api/devices/${id}`),
   

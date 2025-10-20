@@ -24,7 +24,6 @@ import { CreateDeviceDialog } from '@/components/dialogs/CreateDeviceDialog'
 export const Devices = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const { data: devices, isLoading } = useDevices()
-  console.log('devices', devices)
   const deleteDevice = useDeleteDevice()
 
   const handleDelete = async (id: number) => {
@@ -52,7 +51,7 @@ export const Devices = () => {
 
       <Card>
         <CardContent className="p-0">
-          {!devices || devices.length === 0 ? (
+          {!devices || !devices.items || devices.items.length === 0 ? (
             <EmptyState
               icon={Monitor}
               title="No devices found"
@@ -80,7 +79,7 @@ export const Devices = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {devices.map((device) => (
+                {devices.items.map((device) => (
                   <TableRow key={device.id}>
                     <TableCell className="font-medium">
                       {device.deviceName}

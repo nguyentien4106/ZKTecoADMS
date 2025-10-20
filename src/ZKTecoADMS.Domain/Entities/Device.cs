@@ -45,7 +45,11 @@ public class Device : AuditableEntity<Guid>
     public int? MaxFaces { get; set; }
 
     public bool SupportsPushSDK { get; set; } = true;
-    
+
+    public Guid ApplicationUserId { get; set; }
+
+    public virtual ApplicationUser ApplicationUser { get; set; } = null!;
+
     // Navigation Properties
     public virtual ICollection<User> Users { get; set; } = new List<User>();
     public virtual ICollection<AttendanceLog> AttendanceLogs { get; set; } = new List<AttendanceLog>();

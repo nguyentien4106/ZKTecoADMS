@@ -2,6 +2,7 @@
 // src/services/api.ts
 // ==========================================
 import axios, { AxiosInstance, AxiosError } from 'axios';
+import Cookies from 'js-cookie';
 import { toast } from 'sonner';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
@@ -26,7 +27,7 @@ class ApiService {
     this.client.interceptors.request.use(
       (config) => {
         // Add auth token if exists
-        const token = localStorage.getItem('auth_token');
+        const token = Cookies.get('access_token');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }

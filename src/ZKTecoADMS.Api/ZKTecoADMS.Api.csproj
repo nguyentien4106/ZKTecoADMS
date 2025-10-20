@@ -24,4 +24,8 @@
     <ProjectReference Include="..\ZKTecoADMS.Infrastructure\ZKTecoADMS.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Responses\" />
+  </ItemGroup>
+
 </Project>

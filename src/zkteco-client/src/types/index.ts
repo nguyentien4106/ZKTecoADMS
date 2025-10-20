@@ -101,16 +101,20 @@ export interface SendCommandRequest {
   priority?: number;
 }
 
-export interface ApiResponse<T> {
-  data?: T;
-  message?: string;
-  success: boolean;
+export interface AppResponse<T> {
+  data: T;
+  errors: string;
+  isSuccess: boolean;
 }
 
 export interface PaginatedResponse<T> {
-  data: T[];
-  page: number;
-  pageSize: number;
+  items: T[];
   totalCount: number;
+  pageNumber: number;
+  pageSize: number;
   totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  previousPageNumber?: number;
+  nextPageNumber?: number;
 }

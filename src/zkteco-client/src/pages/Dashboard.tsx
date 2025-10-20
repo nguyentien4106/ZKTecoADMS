@@ -22,7 +22,6 @@ import {
 export const Dashboard = () => {
   const { data: devices, isLoading: devicesLoading } = useDevices()
   const { data: users, isLoading: usersLoading } = useUsers()
-  const { data: unprocessedLogs } = useUnprocessedAttendance()
 
   if (devicesLoading || usersLoading) {
     return <LoadingSpinner />
@@ -99,22 +98,6 @@ export const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              Unprocessed Logs
-            </CardTitle>
-            <AlertCircle className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {unprocessedLogs?.length || 0}
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Awaiting processing
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Charts and Recent Activity */}
