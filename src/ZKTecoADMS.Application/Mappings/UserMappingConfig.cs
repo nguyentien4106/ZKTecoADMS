@@ -10,6 +10,7 @@ public class UserMappingConfig : IRegister
     {
         config.NewConfig<User, UserResponse>()
             .Map(dest => dest.DeviceName, src => src.Device.DeviceName)
+            .Map(dest => dest.PIN, src => src.PIN)
             .Map(dest => dest, src => src);
     }
 }

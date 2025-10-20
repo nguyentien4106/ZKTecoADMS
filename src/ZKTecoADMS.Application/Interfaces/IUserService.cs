@@ -12,4 +12,5 @@ public interface IUserService
     Task DeleteUserAsync(Guid userId);
     Task SyncUserToDeviceAsync(Guid userId, Guid deviceId);
     Task SyncUserToAllDevicesAsync(Guid userId);
+    Task<bool> IsPinValidAsync(string pin, Guid deviceId);
 }

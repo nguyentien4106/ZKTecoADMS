@@ -73,7 +73,6 @@ export const UsersTable = ({
                 <TableHead>Name</TableHead>
                 <TableHead>Privilege</TableHead>
                 <TableHead>Department</TableHead>
-                <TableHead>Position</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Card Number</TableHead>
                 <TableHead>Device</TableHead>
@@ -92,7 +91,6 @@ export const UsersTable = ({
                     {user.privilege}
                   </TableCell>
                   <TableCell>{user.department || "-"}</TableCell>
-                  <TableCell>{user.position || "-"}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {user.email || "-"}
                   </TableCell>
