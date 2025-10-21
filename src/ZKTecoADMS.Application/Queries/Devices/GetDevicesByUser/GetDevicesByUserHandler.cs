@@ -6,13 +6,13 @@ using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Repositories;
 
 namespace ZKTecoADMS.Application.Queries.Devices.GetDevicesByUser;
-public class GetDevicesByUserHandler(IRepository<Device> deviceRepository) : IQueryHandler<GetDevicesByUserQuery, AppResponse<IEnumerable<DeviceResponse>>>
+public class GetDevicesByUserHandler(IRepository<Device> deviceRepository) : IQueryHandler<GetDevicesByUserQuery, AppResponse<IEnumerable<DeviceDto>>>
 {
-    public async Task<AppResponse<IEnumerable<DeviceResponse>>> Handle(GetDevicesByUserQuery request, CancellationToken cancellationToken)
+    public async Task<AppResponse<IEnumerable<DeviceDto>>> Handle(GetDevicesByUserQuery request, CancellationToken cancellationToken)
     {
         var devices = await deviceRepository
             .GetAllAsync(d => d.ApplicationUserId == request.UserId, cancellationToken: cancellationToken);
 
-        return AppResponse<IEnumerable<DeviceResponse>>.Success(devices.Adapt<IEnumerable<DeviceResponse>>());
+        return AppResponse<IEnumerable<DeviceDto>>.Success(devices.Adapt<IEnumerable<DeviceDto>>());
     }
 }

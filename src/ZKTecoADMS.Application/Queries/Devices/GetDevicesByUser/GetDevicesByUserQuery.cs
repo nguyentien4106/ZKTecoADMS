@@ -4,4 +4,4 @@ using ZKTecoADMS.Application.Models;
 
 namespace ZKTecoADMS.Application.Queries.Devices.GetDevicesByUser;
 
-public record GetDevicesByUserQuery(Guid UserId) : IQuery<AppResponse<IEnumerable<DeviceResponse>>>;
+public record GetDevicesByUserQuery(Guid UserId) : IQuery<AppResponse<IEnumerable<DeviceDto>>>;

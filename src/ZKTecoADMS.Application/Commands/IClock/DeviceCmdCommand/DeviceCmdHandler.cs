@@ -6,17 +6,39 @@ using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand;
 
-public class DeviceCmdHandler(IDeviceService deviceService) : ICommandHandler<DeviceCmdCommand, string>
+public class DeviceCmdHandler(
+    IDeviceCmdService deviceCmdService,
+    IRepository<User> userRepository
+    ) : ICommandHandler<DeviceCmdCommand, string>
 {
     public async Task<string> Handle(DeviceCmdCommand request, CancellationToken cancellationToken)
     {
-        var sn = request.SN;
+        var response = request.Body.ParseClockResponse();
         
-        using var reader = new StreamReader(request.Body, Encoding.UTF8);
-        var body = await reader.ReadToEndAsync(cancellationToken);
-        var response = body.ParseClockResponse();
-    
-        await deviceService.UpdateCommandStatusAsync(response.ID, CommandStatus.Sent, response.CMD, response.Message);
+        await deviceCmdService.UpdateCommandAfterExecutedAsync(response);
+        var (commandType, objectRefId) = await deviceCmdService.GetCommandTypesAndIdAsync(response.CommandId);
+        
+        if (commandType == DeviceCommandTypes.AddUser)
+        {
+            var user = await userRepository.GetByIdAsync(objectRefId, cancellationToken: cancellationToken);
+            user.IsActive = response.IsSuccess;
+            await userRepository.UpdateAsync(user, cancellationToken);
+        }
+        else if (commandType == DeviceCommandTypes.DeleteUser)
+        {
+            var user = await userRepository.GetByIdAsync(objectRefId, cancellationToken: cancellationToken);
+            if (response.IsSuccess)
+            {
+                await userRepository.DeleteAsync(user, cancellationToken);
+            }
+        }
+        
+        else if (commandType == DeviceCommandTypes.UpdateUser)
+        {
+            var user = await userRepository.GetByIdAsync(objectRefId, cancellationToken: cancellationToken);
+            user.IsActive = response.IsSuccess;
+            await userRepository.UpdateAsync(user, cancellationToken);
+        }
         
         return ClockResponses.Ok;
     }

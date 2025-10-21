@@ -1,5 +1,3 @@
-using ZKTecoADMS.Application.CQRS;
+namespace ZKTecoADMS.Application.Queries.IClock.GetRequest;
 
-namespace ZKTecoADMS.Application.Commands.GetRequest;
-
-public record GetRequestQuery(string SN) : ICommand<string>;
+public record GetRequestQuery(string SN, string Info) : ICommand<string>;

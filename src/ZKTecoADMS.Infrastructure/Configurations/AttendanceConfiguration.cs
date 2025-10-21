@@ -4,9 +4,9 @@ using ZKTecoADMS.Domain.Entities;
 
 namespace ZKTecoADMS.Infrastructure.Configurations;
 
-public class AttendanceLogConfiguration : IEntityTypeConfiguration<AttendanceLog>
+public class AttendanceConfiguration : IEntityTypeConfiguration<Attendance>
 {
-    public void Configure(EntityTypeBuilder<AttendanceLog> builder)
+    public void Configure(EntityTypeBuilder<Attendance> builder)
     {
         builder.HasKey(e => e.Id);
         builder.HasIndex(e => e.DeviceId);
@@ -24,8 +24,5 @@ public class AttendanceLogConfiguration : IEntityTypeConfiguration<AttendanceLog
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // Add precision for Temperature
-        builder.Property(e => e.Temperature)
-            .HasPrecision(4, 1); // 4 total digits, 1 decimal place (e.g., 36.5)
     }
 }

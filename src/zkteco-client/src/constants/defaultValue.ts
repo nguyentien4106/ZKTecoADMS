@@ -1,4 +1,7 @@
-import { CreateDeviceRequest, CreateUserRequest } from "@/types";
+import { CreateDeviceRequest, PaginationRequest } from "@/types";
+import { AttendancesFilterParams } from "@/types/attendance";
+import { CreateUserRequest } from "@/types/user";
+import { subMonths } from "date-fns";
 
 export const defaultNewUser: CreateUserRequest = {
     pin: '',
@@ -8,10 +11,7 @@ export const defaultNewUser: CreateUserRequest = {
     email: '',
     phoneNumber: '',
     department: '',
-    position: '',
-    groupId: 1,
     privilege: 0,
-    verifyMode: 0,
 }
 
 export const defaultNewDevice: CreateDeviceRequest = {
@@ -22,4 +22,20 @@ export const defaultNewDevice: CreateDeviceRequest = {
     port: 4370,
     location: '',
     applicationUserId: ''
+}
+
+const today = new Date()
+const threeMonthsAgo = subMonths(today, 3)
+
+export const defaultAttendanceFilter: AttendancesFilterParams = {
+    fromDate: threeMonthsAgo,
+    toDate: today,
+    deviceIds: []
+}
+
+export const defaultAttendancePaginationRequest: PaginationRequest = {
+    pageNumber: 1,
+    pageSize: 50,
+    sortBy: 'AttendanceTime',
+    sortOrder: 'desc'
 }

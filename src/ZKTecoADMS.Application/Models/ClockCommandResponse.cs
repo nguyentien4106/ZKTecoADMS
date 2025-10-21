@@ -3,11 +3,10 @@ using ZKTecoADMS.Application.Constants;
 
 namespace ZKTecoADMS.Application.Models;
 
-public class ClockResponseModel
+public class ClockCommandResponse
 {
 
-    public long ID { get; set; }
-    
+    public long CommandId { get; set; }
     public int Return { get; set; }
     public string CMD { get; set; }
     

@@ -1,17 +1,16 @@
 using ZKTecoADMS.Application.Constants;
-using ZKTecoADMS.Application.CQRS;
+using ZKTecoADMS.Application.DTOs.Users;
 using ZKTecoADMS.Application.Interfaces;
-using ZKTecoADMS.Domain.Entities;
-using ZKTecoADMS.Domain.Repositories;
+using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Commands.Users.CreateUser;
 
 public class CreateUserHandler(
     IDeviceService deviceService, 
     IRepository<User> userRepository,
-    IRepository<DeviceCommand> deviceCmdRepository) : ICommandHandler<CreateUserCommand, List<User>>
+    IRepository<DeviceCommand> deviceCmdRepository) : ICommandHandler<CreateUserCommand, List<AppResponse<UserDto>>>
 {
-    public async Task<List<User>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<List<AppResponse<UserDto>>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var users = request.DeviceIds.Select(deviceId => new User
             {
@@ -19,33 +18,39 @@ public class CreateUserHandler(
                 FullName = request.FullName,
                 CardNumber = request.CardNumber,
                 Password = request.Password,
-                GroupId = request.GroupId,
                 Privilege = request.Privilege,
-                VerifyMode = request.VerifyMode,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
                 Department = request.Department,
-                IsActive = true,
                 DeviceId = deviceId
             })
             .ToList();
-
+        var userResults = new List<AppResponse<UserDto>>();
+        
         foreach (var user in users)
         {
-            var result = await userRepository.AddAsync(user, cancellationToken);
-            if (result != null)
+            var validUser = await deviceService.IsValidUserAsync(user);
+            if (!validUser.IsSuccess)
             {
-                var cmd = new DeviceCommand
-                {
-                    DeviceId = result.DeviceId,
-                    Command = ClockCommandBuilder.BuildAddUserCommand(result),
-                    Priority = 10
-                };
-                await deviceCmdRepository.AddAsync(cmd, cancellationToken);
-                
+                userResults.Add(AppResponse<UserDto>.Error(validUser.Errors));
+                continue;
             }
+            
+            var userEntity = await userRepository.AddAsync(user, cancellationToken);
+            userResults.Add(AppResponse<UserDto>.Success(userEntity.Adapt<UserDto>()));
+            
+            var cmd = new DeviceCommand
+            {
+                DeviceId = userEntity.DeviceId,
+                Command = ClockCommandBuilder.BuildAddOrUpdateUserCommand(userEntity),
+                Priority = 10,
+                Status = CommandStatus.Created,
+                CommandType = DeviceCommandTypes.AddUser,
+                ObjectReferenceId = userEntity.Id
+            };
+            await deviceCmdRepository.AddAsync(cmd, cancellationToken);
         }
         
-        return users;
+        return userResults;
     }
 }

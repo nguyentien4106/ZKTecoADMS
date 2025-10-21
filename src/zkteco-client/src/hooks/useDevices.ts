@@ -21,6 +21,9 @@ export const useDevicesByUser = (userId: string | null) => {
       return deviceService.getByUserId(userId);
     },
     enabled: Boolean(userId),
+    gcTime: 0, // Immediately garbage collect
+    retry: false, // Don't retry on error
+    staleTime: 5000, // Consider data stale after 5 seconds
   });
 }
 

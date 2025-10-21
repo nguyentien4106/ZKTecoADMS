@@ -1,6 +1,6 @@
 namespace ZKTecoADMS.Application.DTOs.Users;
 
-public record UserResponse(
+public record UserDto(
     Guid Id,
     string PIN,
     string FullName,

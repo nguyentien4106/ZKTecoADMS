@@ -18,14 +18,21 @@ public class DeviceCommand : Entity<Guid>
 
     [MaxLength(20)]
     public CommandStatus Status { get; set; } = CommandStatus.Created;
-
+    
     public string? ResponseData { get; set; }
 
     [MaxLength(500)]
     public string? ErrorMessage { get; set; }
-
+    
+    public int? Return { get; set; }
+    
     public DateTime? SentAt { get; set; }
+    
     public DateTime? CompletedAt { get; set; }
+    
+    public DeviceCommandTypes CommandType { get; set; }
+    
+    public Guid ObjectReferenceId { get; set; }
 
     // Navigation Properties
     public virtual Device Device { get; set; } = null!;

@@ -23,35 +23,35 @@ public class DevicesController(
     ) : ControllerBase
 {
     [HttpGet("users/{userId}")]
-    public async Task<ActionResult<AppResponse<DeviceResponse>>> GetDevicesByUser(Guid userId)
+    public async Task<ActionResult<AppResponse<DeviceDto>>> GetDevicesByUser(Guid userId)
     {
         var query = new GetDevicesByUserQuery(userId);
         return Ok(await bus.Send(query));
     }
 
     [HttpGet("{id}/commands")]
-    public async Task<ActionResult<AppResponse<IEnumerable<DeviceCmdResponse>>>> GetCommandsByDevice(Guid deviceId)
+    public async Task<ActionResult<AppResponse<IEnumerable<DeviceCmdDto>>>> GetCommandsByDevice(Guid deviceId)
     {
         var query = new GetCommandsByDeviceQuery(deviceId);
         return Ok(await bus.Send(query));
     }
     
     [HttpGet]
-    public async Task<ActionResult<AppResponse<PagedResult<DeviceResponse>>>> GetAllDevices([FromQuery] PaginationRequest request)
+    public async Task<ActionResult<AppResponse<PagedResult<DeviceDto>>>> GetAllDevices([FromQuery] PaginationRequest request)
     {
         var query = new GetAllDevicesQuery(request);
         return Ok(await bus.Send(query));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<AppResponse<DeviceResponse>>> GetDeviceById(Guid id)
+    public async Task<ActionResult<AppResponse<DeviceDto>>> GetDeviceById(Guid id)
     {
         var query = new GetDeviceByIdQuery(id);
         return Ok(await bus.Send(query));
     }
 
     [HttpPost]
-    public async Task<ActionResult<DeviceResponse>> AddDevice([FromBody] AddDeviceRequest request)
+    public async Task<ActionResult<DeviceDto>> AddDevice([FromBody] AddDeviceRequest request)
     {
         var cmd = request.Adapt<AddDeviceCommand>();
         
@@ -74,7 +74,7 @@ public class DevicesController(
     }
 
     [HttpPost("{deviceId}/commands")]
-    public async Task<ActionResult<DeviceCmdResponse>> CreateDeviceCommand(Guid deviceId, [FromBody] DeviceCmdRequest request)
+    public async Task<ActionResult<DeviceCmdDto>> CreateDeviceCommand(Guid deviceId, [FromBody] DeviceCmdRequest request)
     {
         var cmd = new CreateDeviceCmdCommand(deviceId, request.Command, request.Priority);
         

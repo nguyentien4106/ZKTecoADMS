@@ -1,6 +1,6 @@
 export const UserPrivileges = {
-    ["Normal User"]: 0,
-    ["Inactive User"]: 1,
-    Enroller: 2,
-    Admin: 14
+    0: "Normal User",
+    1: "Inactive User",
+    2: "Enroller",
+    14: "Admin"
 }

@@ -24,7 +24,7 @@ export interface User {
   department?: string;
   position?: string;
   isActive: boolean;
-  privilege: number;
+  privilege: 0 | 1 | 2 | 14;
   verifyMode: number;
   createdAt: string;
   updatedAt: string;
@@ -62,32 +62,6 @@ export interface DeviceCommand {
   completedAt?: string;
 }
 
-export interface UserDeviceMapping {
-  id: string;
-  userId: number;
-  deviceId: number;
-  isSynced: boolean;
-  lastSyncedAt?: string;
-  syncStatus: string;
-  errorMessage?: string;
-  device?: Device;
-}
-
-export interface CreateUserRequest {
-  pin: string;
-  fullName: string;
-  cardNumber?: string;
-  password?: string;
-  groupId?: number;
-  privilege?: number;
-  verifyMode?: number;
-  email?: string;
-  phoneNumber?: string;
-  department?: string;
-  position?: string;
-  DeviceIds?: string[];
-}
-
 export interface CreateDeviceRequest {
   serialNumber: string;
   deviceName: string;
@@ -120,4 +94,12 @@ export interface PaginatedResponse<T> {
   hasNextPage: boolean;
   previousPageNumber?: number;
   nextPageNumber?: number;
+}
+
+
+export interface PaginationRequest {
+  pageNumber: number;
+  pageSize: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }

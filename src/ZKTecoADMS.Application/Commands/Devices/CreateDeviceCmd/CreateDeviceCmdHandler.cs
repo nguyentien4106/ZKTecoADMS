@@ -2,9 +2,9 @@ using ZKTecoADMS.Application.DTOs.Devices;
 
 namespace ZKTecoADMS.Application.Commands.Devices.CreateDeviceCmd;
 
-public class CreateDeviceCmdHandler(IRepository<Device> deviceRepository, IRepository<DeviceCommand> deviceCmdRepository) : ICommandHandler<CreateDeviceCmdCommand, AppResponse<DeviceCmdResponse>>
+public class CreateDeviceCmdHandler(IRepository<Device> deviceRepository, IRepository<DeviceCommand> deviceCmdRepository) : ICommandHandler<CreateDeviceCmdCommand, AppResponse<DeviceCmdDto>>
 {
-    public async Task<AppResponse<DeviceCmdResponse>> Handle(CreateDeviceCmdCommand request, CancellationToken cancellationToken)
+    public async Task<AppResponse<DeviceCmdDto>> Handle(CreateDeviceCmdCommand request, CancellationToken cancellationToken)
     {
         var device = await deviceRepository.GetByIdAsync(request.DeviceId, cancellationToken: cancellationToken);
 
@@ -17,6 +17,6 @@ public class CreateDeviceCmdHandler(IRepository<Device> deviceRepository, IRepos
         
         var created = await deviceCmdRepository.AddAsync(command, cancellationToken);
 
-        return AppResponse<DeviceCmdResponse>.Success(created.Adapt<DeviceCmdResponse>());
+        return AppResponse<DeviceCmdDto>.Success(created.Adapt<DeviceCmdDto>());
     }
 }

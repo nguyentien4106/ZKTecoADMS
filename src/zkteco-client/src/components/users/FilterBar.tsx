@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { toast } from "sonner";
-
 import { MultiSelect } from "@/components/multi-select";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,10 +62,13 @@ export default function FilterBar({ devices, handleSubmit, selectedDeviceIds }: 
                   defaultValue={selectedDeviceIds}
                 />
               </FormControl>
-              <FormMessage />
+            <FormMessage />
+
             </FormItem>
           )}
+          
         />
+
         <Button type="submit">Submit</Button>
       </form>
     </Form>

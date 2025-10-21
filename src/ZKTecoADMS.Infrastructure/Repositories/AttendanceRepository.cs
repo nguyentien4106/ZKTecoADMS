@@ -6,9 +6,9 @@ using ZKTecoADMS.Domain.Repositories;
 namespace ZKTecoADMS.Infrastructure.Repositories;
 
 
-public class AttendanceRepository(ZKTecoDbContext context, ILogger<EfRepository<AttendanceLog>> logger) : EfRepository<AttendanceLog>(context, logger), IAttendanceRepository
+public class AttendanceRepository(ZKTecoDbContext context, ILogger<EfRepository<Attendance>> logger) : EfRepository<Attendance>(context, logger), IAttendanceRepository
 {
-    public async Task<IEnumerable<AttendanceLog>> GetByDeviceIdAsync(Guid deviceId, DateTime? startDate = null, DateTime? endDate = null)
+    public async Task<IEnumerable<Attendance>> GetByDeviceIdAsync(Guid deviceId, DateTime? startDate = null, DateTime? endDate = null)
     {
         var query = dbSet
             .Include(a => a.User)
@@ -23,7 +23,7 @@ public class AttendanceRepository(ZKTecoDbContext context, ILogger<EfRepository<
         return await query.OrderByDescending(a => a.AttendanceTime).ToListAsync();
     }
 
-    public async Task<IEnumerable<AttendanceLog>> GetByUserIdAsync(Guid userId, DateTime? startDate = null, DateTime? endDate = null)
+    public async Task<IEnumerable<Attendance>> GetByUserIdAsync(Guid userId, DateTime? startDate = null, DateTime? endDate = null)
     {
         var query = dbSet
             .Include(a => a.Device)
@@ -38,16 +38,7 @@ public class AttendanceRepository(ZKTecoDbContext context, ILogger<EfRepository<
         return await query.OrderByDescending(a => a.AttendanceTime).ToListAsync();
     }
 
-    public async Task<IEnumerable<AttendanceLog>> GetUnprocessedLogsAsync()
-    {
-        return await dbSet
-            .Include(a => a.Device)
-            .Include(a => a.User)
-            .Where(a => !a.IsProcessed)
-            .OrderBy(a => a.AttendanceTime)
-            .ToListAsync();
-    }
-
+   
     public async Task<bool> LogExistsAsync(Guid deviceId, string pin, DateTime attendanceTime)
     {
         return await dbSet.AnyAsync(a => 

@@ -1,7 +1,8 @@
-using ZKTecoADMS.Application.Commands.GetRequest;
+using System.Text;
 using ZKTecoADMS.Application.Commands.IClock.CDataPost;
 using ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand;
 using ZKTecoADMS.Application.Queries.IClock.CDataGet;
+using ZKTecoADMS.Application.Queries.IClock.GetRequest;
 
 namespace ZKTecoADMS.API.Controllers;
 
@@ -61,9 +62,9 @@ public class ClockController(
     /// GET /iclock/getrequest?SN=XXX
     /// </summary>
     [HttpGet("getrequest")]
-    public async Task<IActionResult> GetRequest([FromQuery] string SN)
+    public async Task<IActionResult> GetRequest([FromQuery] string SN, [FromQuery] string? INFO)
     {
-        var command = new GetRequestQuery(SN);
+        var command = new GetRequestQuery(SN, INFO);
         var response = await bus.Send(command);    
         return Content(response, "text/plain");
     }
@@ -75,7 +76,9 @@ public class ClockController(
     [HttpPost("devicecmd")]
     public async Task<IActionResult> DeviceCmd([FromQuery] string SN)
     {
-        var response = await bus.Send(new DeviceCmdCommand(SN, Request.Body));
+        using var reader = new StreamReader(Request.Body, Encoding.UTF8);
+        var body = await reader.ReadToEndAsync();
+        var response = await bus.Send(new DeviceCmdCommand(SN, body));
             
         return Content(response, "text/plain");
     }

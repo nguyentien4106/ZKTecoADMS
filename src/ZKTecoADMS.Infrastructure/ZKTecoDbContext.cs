@@ -14,7 +14,7 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
     public DbSet<Device> Devices => Set<Device>();
     public DbSet<FingerprintTemplate> FingerprintTemplates => Set<FingerprintTemplate>();
     public DbSet<FaceTemplate> FaceTemplates => Set<FaceTemplate>();
-    public DbSet<AttendanceLog> AttendanceLogs => Set<AttendanceLog>();
+    public DbSet<Attendance> AttendanceLogs => Set<Attendance>();
     public DbSet<DeviceCommand> DeviceCommands => Set<DeviceCommand>();
     public DbSet<SyncLog> SyncLogs => Set<SyncLog>();
     public DbSet<DeviceSetting> DeviceSettings => Set<DeviceSetting>();

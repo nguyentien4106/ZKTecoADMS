@@ -25,13 +25,17 @@ import { useAuth } from '@/contexts/AuthContext'
 export const Devices = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const { applicationUserId } = useAuth()
-  const { data: devices, isFetching } = useDevicesByUser(applicationUserId)
+  const { data: devices, isFetching, isError } = useDevicesByUser(applicationUserId)
   const deleteDevice = useDeleteDevice()
   const activeDevice = useActiveDevice()
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this device?')) {
-      await deleteDevice.mutateAsync(id)
+    try {
+      if (confirm('Are you sure you want to delete this device?')) {
+        await deleteDevice.mutateAsync(id)
+      }
+    } catch (error) {
+      console.error('Error deleting device:', error)
     }
   }
 
@@ -39,7 +43,17 @@ export const Devices = () => {
     await activeDevice.mutateAsync(id)
   }
 
-  if (isFetching) {
+  if (isError) {
+    return (
+      <EmptyState
+        icon={Monitor}
+        title="Error loading devices"
+        description="There was an error loading your devices. Please try again later."
+      />
+    )
+  }
+
+  if (isFetching && !devices) {
     return <LoadingSpinner />
   }
 

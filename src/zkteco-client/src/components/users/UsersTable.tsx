@@ -18,6 +18,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { User } from "@/types";
+import { UserPrivileges } from "@/constants";
 
 type UsersTableProps = {
   users?: User[];
@@ -88,7 +89,7 @@ export const UsersTable = ({
                   </TableCell>
                   <TableCell className="font-medium">{user.fullName}</TableCell>
                   <TableCell className="font-medium">
-                    {user.privilege}
+                    {UserPrivileges[user.privilege]}
                   </TableCell>
                   <TableCell>{user.department || "-"}</TableCell>
                   <TableCell className="text-muted-foreground">
@@ -107,14 +108,14 @@ export const UsersTable = ({
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
+                      {/* <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => onSync(user.id, user.fullName)}
                         disabled={isSyncPending}
                       >
                         <RefreshCw className="w-4 h-4" />
-                      </Button>
+                      </Button> */}
                       <Button
                         variant="ghost"
                         size="icon"

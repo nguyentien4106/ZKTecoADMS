@@ -2,7 +2,7 @@ using ZKTecoADMS.Domain.Entities.Base;
 
 namespace ZKTecoADMS.Application.Models;
 
-public record PaginationRequest
+public class PaginationRequest
 {
     public int PageNumber { get; set; } = 1;
 

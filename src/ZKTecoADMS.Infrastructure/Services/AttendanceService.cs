@@ -13,7 +13,7 @@ public class AttendanceService(
     ILogger<AttendanceService> logger)
     : IAttendanceService
 {
-    public async Task SaveAttendanceLogsAsync(IEnumerable<AttendanceLog> logs)
+    public async Task SaveAttendanceLogsAsync(IEnumerable<Attendance> logs)
     {
         foreach (var log in logs)
         {
@@ -44,35 +44,15 @@ public class AttendanceService(
         }
     }
 
-    public async Task<IEnumerable<AttendanceLog>> GetAttendanceByDeviceAsync(
+    public async Task<IEnumerable<Attendance>> GetAttendanceByDeviceAsync(
         Guid deviceId, DateTime? startDate, DateTime? endDate)
     {
         return await attendanceRepository.GetByDeviceIdAsync(deviceId, startDate, endDate);
     }
 
-    public async Task<IEnumerable<AttendanceLog>> GetAttendanceByUserAsync(
+    public async Task<IEnumerable<Attendance>> GetAttendanceByUserAsync(
         Guid userId, DateTime? startDate, DateTime? endDate)
     {
         return await attendanceRepository.GetByUserIdAsync(userId, startDate, endDate);
-    }
-
-    public async Task<IEnumerable<AttendanceLog>> GetUnprocessedLogsAsync()
-    {
-        return await attendanceRepository.GetUnprocessedLogsAsync();
-    }
-
-    public async Task MarkLogsAsProcessedAsync(IEnumerable<Guid> logIds)
-    {
-        var logs = await context.AttendanceLogs
-            .Where(l => logIds.Contains(l.Id))
-            .ToListAsync();
-
-        foreach (var log in logs)
-        {
-            log.IsProcessed = true;
-            log.ProcessedAt = DateTime.UtcNow;
-        }
-
-        await context.SaveChangesAsync();
     }
 }

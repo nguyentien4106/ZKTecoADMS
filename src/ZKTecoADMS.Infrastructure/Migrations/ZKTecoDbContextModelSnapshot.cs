@@ -235,11 +235,14 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.AttendanceLog", b =>
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Attendance", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AttendanceState")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("AttendanceTime")
                         .HasColumnType("datetime2");
@@ -253,26 +256,10 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<Guid>("DeviceId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsProcessed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("MaskStatus")
-                        .HasColumnType("bit");
-
                     b.Property<string>("PIN")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime?>("ProcessedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RawData")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("Temperature")
-                        .HasPrecision(4, 1)
-                        .HasColumnType("decimal(4,1)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -283,10 +270,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("VerifyState")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("VerifyType")
+                    b.Property<int>("VerifyMode")
                         .HasColumnType("int");
 
                     b.Property<string>("WorkCode")
@@ -428,6 +412,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<long>("CommandId")
                         .HasColumnType("bigint");
 
+                    b.Property<int>("CommandType")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
 
@@ -444,11 +431,17 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<Guid>("ObjectReferenceId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
                     b.Property<string>("ResponseData")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Return")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("SentAt")
                         .HasColumnType("datetime2");
@@ -730,9 +723,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("EndDatetime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -757,15 +747,8 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("Position")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<int>("Privilege")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("StartDatetime")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -872,7 +855,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.AttendanceLog", b =>
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Attendance", b =>
                 {
                     b.HasOne("ZKTecoADMS.Domain.Entities.Device", "Device")
                         .WithMany("AttendanceLogs")

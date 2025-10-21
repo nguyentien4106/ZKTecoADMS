@@ -2,7 +2,7 @@
 
 namespace ZKTecoADMS.Application.DTOs.Devices;
 
-public record DeviceCmdResponse(
+public record DeviceCmdDto(
     Guid Id, 
     DateTime CreatedAt,
     DateTime UpdatedAt,

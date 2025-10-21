@@ -13,7 +13,7 @@ export const useAttendanceByDevice = (
 ) => {
   return useQuery({
     queryKey: ['attendance', 'device', deviceId, startDate, endDate],
-    queryFn: () => attendanceService.getByDevice(deviceId, startDate, endDate),
+    queryFn: () => attendanceService.getByDevices(deviceId, startDate, endDate),
     enabled: !!deviceId,
   });
 };

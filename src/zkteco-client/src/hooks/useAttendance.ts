@@ -4,17 +4,17 @@
 // ==========================================
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { attendanceService } from '@/services/attendanceService';
-import { toast } from 'sonner';
+import { PaginationRequest } from '@/types';
+import { AttendancesFilterParams } from '@/types/attendance';
 
-export const useAttendanceByDevice = (
-  deviceId: number,
-  startDate?: string,
-  endDate?: string
+export const useAttendancesByDevices = (
+  paginationRequest: PaginationRequest,
+  filter: AttendancesFilterParams,
 ) => {
   return useQuery({
-    queryKey: ['attendance', 'device', deviceId, startDate, endDate],
-    queryFn: () => attendanceService.getByDevice(deviceId, startDate, endDate),
-    enabled: !!deviceId,
+    queryKey: ['attendance', 'devices', filter?.deviceIds, filter?.fromDate, filter?.toDate],
+    queryFn: () => attendanceService.getByDevices(paginationRequest, filter),
+    enabled: !!filter?.deviceIds?.length && filter.fromDate <= filter.toDate,
   });
 };
 
@@ -30,22 +30,23 @@ export const useAttendanceByUser = (
   });
 };
 
-export const useUnprocessedAttendance = () => {
+
+export const useFilteredAttendance = (
+  deviceIds?: string[],
+  startDate?: string,
+  endDate?: string
+) => {
   return useQuery({
-    queryKey: ['attendance', 'unprocessed'],
-    queryFn: attendanceService.getUnprocessed,
-    refetchInterval: 30000, // Refetch every 30 seconds
-  });
-};
-
-export const useMarkAttendanceAsProcessed = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (logIds: number[]) => attendanceService.markAsProcessed(logIds),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['attendance'] });
-      toast.success('Attendance logs marked as processed');
+    queryKey: ['attendance', 'filtered', deviceIds, startDate, endDate],
+    queryFn: () => attendanceService.getFiltered(deviceIds, startDate, endDate),
+    select: (data) => {
+      // Client-side filtering for multiple devices
+      if (!deviceIds || deviceIds.length === 0) {
+        return data;
+      }
+      return data.filter((log) => 
+        deviceIds.includes(log.device?.id || log.deviceId?.toString() || '')
+      );
     },
   });
 };

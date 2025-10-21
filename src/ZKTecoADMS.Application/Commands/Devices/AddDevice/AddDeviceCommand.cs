@@ -9,4 +9,4 @@ public record AddDeviceCommand(
     string? IpAddress,
     int? Port,
     string? Location,
-    Guid ApplicationUserId) : ICommand<AppResponse<DeviceResponse>>;
+    Guid ApplicationUserId) : ICommand<AppResponse<DeviceDto>>;

@@ -5,7 +5,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userService } from '@/services/userService';
 import { toast } from 'sonner';
-import type { CreateUserRequest, User } from '@/types';
+import type { User } from '@/types';
+import { CreateUserRequest, UpdateUserRequest } from '@/types/user';
 
 export const useUsers = (deviceIds: string[]) => {
   return useQuery({
@@ -23,14 +24,8 @@ export const useUser = (id: string) => {
 };
 
 export const useCreateUser = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (data: CreateUserRequest) => userService.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      toast.success('User created successfully');
-    },
   });
 };
 
@@ -38,8 +33,7 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<User> }) =>
-      userService.update(id, data),
+    mutationFn: (data: UpdateUserRequest) => userService.update(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('User updated successfully');

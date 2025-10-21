@@ -1,6 +1,14 @@
-using ZKTecoADMS.Application.CQRS;
-using ZKTecoADMS.Domain.Entities;
+using ZKTecoADMS.Application.DTOs.Users;
 
 namespace ZKTecoADMS.Application.Commands.Users.CreateUser;
 
-public record CreateUserCommand(string PIN, string FullName, string? CardNumber, string? Password, int GroupId, int Privilege, int VerifyMode, string? Email, string? PhoneNumber, string? Department, bool IsActive, List<Guid> DeviceIds) : ICommand<List<User>>;
+public record CreateUserCommand(
+    string PIN, 
+    string FullName, 
+    string? CardNumber, 
+    string? Password, 
+    int Privilege, 
+    string? Email, 
+    string? PhoneNumber, 
+    string? Department,
+    List<Guid> DeviceIds) : ICommand<List<AppResponse<UserDto>>>;

@@ -1,5 +1,5 @@
 ﻿namespace ZKTecoADMS.Application.DTOs.Devices;
-public class DeviceResponse
+public class DeviceDto
 {
     public Guid Id { get; set; }
     public string SerialNumber { get; set; } = string.Empty;

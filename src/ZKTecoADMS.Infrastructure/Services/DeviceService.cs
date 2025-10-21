@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZKTecoADMS.Application.Interfaces;
+using ZKTecoADMS.Application.Models;
 using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
 using ZKTecoADMS.Infrastructure;
@@ -128,16 +129,13 @@ public class DeviceService : IDeviceService
     public async Task DeleteDeviceAsync(Guid deviceId)
     {
         var device = await _deviceRepository.GetByIdAsync(deviceId);
-        if (device != null)
-        {
-            await _deviceRepository.DeleteAsync(device);
-        }
+        await _deviceRepository.DeleteAsync(device);
     }
 
-    public async Task<bool> ValidPinDevice(Guid deviceId, string pin)
+    public async Task<AppResponse<bool>> IsValidUserAsync(User user)
     {
-        var user = await _context.UserDevices.FirstOrDefaultAsync(i => i.DeviceId == deviceId && i.PIN == pin);
+        var existing = await _context.UserDevices.Include(i => i.Device).FirstOrDefaultAsync(i => i.DeviceId == user.DeviceId && i.PIN == user.PIN);
         
-        return user != null;
+        return existing == null ? AppResponse<bool>.Success() : AppResponse<bool>.Error($"User PIN ({user.PIN}) is existed in device {existing.Device.DeviceName}).");
     }
 }

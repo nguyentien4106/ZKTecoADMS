@@ -1,5 +1,3 @@
-using ZKTecoADMS.Domain.Entities;
-using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Interfaces;
@@ -13,5 +11,5 @@ public interface IDeviceService
     Task<DeviceCommand> CreateCommandAsync(DeviceCommand command);
     Task MarkCommandAsSentAsync(Guid commandId);
     Task UpdateCommandStatusAsync(long commandId, CommandStatus status, string? responseData, string? errorMessage);
-    
+    Task<AppResponse<bool>> IsValidUserAsync(User user);
 }

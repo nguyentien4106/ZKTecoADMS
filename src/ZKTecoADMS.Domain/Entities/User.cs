@@ -28,12 +28,8 @@ public class User : Entity<Guid>
     public int GroupId { get; set; } = 1;
     public int Privilege { get; set; } = 0;
     public int VerifyMode { get; set; } = 0;
-
-    public DateTime? StartDatetime { get; set; }
-    public DateTime? EndDatetime { get; set; }
-
-    public bool IsActive { get; set; } = true;
-
+    public bool IsActive { get; set; }
+    
     [MaxLength(100)]
     public string? Email { get; set; }
 
@@ -42,9 +38,6 @@ public class User : Entity<Guid>
 
     [MaxLength(100)]
     public string? Department { get; set; }
-
-    [MaxLength(100)]
-    public string? Position { get; set; }
     
     public Guid DeviceId { get; set; }
     public virtual Device Device { get; set; } = null!;
@@ -52,6 +45,6 @@ public class User : Entity<Guid>
     // Navigation Properties
     public virtual ICollection<FingerprintTemplate> FingerprintTemplates { get; set; } = new List<FingerprintTemplate>();
     public virtual ICollection<FaceTemplate> FaceTemplates { get; set; } = new List<FaceTemplate>();
-    public virtual ICollection<AttendanceLog> AttendanceLogs { get; set; } = new List<AttendanceLog>();
+    public virtual ICollection<Attendance> AttendanceLogs { get; set; } = new List<Attendance>();
 }
 
