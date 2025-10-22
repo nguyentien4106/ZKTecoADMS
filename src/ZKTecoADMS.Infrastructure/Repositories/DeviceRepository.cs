@@ -6,7 +6,10 @@ using ZKTecoADMS.Domain.Enums;
 namespace ZKTecoADMS.Infrastructure.Repositories;
 
 
-public class DeviceRepository(ZKTecoDbContext context, ILogger<EfRepository<Device>> logger) : EfRepository<Device>(context, logger), IDeviceRepository
+public class DeviceRepository(
+    ZKTecoDbContext context,
+    ILogger<EfRepository<Device>> logger
+    ) : EfRepository<Device>(context, logger), IDeviceRepository
 {
 
     public async Task<Device?> GetBySerialNumberAsync(string serialNumber)

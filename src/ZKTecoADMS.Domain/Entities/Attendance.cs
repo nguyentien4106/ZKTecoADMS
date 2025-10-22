@@ -7,15 +7,17 @@ namespace ZKTecoADMS.Domain.Entities;
 public class Attendance : Entity<Guid>
 {
     public Guid DeviceId { get; set; }
+
     public Guid? UserId { get; set; }
     
     [Required]
     [MaxLength(20)]
     public string PIN { get; set; } = string.Empty;
     
-    public int VerifyMode { get; set; } = 0;
+    public VerifyModes VerifyMode { get; set; }
     
     public AttendanceStates AttendanceState { get; set; }
+
     public DateTime AttendanceTime { get; set; }
     
     [MaxLength(10)]
@@ -23,6 +25,7 @@ public class Attendance : Entity<Guid>
 
     // Navigation Properties
     public virtual Device Device { get; set; } = null!;
+    
     public virtual User? User { get; set; }
 }
 

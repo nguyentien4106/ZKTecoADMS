@@ -10,8 +10,8 @@ public class GetAttsByDevicesHandler(IRepositoryPagedQuery<Attendance> attReposi
         var atts = await attRepository.GetPagedResultAsync(
             request.PaginationRequest,
             a => 
-                a.AttendanceTime.Date <= request.Filter.ToDate 
-                && a.AttendanceTime.Date >= request.Filter.FromDate 
+                a.AttendanceTime.Date <= request.Filter.ToDate.Date
+                && a.AttendanceTime.Date >= request.Filter.FromDate.Date
                 && request.Filter.DeviceIds.Contains(a.DeviceId), 
             includeProperties: ["Device", "User"],
             cancellationToken: cancellationToken);

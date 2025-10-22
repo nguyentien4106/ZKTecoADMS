@@ -8,5 +8,6 @@ public record AttendanceDto(
     string DeviceName,
     string UserName,
     VerifyModes VerifyMode,
-    AttendanceStates AttendanceState
+    AttendanceStates AttendanceState,
+    string? WorkCode
 );

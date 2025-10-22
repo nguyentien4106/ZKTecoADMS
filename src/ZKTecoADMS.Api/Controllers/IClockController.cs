@@ -36,25 +36,16 @@ public class ClockController(
     public async Task<IActionResult> PostCData([FromQuery] string SN, [FromQuery] string table, 
         [FromQuery] string Stamp)
     {
-        try
-        {
-            logger.LogInformation("Receiving data from device {SerialNumber}, Table: {Table}, Stamp: {Stamp}", 
-                SN, table, Stamp);
+        using var reader = new StreamReader(Request.Body, Encoding.UTF8);
+        var body = await reader.ReadToEndAsync();
 
-            var command = new CDataPostCommand(SN, table, Stamp, Request.Body);
-            var response = await bus.Send(command);
-            
-            return Content(response, "text/plain");
+        logger.LogInformation("Receiving data from device {SerialNumber}, Table: {Table}, Stamp: {Stamp}, Body: {Body}", 
+            SN, table, Stamp, body);
 
-            
-            // Read request body
-            
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error processing data from device {SerialNumber}", SN);
-            return Content("ERROR", "text/plain");
-        }
+        var command = new CDataPostCommand(SN, table, Stamp, body);
+        var response = await bus.Send(command);
+        
+        return Content(response, "text/plain");
     }
 
     /// <summary>

@@ -22,7 +22,6 @@ export interface User {
   email?: string;
   phoneNumber?: string;
   department?: string;
-  position?: string;
   isActive: boolean;
   privilege: 0 | 1 | 2 | 14;
   verifyMode: number;
@@ -35,18 +34,15 @@ export interface User {
 export interface AttendanceLog {
   id: string;
   deviceId: number;
+  deviceName: string;
   userId?: number;
+  userName: string
   pin: string;
   verifyType?: number;
-  verifyState: number;
+  attendanceState: number;
   attendanceTime: string;
   workCode?: string;
-  temperature?: number;
-  maskStatus?: boolean;
-  isProcessed: boolean;
   createdAt: string;
-  device?: Device;
-  user?: User;
 }
 
 export interface DeviceCommand {
