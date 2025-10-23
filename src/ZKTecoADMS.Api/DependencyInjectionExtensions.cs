@@ -58,6 +58,8 @@ public static class DependencyInjectionExtensions
 
     public static WebApplication UseApiServices(this WebApplication app)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
