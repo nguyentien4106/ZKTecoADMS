@@ -12,11 +12,11 @@ EXPOSE 7071
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/ZKTecoADMS.Api/ZKTecoADMS.Api.csproj", "src/ZKTecoADMS.Api/"]
-COPY ["src/ZKTecoADMS.Application/ZKTecoADMS.Application.csproj", "src/ZKTecoADMS.Application/"]
-COPY ["src/ZKTecoADMS.Domain/ZKTecoADMS.Domain.csproj", "src/ZKTecoADMS.Domain/"]
-COPY ["src/ZKTecoADMS.Infrastructure/ZKTecoADMS.Infrastructure.csproj", "src/ZKTecoADMS.Infrastructure/"]
-RUN dotnet restore "./src/ZKTecoADMS.Api/ZKTecoADMS.Api.csproj"
+COPY ["ZKTecoADMS.Api/ZKTecoADMS.Api.csproj", "ZKTecoADMS.Api/"]
+COPY ["ZKTecoADMS.Application/ZKTecoADMS.Application.csproj", "ZKTecoADMS.Application/"]
+COPY ["ZKTecoADMS.Domain/ZKTecoADMS.Domain.csproj", "ZKTecoADMS.Domain/"]
+COPY ["ZKTecoADMS.Infrastructure/ZKTecoADMS.Infrastructure.csproj", "ZKTecoADMS.Infrastructure/"]
+RUN dotnet restore "./ZKTecoADMS.Api/ZKTecoADMS.Api.csproj"
 COPY . .
 WORKDIR "/src/ZKTecoADMS.Api"
 RUN dotnet build "./ZKTecoADMS.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
