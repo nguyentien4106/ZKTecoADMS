@@ -37,7 +37,7 @@ public static class DependencyInjectionExtensions
         {
             var auditableInterceptor = sp.GetRequiredService<AuditableEntityInterceptor>();
             
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
                 builder => builder.MigrationsAssembly(typeof(ZKTecoDbContext).Assembly.GetName().Name))
                 .AddInterceptors(auditableInterceptor);
         });

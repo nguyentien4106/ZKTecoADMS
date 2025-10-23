@@ -21,7 +21,7 @@ public class ZKTecoDbInitializer(
     {
         try
         {
-            if (context.Database.IsSqlServer())
+            if (context.Database.IsNpgsql())
             {
                 await context.Database.MigrateAsync();
             }

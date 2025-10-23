@@ -10,8 +10,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.HasKey(e => e.Id);
         builder.HasIndex(e => e.PIN).IsUnique();
-        builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
-        builder.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()");
+        builder.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+        builder.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
         
         builder.HasOne(i => i.Device)
             .WithMany(i => i.Users)

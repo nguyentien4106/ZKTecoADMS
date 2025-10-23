@@ -4,6 +4,7 @@ import { DatePicker } from '@/components/date-picker'
 import { MultiSelect } from '@/components/multi-select'
 import { Filter } from 'lucide-react'
 import { AttendancesFilterParams } from '@/types/attendance'
+import { Label } from '../ui/label'
 
 export interface Option {
   value: string
@@ -38,28 +39,10 @@ export const AttendanceFilterBar = ({
           </div>
 
           {/* Filter Inputs */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <DatePicker
-                label="From Date"
-                value={filter.fromDate}
-                onSelectDate={date => onDateChange(date, 'fromDate')}
-                placeholder="Select start date"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <DatePicker
-                label="To Date"
-                value={filter.toDate}
-                onSelectDate={date => onDateChange(date, 'toDate')}
-                placeholder="Select end date"
-              />
-            </div>
-            
-            <div className="space-y-2">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
               <div className="flex flex-col gap-3">
-                <label className="text-sm font-medium px-1">Devices</label>
+                <Label className="text-sm font-medium px-1">Devices</Label>
                 <MultiSelect
                   options={deviceOptions}
                   defaultValue={filter.deviceIds}
@@ -68,18 +51,40 @@ export const AttendanceFilterBar = ({
                 />
               </div>
             </div>
+
+            <div className="flex-1">
+              <div className="flex flex-col gap-3">
+                <Label className="text-sm font-medium px-1">From Date</Label>
+                <DatePicker
+                  value={filter.fromDate}
+                  onSelectDate={date => onDateChange(date, 'fromDate')}
+                  placeholder="Select start date"
+                />
+              </div>
+            </div>
+
+            <div className="flex-1">
+              <div className="flex flex-col gap-3">
+                <Label className="text-sm font-medium px-1">To Date</Label>
+                <DatePicker
+                  value={filter.toDate}
+                  onSelectDate={date => onDateChange(date, 'toDate')}
+                  placeholder="Select end date"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Action Buttons */}
           <div className="flex items-center gap-3 pt-2">
-            <Button 
+            <Button
               onClick={onApplyFilters}
               className="px-6"
             >
               Apply Filters
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={onClearFilters}
               className="px-6"
             >

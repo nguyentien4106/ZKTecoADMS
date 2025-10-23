@@ -61,7 +61,7 @@ export const Devices = () => {
     <div>
       <PageHeader
         title="Devices"
-        description="Manage your ZKTeco attendance devices"
+        description="Mange your Biometric devices."
         action={
           <Button onClick={() => setCreateDialogOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
@@ -76,7 +76,7 @@ export const Devices = () => {
             <EmptyState
               icon={Monitor}
               title="No devices found"
-              description="Get started by adding your first ZKTeco device"
+              description="Get started by adding your own device."
               action={
                 <Button onClick={() => setCreateDialogOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />

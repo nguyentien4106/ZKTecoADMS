@@ -50,7 +50,9 @@ export const Attendance = () => {
   }
 
   useEffect(() => {
-    setFilter({ ...defaultAttendanceFilter, deviceIds: userDevices?.map(device => device.id) })
+    const newFilter = { ...defaultAttendanceFilter, deviceIds: userDevices?.map(device => device.id) }  
+    setFilter(newFilter)
+    setAppliedFilters(newFilter)
   }, [userDevices])
 
   return (

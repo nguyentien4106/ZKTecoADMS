@@ -1,44 +1,100 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: zkteco_postgres
+    environment:
+      - POSTGRES_DB=ZKTecoIntegration
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Ti100600@
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init_data.sql:/docker-entrypoint-initdb.d/init_data.sql
+    networks:
+      - zkteconet
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
   zktecoadms.api:
     image: zktecoadms.api
+    container_name: zkteco_api
     build:
       context: .
-      dockerfile: ZKTecoADMS.API/Dockerfile
+      dockerfile: ZKTecoADMS.Api/Dockerfile
     ports:
-      - "6000:6000"
-      - "6001:6001"
+      - "7070:7070"
+      - "7071:7071"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=6000
-      - ASPNETCORE_HTTPS_PORTS=6001
-      - ConnectionStrings__DefaultConnection=Server=db;Database=ZKTecoDB;User=sa;Password=YourStrong!Password123;TrustServerCertificate=True
-
+      - ASPNETCORE_HTTP_PORTS=7070
+      - ASPNETCORE_HTTPS_PORTS=7071
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=ZKTecoIntegration;Username=postgres;Password=Ti100600@;
+      - JwtSettings__AccessTokenSecret=0hN6BbNJ2dwfCPykLrdeOeYd53Arr5jzNcyv0HQBd3I=
+      - JwtSettings__RefreshTokenSecret=GtkWOJijzhUF+qsTT875Jz81rcHAZQl29HqJbtcWnGA=
+      - JwtSettings__Issuer=https://localhost:3000
+      - JwtSettings__Audience=https://localhost:3000
+      - JwtSettings__AccessTokenExpirationMinutes=3000
+      - JwtSettings__RefreshTokenExpirationMinutes=120
     volumes:
-      - $HOME/.aspnet/https:/home/app/.aspnet/https:ro
-      - $HOME/.microsoft/usersecrets:/home/app/.microsoft/usersecrets:ro
+      - ~/.aspnet/https:/home/app/.aspnet/https:ro
+      - ~/.microsoft/usersecrets:/home/app/.microsoft/usersecrets:ro
     depends_on:
-      - db
+      postgres:
+        condition: service_healthy
     networks:
       - zkteconet
     restart: unless-stopped
 
-  db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=YourStrong!Password123
+  # Frontend (React + Vite)
+  zkteco-client:
+    image: zkteco-client
+    container_name: zkteco_frontend
+    build:
+      context: ./zkteco-client
+      dockerfile: Dockerfile
     ports:
-      - "1433:1433"
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:7070
+      - NODE_ENV=production
+    depends_on:
+      - zktecoadms.api
+    networks:
+      - zkteconet
+    restart: unless-stopped
+
+  # pgAdmin (Optional - for database management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: zkteco_pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@zkteco.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_CONFIG_SERVER_MODE=False
+    ports:
+      - "5050:80"
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
     networks:
       - zkteconet
     restart: unless-stopped
 
 volumes:
-  sqlserver_data:
+  postgres_data:
+    driver: local
+  pgadmin_data:
     driver: local
 
 networks:

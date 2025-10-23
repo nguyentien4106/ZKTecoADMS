@@ -1,7 +1,7 @@
 // ==========================================
 // src/components/Header.tsx (Updated with Logout)
 // ==========================================
-import { Bell, Moon, Sun, LogOut, User, Settings } from 'lucide-react'
+import { Bell, Moon, Sun, LogOut, User, Settings, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -13,11 +13,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useDarkMode } from '@/hooks/useDarkMode'
 import { useAuth } from '@/contexts/AuthContext'
+import { useSidebar } from '@/contexts/SidebarContext'
 import { useNavigate } from 'react-router-dom'
 
 export const Header = () => {
   const { isDark, toggleDark } = useDarkMode()
   const { user, logout } = useAuth()
+  const { toggleSidebar } = useSidebar()
   console.log(user)
   const navigate = useNavigate()
 
@@ -36,15 +38,23 @@ export const Header = () => {
   }
 
   return (
-    <header className="h-16 border-b border-border bg-card px-6 flex items-center justify-between">
+    <header className="h-16 border-b border-border bg-card px-4 md:px-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
-        <h2 className="text-lg font-semibold">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={toggleSidebar}
+          className="shrink-0"
+        >
+          <Menu className="w-5 h-5" />
+        </Button>
+        <h2 className="text-lg font-semibold hidden sm:block">
           {document.title || 'ZKTeco Management'}
         </h2>
       </div>
       
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon">
+      <div className="flex items-center gap-1 md:gap-2">
+        <Button variant="ghost" size="icon" className="hidden sm:flex">
           <Bell className="w-5 h-5" />
         </Button>
         
@@ -56,16 +66,16 @@ export const Header = () => {
           )}
         </Button>
 
-        <div className="h-6 w-px bg-border mx-2" />
+        <div className="h-6 w-px bg-border mx-2 hidden sm:block" />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-3">
-              <div className="text-right">
+            <Button variant="ghost" className="flex items-center gap-2 md:gap-3">
+              <div className="text-right hidden md:block">
                 <p className="text-sm font-medium">{user?.name}</p>
                 <p className="text-xs text-muted-foreground">{user?.email}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm md:text-base">
                 {user ? getInitials(user.name) : 'U'}
               </div>
             </Button>

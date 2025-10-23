@@ -10,8 +10,8 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
     {
         builder.HasKey(e => e.Id);
         builder.HasIndex(e => e.SerialNumber).IsUnique();
-        builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
-        builder.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()");
+        builder.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+        builder.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
         
     }
 }
