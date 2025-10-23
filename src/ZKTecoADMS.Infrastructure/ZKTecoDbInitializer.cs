@@ -25,7 +25,19 @@ public class ZKTecoDbInitializer(
         {
             if (context.Database.IsNpgsql())
             {
-                await context.Database.MigrateAsync();
+                // Check if there are any pending migrations
+                var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+                
+                if (pendingMigrations.Any())
+                {
+                    logger.LogInformation("Applying {Count} pending migrations...", pendingMigrations.Count());
+                    await context.Database.MigrateAsync();
+                    logger.LogInformation("Migrations applied successfully.");
+                }
+                else
+                {
+                    logger.LogInformation("Database is up to date. No pending migrations.");
+                }
             }
         }
         catch (Exception ex)
