@@ -1,11 +1,298 @@
 -- ==========================================
--- PostgreSQL Initial Data Script
+-- PostgreSQL Database Initialization Script
 -- ZKTeco Attendance Management System
 -- Date: October 23, 2025
+-- ==========================================
+-- This script creates all tables and inserts initial sample data
 -- ==========================================
 
 -- Set timezone
 SET timezone = 'UTC';
+
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- ==========================================
+-- 0. CREATE DATABASE SCHEMA (TABLES)
+-- ==========================================
+
+-- Drop tables if they exist (for clean reinstall)
+-- Uncomment if you want to reset the database
+-- DROP TABLE IF EXISTS "DeviceSettings" CASCADE;
+-- DROP TABLE IF EXISTS "SyncLogs" CASCADE;
+-- DROP TABLE IF EXISTS "DeviceCommands" CASCADE;
+-- DROP TABLE IF EXISTS "AttendanceLogs" CASCADE;
+-- DROP TABLE IF EXISTS "FaceTemplates" CASCADE;
+-- DROP TABLE IF EXISTS "FingerprintTemplates" CASCADE;
+-- DROP TABLE IF EXISTS "UserDevices" CASCADE;
+-- DROP TABLE IF EXISTS "Devices" CASCADE;
+-- DROP TABLE IF EXISTS "SystemConfigurations" CASCADE;
+-- DROP TABLE IF EXISTS "UserRefreshTokens" CASCADE;
+-- DROP TABLE IF EXISTS "AspNetUserTokens" CASCADE;
+-- DROP TABLE IF EXISTS "AspNetUserRoles" CASCADE;
+-- DROP TABLE IF EXISTS "AspNetUserLogins" CASCADE;
+-- DROP TABLE IF EXISTS "AspNetUserClaims" CASCADE;
+-- DROP TABLE IF EXISTS "AspNetRoleClaims" CASCADE;
+-- DROP TABLE IF EXISTS "AspNetUsers" CASCADE;
+-- DROP TABLE IF EXISTS "AspNetRoles" CASCADE;
+
+-- ==========================================
+-- Create ASP.NET Identity Tables
+-- ==========================================
+
+-- AspNetRoles Table
+CREATE TABLE IF NOT EXISTS "AspNetRoles" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "Name" VARCHAR(256),
+    "NormalizedName" VARCHAR(256),
+    "ConcurrencyStamp" TEXT
+);
+
+-- AspNetUsers Table
+CREATE TABLE IF NOT EXISTS "AspNetUsers" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "FirstName" VARCHAR(100),
+    "LastName" VARCHAR(100),
+    "UserName" VARCHAR(256),
+    "NormalizedUserName" VARCHAR(256),
+    "Email" VARCHAR(256),
+    "NormalizedEmail" VARCHAR(256),
+    "EmailConfirmed" BOOLEAN NOT NULL DEFAULT FALSE,
+    "PasswordHash" TEXT,
+    "SecurityStamp" TEXT,
+    "ConcurrencyStamp" TEXT,
+    "PhoneNumber" TEXT,
+    "PhoneNumberConfirmed" BOOLEAN NOT NULL DEFAULT FALSE,
+    "TwoFactorEnabled" BOOLEAN NOT NULL DEFAULT FALSE,
+    "LockoutEnd" TIMESTAMPTZ,
+    "LockoutEnabled" BOOLEAN NOT NULL DEFAULT FALSE,
+    "AccessFailedCount" INTEGER NOT NULL DEFAULT 0,
+    "Created" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256)
+);
+
+-- AspNetUserRoles Table
+CREATE TABLE IF NOT EXISTS "AspNetUserRoles" (
+    "UserId" UUID NOT NULL,
+    "RoleId" UUID NOT NULL,
+    PRIMARY KEY ("UserId", "RoleId"),
+    CONSTRAINT "FK_AspNetUserRoles_Users" FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_AspNetUserRoles_Roles" FOREIGN KEY ("RoleId") REFERENCES "AspNetRoles" ("Id") ON DELETE CASCADE
+);
+
+-- AspNetUserClaims Table
+CREATE TABLE IF NOT EXISTS "AspNetUserClaims" (
+    "Id" SERIAL PRIMARY KEY,
+    "UserId" UUID NOT NULL,
+    "ClaimType" TEXT,
+    "ClaimValue" TEXT,
+    CONSTRAINT "FK_AspNetUserClaims_Users" FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
+);
+
+-- AspNetUserLogins Table
+CREATE TABLE IF NOT EXISTS "AspNetUserLogins" (
+    "LoginProvider" VARCHAR(128) NOT NULL,
+    "ProviderKey" VARCHAR(128) NOT NULL,
+    "ProviderDisplayName" TEXT,
+    "UserId" UUID NOT NULL,
+    PRIMARY KEY ("LoginProvider", "ProviderKey"),
+    CONSTRAINT "FK_AspNetUserLogins_Users" FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
+);
+
+-- AspNetUserTokens Table
+CREATE TABLE IF NOT EXISTS "AspNetUserTokens" (
+    "UserId" UUID NOT NULL,
+    "LoginProvider" VARCHAR(128) NOT NULL,
+    "Name" VARCHAR(128) NOT NULL,
+    "Value" TEXT,
+    PRIMARY KEY ("UserId", "LoginProvider", "Name"),
+    CONSTRAINT "FK_AspNetUserTokens_Users" FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
+);
+
+-- AspNetRoleClaims Table
+CREATE TABLE IF NOT EXISTS "AspNetRoleClaims" (
+    "Id" SERIAL PRIMARY KEY,
+    "RoleId" UUID NOT NULL,
+    "ClaimType" TEXT,
+    "ClaimValue" TEXT,
+    CONSTRAINT "FK_AspNetRoleClaims_Roles" FOREIGN KEY ("RoleId") REFERENCES "AspNetRoles" ("Id") ON DELETE CASCADE
+);
+
+-- ==========================================
+-- Create Application Tables
+-- ==========================================
+
+-- UserRefreshTokens Table
+CREATE TABLE IF NOT EXISTS "UserRefreshTokens" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "UserId" UUID NOT NULL,
+    "Token" TEXT NOT NULL,
+    "ExpiresAt" TIMESTAMPTZ NOT NULL,
+    "IsRevoked" BOOLEAN NOT NULL DEFAULT FALSE,
+    "CreatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256),
+    CONSTRAINT "FK_UserRefreshTokens_Users" FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
+);
+
+-- Devices Table
+CREATE TABLE IF NOT EXISTS "Devices" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "SerialNumber" VARCHAR(50) NOT NULL,
+    "DeviceName" VARCHAR(100) NOT NULL,
+    "Model" VARCHAR(50),
+    "IpAddress" VARCHAR(50),
+    "Port" INTEGER,
+    "Location" VARCHAR(200),
+    "Timezone" VARCHAR(50) NOT NULL DEFAULT 'UTC',
+    "LastOnline" TIMESTAMPTZ,
+    "FirmwareVersion" VARCHAR(50),
+    "Platform" VARCHAR(50),
+    "DeviceStatus" VARCHAR(20) NOT NULL DEFAULT 'Offline',
+    "MaxUsers" INTEGER,
+    "MaxFingerprints" INTEGER,
+    "MaxFaces" INTEGER,
+    "SupportsPushSDK" BOOLEAN NOT NULL DEFAULT TRUE,
+    "ApplicationUserId" UUID NOT NULL,
+    "IsActive" BOOLEAN NOT NULL DEFAULT TRUE,
+    "CreatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256),
+    "LastModified" TIMESTAMPTZ,
+    "LastModifiedBy" VARCHAR(256),
+    "Deleted" TIMESTAMPTZ,
+    "DeletedBy" VARCHAR(256),
+    CONSTRAINT "FK_Devices_Users" FOREIGN KEY ("ApplicationUserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
+);
+
+-- UserDevices Table (Device Users)
+CREATE TABLE IF NOT EXISTS "UserDevices" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "PIN" VARCHAR(20) NOT NULL,
+    "FullName" VARCHAR(200) NOT NULL,
+    "CardNumber" VARCHAR(50),
+    "Password" VARCHAR(50),
+    "GroupId" INTEGER NOT NULL DEFAULT 1,
+    "Privilege" INTEGER NOT NULL DEFAULT 0,
+    "VerifyMode" INTEGER NOT NULL DEFAULT 0,
+    "IsActive" BOOLEAN NOT NULL DEFAULT TRUE,
+    "Email" VARCHAR(100),
+    "PhoneNumber" VARCHAR(20),
+    "Department" VARCHAR(100),
+    "DeviceId" UUID NOT NULL,
+    "CreatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256),
+    CONSTRAINT "FK_UserDevices_Devices" FOREIGN KEY ("DeviceId") REFERENCES "Devices" ("Id") ON DELETE CASCADE
+);
+
+-- AttendanceLogs Table
+CREATE TABLE IF NOT EXISTS "AttendanceLogs" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "DeviceId" UUID NOT NULL,
+    "UserId" UUID,
+    "PIN" VARCHAR(20) NOT NULL,
+    "VerifyMode" INTEGER NOT NULL,
+    "AttendanceState" INTEGER NOT NULL,
+    "AttendanceTime" TIMESTAMPTZ NOT NULL,
+    "WorkCode" VARCHAR(10),
+    "CreatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256),
+    CONSTRAINT "FK_AttendanceLogs_Devices" FOREIGN KEY ("DeviceId") REFERENCES "Devices" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_AttendanceLogs_Users" FOREIGN KEY ("UserId") REFERENCES "UserDevices" ("Id") ON DELETE SET NULL
+);
+
+-- FingerprintTemplates Table
+CREATE TABLE IF NOT EXISTS "FingerprintTemplates" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "UserId" UUID NOT NULL,
+    "FingerIndex" INTEGER NOT NULL,
+    "Template" TEXT NOT NULL,
+    "TemplateVersion" INTEGER NOT NULL DEFAULT 0,
+    "CreatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256),
+    CONSTRAINT "FK_FingerprintTemplates_Users" FOREIGN KEY ("UserId") REFERENCES "UserDevices" ("Id") ON DELETE CASCADE
+);
+
+-- FaceTemplates Table
+CREATE TABLE IF NOT EXISTS "FaceTemplates" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "UserId" UUID NOT NULL,
+    "FaceIndex" INTEGER NOT NULL,
+    "Template" TEXT NOT NULL,
+    "TemplateVersion" INTEGER NOT NULL DEFAULT 0,
+    "CreatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256),
+    CONSTRAINT "FK_FaceTemplates_Users" FOREIGN KEY ("UserId") REFERENCES "UserDevices" ("Id") ON DELETE CASCADE
+);
+
+-- DeviceCommands Table
+CREATE TABLE IF NOT EXISTS "DeviceCommands" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "DeviceId" UUID NOT NULL,
+    "CommandType" VARCHAR(50) NOT NULL,
+    "CommandData" TEXT,
+    "Status" VARCHAR(20) NOT NULL DEFAULT 'Pending',
+    "Response" TEXT,
+    "CreatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256),
+    "ExecutedAt" TIMESTAMPTZ,
+    CONSTRAINT "FK_DeviceCommands_Devices" FOREIGN KEY ("DeviceId") REFERENCES "Devices" ("Id") ON DELETE CASCADE
+);
+
+-- SyncLogs Table
+CREATE TABLE IF NOT EXISTS "SyncLogs" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "DeviceId" UUID NOT NULL,
+    "SyncType" VARCHAR(50) NOT NULL,
+    "SyncStatus" VARCHAR(50) NOT NULL,
+    "RecordsProcessed" INTEGER,
+    "ErrorMessage" VARCHAR(500),
+    "StartTime" TIMESTAMPTZ NOT NULL,
+    "EndTime" TIMESTAMPTZ,
+    "CreatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256),
+    CONSTRAINT "FK_SyncLogs_Devices" FOREIGN KEY ("DeviceId") REFERENCES "Devices" ("Id") ON DELETE CASCADE
+);
+
+-- DeviceSettings Table
+CREATE TABLE IF NOT EXISTS "DeviceSettings" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "DeviceId" UUID NOT NULL,
+    "SettingKey" VARCHAR(100) NOT NULL,
+    "SettingValue" VARCHAR(500),
+    "Description" VARCHAR(200),
+    "CreatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256),
+    CONSTRAINT "FK_DeviceSettings_Devices" FOREIGN KEY ("DeviceId") REFERENCES "Devices" ("Id") ON DELETE CASCADE
+);
+
+-- SystemConfigurations Table
+CREATE TABLE IF NOT EXISTS "SystemConfigurations" (
+    "Id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "ConfigKey" VARCHAR(100) NOT NULL UNIQUE,
+    "ConfigValue" VARCHAR(500),
+    "Description" VARCHAR(200),
+    "CreatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "CreatedBy" VARCHAR(256)
+);
+
+-- ==========================================
+-- Create Indexes for Performance
+-- ==========================================
+
+CREATE INDEX IF NOT EXISTS "IX_AspNetUsers_Email" ON "AspNetUsers" ("NormalizedEmail");
+CREATE INDEX IF NOT EXISTS "IX_AspNetUsers_UserName" ON "AspNetUsers" ("NormalizedUserName");
+CREATE INDEX IF NOT EXISTS "IX_Devices_SerialNumber" ON "Devices" ("SerialNumber");
+CREATE INDEX IF NOT EXISTS "IX_Devices_ApplicationUserId" ON "Devices" ("ApplicationUserId");
+CREATE INDEX IF NOT EXISTS "IX_UserDevices_PIN" ON "UserDevices" ("PIN");
+CREATE INDEX IF NOT EXISTS "IX_UserDevices_DeviceId" ON "UserDevices" ("DeviceId");
+CREATE INDEX IF NOT EXISTS "IX_AttendanceLogs_DeviceId" ON "AttendanceLogs" ("DeviceId");
+CREATE INDEX IF NOT EXISTS "IX_AttendanceLogs_UserId" ON "AttendanceLogs" ("UserId");
+CREATE INDEX IF NOT EXISTS "IX_AttendanceLogs_AttendanceTime" ON "AttendanceLogs" ("AttendanceTime");
+CREATE INDEX IF NOT EXISTS "IX_AttendanceLogs_PIN" ON "AttendanceLogs" ("PIN");
+CREATE INDEX IF NOT EXISTS "IX_DeviceSettings_DeviceId" ON "DeviceSettings" ("DeviceId");
+CREATE INDEX IF NOT EXISTS "IX_SyncLogs_DeviceId" ON "SyncLogs" ("DeviceId");
+CREATE INDEX IF NOT EXISTS "IX_SyncLogs_StartTime" ON "SyncLogs" ("StartTime");
+
 
 -- ==========================================
 -- 1. CREATE ADMIN USER
@@ -39,7 +326,7 @@ INSERT INTO "AspNetUsers" (
     'admin@zkteco.com',
     'ADMIN@ZKTECO.COM',
     true,
-    'AQAAAAIAAYagAAAAELkxHZ8+8Q3YqN3WxFgIZKJ8RhD0c1RKF3MpzVvQNYnX5qHfZMj7KxP4WwG2tN9YvA==', -- Admin@123
+    'AANGrxMpCl7Flmh8nbd/iCyHgrzDCnyYiCz7PoOwo4Slt+fMA8zGWM50v7zpJpuycJQ==', -- Admin@123
     'WYXQJZ4VQJZQX4WVJQX4WVJQX4WV',
     'c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f',
     '+1234567890',

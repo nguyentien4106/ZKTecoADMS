@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: zkteco_postgres
+    environment:
+      - POSTGRES_DB=ZKTecoIntegration
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-Ti100600@}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/init_data.sql:/docker-entrypoint-initdb.d/init_data.sql
+    networks:
+      - zkteconet
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API - Pull from GitHub Container Registry
+  zktecoadms-api:
+    image: ghcr.io/nguyentien4106/zktecoadms-api:latest
+    container_name: zkteco_api
+    ports:
+      - "7070:7070"
+      - "7071:7071"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
+      - ASPNETCORE_HTTP_PORTS=7070
+      - ASPNETCORE_HTTPS_PORTS=7071
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=ZKTecoIntegration;Username=postgres;Password=${POSTGRES_PASSWORD:-Ti100600@};
+      - JwtSettings__AccessTokenSecret=${JWT_ACCESS_SECRET:-0hN6BbNJ2dwfCPykLrdeOeYd53Arr5jzNcyv0HQBd3I=}
+      - JwtSettings__RefreshTokenSecret=${JWT_REFRESH_SECRET:-GtkWOJijzhUF+qsTT875Jz81rcHAZQl29HqJbtcWnGA=}
+      - JwtSettings__Issuer=${JWT_ISSUER:-https://zk-teco-adms-7fwi.vercel.app}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-https://zk-teco-adms-7fwi.vercel.app}
+      - JwtSettings__AccessTokenExpirationMinutes=${JWT_ACCESS_EXPIRATION:-1500}
+      - JwtSettings__RefreshTokenExpirationMinutes=${JWT_REFRESH_EXPIRATION:-120}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=yourpassword
+    volumes:
+      - ./https:/https:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - zkteconet
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:7070/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend (Optional - uncomment if you have frontend image)
+  # zkteco-client:
+  #   image: ghcr.io/nguyentien4106/zkteco-client:latest
+  #   container_name: zkteco_frontend
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - VITE_API_URL=http://localhost:7070
+  #     - NODE_ENV=production
+  #   depends_on:
+  #     - zktecoadms-api
+  #   networks:
+  #     - zkteconet
+  #   restart: unless-stopped
+
+  # pgAdmin (Optional - for database management)
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   container_name: zkteco_pgadmin
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:-admin@zkteco.com}
+  #     - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-admin}
+  #     - PGADMIN_CONFIG_SERVER_MODE=False
+  #   ports:
+  #     - "5050:80"
+  #   volumes:
+  #     - pgadmin_data:/var/lib/pgadmin
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - zkteconet
+  #   restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  zkteconet:
+    driver: bridge
