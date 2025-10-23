@@ -62,11 +62,13 @@ public static class DependencyInjectionExtensions
         {
             app.UseSwagger();
             app.UseSwaggerUI();
-            using var scope = app.Services.CreateScope();
-            var initialiser = scope.ServiceProvider.GetRequiredService<ZKTecoDbInitializer>();
-            initialiser.InitialiseAsync().Wait();
-            initialiser.SeedAsync().Wait();
+
         }
+        
+        using var scope = app.Services.CreateScope();
+        var initialiser = scope.ServiceProvider.GetRequiredService<ZKTecoDbInitializer>();
+        initialiser.InitialiseAsync().Wait();
+        initialiser.SeedAsync().Wait();
         
         app.UseExceptionHandler(options => { });
         app.UseHttpsRedirection();

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ZKTecoADMS.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 using ZKTecoADMS.Domain.Entities.Base;
 
 namespace ZKTecoADMS.Domain.Entities;
-// ZKTecoADMS.Domain/Entities/SyncLog.cs
+
 public class SyncLog : Entity<Guid>
 {
     public Guid DeviceId { get; set; }
