@@ -73,7 +73,6 @@ public static class DependencyInjectionExtensions
         initialiser.SeedAsync().Wait();
         
         app.UseExceptionHandler(options => { });
-        app.UseHttpsRedirection();
         app.UseCors("corsPolicy");
         app.UseAuthentication();
         app.UseAuthorization();
