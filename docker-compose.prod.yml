@@ -42,10 +42,11 @@ services:
       - JwtSettings__Audience=${JWT_AUDIENCE:-https://zk-teco-adms-7fwi.vercel.app}
       - JwtSettings__AccessTokenExpirationMinutes=${JWT_ACCESS_EXPIRATION:-1500}
       - JwtSettings__RefreshTokenExpirationMinutes=${JWT_REFRESH_EXPIRATION:-120}
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=yourpassword
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/certs/fullchain.pem
+      - ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/certs/privkey.pem
     volumes:
-      - ./https:/https:ro
+      - /docker/certs/fullchain.pem:/certs/fullchain.pem:ro
+      - /docker/certs/privkey.pem:/certs/privkey.pem:ro
     depends_on:
       postgres:
         condition: service_healthy
