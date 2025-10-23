@@ -7,6 +7,8 @@ public class AppResponse<T>
 
     public List<string> Errors { get; set; } = [];
 
+    public string Message => Errors.Any() ? string.Join("; ", Errors) : string.Empty;
+
     public T? Data { get; set; }
 
     public static AppResponse<T> Create(bool isSuccess, T? data = default, List<string> errors = null)
@@ -25,6 +27,15 @@ public class AppResponse<T>
         {
             IsSuccess = true,
             Data = data
+        };
+    }
+
+    public static AppResponse<T> Fail(string errorMsg)
+    {
+        return new AppResponse<T>
+        {
+            IsSuccess = false,
+            Errors = new List<string> { errorMsg },
         };
     }
 

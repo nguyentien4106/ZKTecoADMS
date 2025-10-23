@@ -56,40 +56,40 @@ services:
     restart: unless-stopped
 
   # Frontend (React + Vite)
-  zkteco-client:
-    image: zkteco-client
-    container_name: zkteco_frontend
-    build:
-      context: ./zkteco-client
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - VITE_API_URL=http://localhost:7070
-      - NODE_ENV=production
-    depends_on:
-      - zktecoadms.api
-    networks:
-      - zkteconet
-    restart: unless-stopped
+  # zkteco-client:
+  #   image: zkteco-client
+  #   container_name: zkteco_frontend
+  #   build:
+  #     context: ./zkteco-client
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - VITE_API_URL=http://localhost:7070
+  #     - NODE_ENV=production
+  #   depends_on:
+  #     - zktecoadms.api
+  #   networks:
+  #     - zkteconet
+  #   restart: unless-stopped
 
   # pgAdmin (Optional - for database management)
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: zkteco_pgadmin
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@zkteco.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-      - PGADMIN_CONFIG_SERVER_MODE=False
-    ports:
-      - "5050:80"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    depends_on:
-      - postgres
-    networks:
-      - zkteconet
-    restart: unless-stopped
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   container_name: zkteco_pgadmin
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=admin@zkteco.com
+  #     - PGADMIN_DEFAULT_PASSWORD=admin
+  #     - PGADMIN_CONFIG_SERVER_MODE=False
+  #   ports:
+  #     - "5050:80"
+  #   volumes:
+  #     - pgadmin_data:/var/lib/pgadmin
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - zkteconet
+  #   restart: unless-stopped
 
 volumes:
   postgres_data:

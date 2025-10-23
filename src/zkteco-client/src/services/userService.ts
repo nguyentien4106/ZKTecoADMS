@@ -4,7 +4,7 @@
 // ==========================================
 import { CreateUserRequest, UpdateUserRequest } from '@/types/user';
 import { apiService } from './api';
-import type { User, UserDeviceMapping, AppResponse } from '@/types';
+import type { User, AppResponse } from '@/types';
 
 export const userService = {
   getUsersByDevices: async (deviceIds?: string[]) => {
@@ -31,10 +31,4 @@ export const userService = {
   
   syncToDevice: (userId: string, deviceId: string) => 
     apiService.post(`/api/users/${userId}/sync-to-device/${deviceId}`),
-  
-  syncToAllDevices: (userId: string) => 
-    apiService.post(`/api/users/${userId}/sync-to-all-devices`),
-  
-  getDeviceMappings: (userId: string) => 
-    apiService.get<UserDeviceMapping[]>(`/api/users/${userId}/device-mappings`),
 };

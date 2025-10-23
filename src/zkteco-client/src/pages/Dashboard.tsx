@@ -2,167 +2,94 @@
 // src/pages/Dashboard.tsx
 // ==========================================
 import { PageHeader } from '@/components/PageHeader'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { useDevices, useDevicesOnline } from '@/hooks/useDevices'
-import { useUsers } from '@/hooks/useUsers'
-import { useUnprocessedAttendance } from '@/hooks/useAttendance'
-import { Monitor, Users, Clock, AlertCircle } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts'
+import { useDashboardSummary, useAttendanceTrends, useTopPerformers, useLateEmployees, useDepartmentStats, useDeviceStatus } from '@/hooks/useDashboard'
+import { SummaryCards } from '@/components/dashboard/SummaryCards'
+import { AttendanceTrendChart } from '@/components/dashboard/AttendanceTrendChart'
+import { TopPerformersList } from '@/components/dashboard/TopPerformersList'
+import { LateEmployeesList } from '@/components/dashboard/LateEmployeesList'
+import { DepartmentStatsCard } from '@/components/dashboard/DepartmentStatsCard'
+import { DeviceStatusList } from '@/components/dashboard/DeviceStatusList'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
+import { RefreshCw } from 'lucide-react'
 
 export const Dashboard = () => {
-  const { data: devices, isLoading: devicesLoading } = useDevices()
-  const { data: onlineDevices, isLoading : onlineDeviceLoading } = useDevicesOnline()
-  const { data: users, isLoading: usersLoading } = useUsers()
+  const trendDays = 30
+  const performerCount = 10
 
-  if (devicesLoading || usersLoading) {
+  // Fetch all dashboard data
+  const { data: summary, isLoading: summaryLoading, refetch: refetchSummary } = useDashboardSummary()
+  const { data: trends, isLoading: trendsLoading } = useAttendanceTrends(trendDays)
+  const { data: topPerformers, isLoading: performersLoading } = useTopPerformers({ count: performerCount })
+  const { data: lateEmployees, isLoading: lateLoading } = useLateEmployees({ count: performerCount })
+  const { data: departments, isLoading: deptLoading } = useDepartmentStats()
+  const { data: devices, isLoading: devicesLoading } = useDeviceStatus()
+
+  const isLoading = summaryLoading
+
+  if (isLoading) {
     return <LoadingSpinner />
   }
 
-  const totalDevices = devices?.length || 0
-  const totalUsers = users?.length || 0
-  const activeUsers = users?.filter((u) => u.isActive).length || 0
-
-  // Mock data for chart
-  const chartData = [
-    { name: 'Mon', attendance: 45 },
-    { name: 'Tue', attendance: 52 },
-    { name: 'Wed', attendance: 48 },
-    { name: 'Thu', attendance: 61 },
-    { name: 'Fri', attendance: 55 },
-    { name: 'Sat', attendance: 23 },
-    { name: 'Sun', attendance: 12 },
-  ]
-
   return (
-    <div>
-      <PageHeader
-        title="Dashboard"
-        description="Overview of your ZKTeco attendance system"
-      />
-
-      {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Devices</CardTitle>
-            <Monitor className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalDevices}</div>
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant="success">{onlineDevices?.length} Online</Badge>
-              {totalDevices - onlineDevices?.length > 0 && (
-                <Badge variant="secondary">
-                  {totalDevices - onlineDevices?.length} Offline
-                </Badge>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalUsers}</div>
-            <p className="text-xs text-muted-foreground mt-2">
-              {activeUsers} active users
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              Today's Attendance
-            </CardTitle>
-            <Clock className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">156</div>
-            <p className="text-xs text-muted-foreground mt-2">
-              +12% from yesterday
-            </p>
-          </CardContent>
-        </Card>
-
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <PageHeader
+          title="Dashboard"
+          description="Overview of your attendance system performance"
+        />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refetchSummary()}
+          className="gap-2"
+        >
+          <RefreshCw className="w-4 h-4" />
+          Refresh
+        </Button>
       </div>
 
-      {/* Charts and Recent Activity */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Attendance Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="attendance"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      {/* Summary Cards */}
+      <SummaryCards summary={summary} isLoading={summaryLoading} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Device Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {devices?.items?.slice(0, 5).map((device) => (
-                <div
-                  key={device.id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        device.deviceStatus === 'Online'
-                          ? 'bg-green-500'
-                          : 'bg-gray-400'
-                      }`}
-                    />
-                    <div>
-                      <p className="font-medium">{device.deviceName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {device.serialNumber}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge
-                    variant={
-                      device.deviceStatus === 'Online' ? 'success' : 'secondary'
-                    }
-                  >
-                    {device.deviceStatus}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Tabs for Different Views */}
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="departments">Departments</TabsTrigger>
+          <TabsTrigger value="devices">Devices</TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <AttendanceTrendChart data={trends} isLoading={trendsLoading} />
+            <DeviceStatusList devices={devices} isLoading={devicesLoading} />
+          </div>
+          
+          <DepartmentStatsCard departments={departments} isLoading={deptLoading} />
+        </TabsContent>
+
+        {/* Performance Tab */}
+        <TabsContent value="performance" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <TopPerformersList performers={topPerformers} isLoading={performersLoading} />
+            <LateEmployeesList employees={lateEmployees} isLoading={lateLoading} />
+          </div>
+        </TabsContent>
+
+        {/* Departments Tab */}
+        <TabsContent value="departments" className="space-y-4">
+          <DepartmentStatsCard departments={departments} isLoading={deptLoading} />
+        </TabsContent>
+
+        {/* Devices Tab */}
+        <TabsContent value="devices" className="space-y-4">
+          <DeviceStatusList devices={devices} isLoading={devicesLoading} />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

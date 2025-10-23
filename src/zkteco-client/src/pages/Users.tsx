@@ -9,16 +9,11 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import {
   useUsers,
   useDeleteUser,
-  useSyncUserToAllDevices,
   useCreateUser,
   useUpdateUser,
 } from "@/hooks/useUsers";
 import {
-  Users as UsersIcon,
   Plus,
-  Trash2,
-  Edit,
-  RefreshCw,
 } from "lucide-react";
 import { CreateUserDialog } from "@/components/dialogs/CreateUserDialog";
 import { toast } from "sonner";
@@ -36,7 +31,6 @@ export const Users = () => {
     useDevicesByUser(applicationUserId);
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
   const deleteUser = useDeleteUser();
-  const syncUser = useSyncUserToAllDevices();
   const { data: users, isLoading } = useUsers(selectedDeviceIds);
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
@@ -85,15 +79,6 @@ export const Users = () => {
     setCreateDialogOpen(true);
   };
 
-  const handleSync = async (id: string, name: string) => {
-    if (!id) return;
-    await toast.promise(syncUser.mutateAsync(id), {
-      loading: `Syncing ${name} to all devices...`,
-      success: `${name} synced successfully`,
-      error: "Failed to sync user",
-    });
-  };
-
   const handleSubmit = (deviceIds: string[]) => {
     setSelectedDeviceIds(deviceIds);
   };
@@ -123,10 +108,8 @@ export const Users = () => {
 
       <UsersTable
         users={users}
-        onSync={handleSync}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        isSyncPending={syncUser.isPending}
         isDeletePending={deleteUser.isPending}
         onAddUser={() => setCreateDialogOpen(true)}
         isLoading={isLoading}

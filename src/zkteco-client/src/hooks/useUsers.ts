@@ -5,7 +5,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userService } from '@/services/userService';
 import { toast } from 'sonner';
-import type { User } from '@/types';
 import { CreateUserRequest, UpdateUserRequest } from '@/types/user';
 
 export const useUsers = (deviceIds: string[]) => {
@@ -63,25 +62,5 @@ export const useSyncUserToDevice = () => {
       queryClient.invalidateQueries({ queryKey: ['user-mappings'] });
       toast.success('User sync initiated');
     },
-  });
-};
-
-export const useSyncUserToAllDevices = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (userId: string) => userService.syncToAllDevices(userId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-mappings'] });
-      toast.success('User sync to all devices initiated');
-    },
-  });
-};
-
-export const useUserDeviceMappings = (userId: string) => {
-  return useQuery({
-    queryKey: ['user-mappings', userId],
-    queryFn: () => userService.getDeviceMappings(userId),
-    enabled: !!userId,
   });
 };

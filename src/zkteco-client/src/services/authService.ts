@@ -4,14 +4,14 @@
 // ==========================================
 import { AppResponse } from '@/types';
 import { apiService } from './api';
-import type { AuthUser, ForgotPasswordResponse, LoginRequest, LoginResponse } from '@/types/auth';
+import type { AuthUser, ForgotPasswordResponse, LoginResponse } from '@/types/auth';
 
 export const authService = {
   login: async (userName: string, password: string): Promise<LoginResponse> => {
 
     const result = await apiService.post<AppResponse<LoginResponse>>('/api/auth/login', { userName, password });
     
-    return result.isSuccess ? result.data : Promise.reject(new Error(result.errors));
+    return result.isSuccess ? result.data : Promise.reject(new Error(result.errors.join(', ')));
   },
 
   logout: async (): Promise<void> => {

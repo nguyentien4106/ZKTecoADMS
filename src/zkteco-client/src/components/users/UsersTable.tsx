@@ -14,18 +14,15 @@ import {
   Users as UsersIcon,
   Plus,
   Trash2,
-  Edit,
-  RefreshCw,
+  Edit
 } from "lucide-react";
 import { User } from "@/types";
 import { UserPrivileges } from "@/constants";
 
 type UsersTableProps = {
   users?: User[];
-  onSync: (id: string, name: string) => void;
   onEdit: (user: User) => void;
   onDelete: (id: string) => void;
-  isSyncPending: boolean;
   isDeletePending: boolean;
   onAddUser: () => void;
   isLoading: boolean;
@@ -33,10 +30,8 @@ type UsersTableProps = {
 
 export const UsersTable = ({
   users,
-  onSync,
   onEdit,
   onDelete,
-  isSyncPending,
   isDeletePending,
   onAddUser,
   isLoading,
