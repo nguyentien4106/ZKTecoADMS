@@ -141,7 +141,7 @@ public static class DependencyInjectionExtensions
             options.AddPolicy("corsPolicy", builder =>
             {
                 builder.WithOrigins([
-                            jwtSettings.Audience, "http://localhost:3000"
+                            jwtSettings.Audience
                         ])
                        .AllowAnyMethod()
                        .AllowAnyHeader()
