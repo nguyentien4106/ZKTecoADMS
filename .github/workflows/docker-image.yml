@@ -6,22 +6,22 @@ on:
       - master
       - main
     paths:
-      - 'ZKTecoADMS.Api/**'
-      - 'ZKTecoADMS.Application/**'
-      - 'ZKTecoADMS.Domain/**'
-      - 'ZKTecoADMS.Infrastructure/**'
-      - 'src.sln'
+      - 'src/ZKTecoADMS.Api/**'
+      - 'src/ZKTecoADMS.Application/**'
+      - 'src/ZKTecoADMS.Domain/**'
+      - 'src/ZKTecoADMS.Infrastructure/**'
+      - 'src/src.sln'
       - '.github/workflows/docker-image.yml'
   pull_request:
     branches: 
       - master
       - main
     paths:
-      - 'ZKTecoADMS.Api/**'
-      - 'ZKTecoADMS.Application/**'
-      - 'ZKTecoADMS.Domain/**'
-      - 'ZKTecoADMS.Infrastructure/**'
-      - 'src.sln'
+      - 'src/ZKTecoADMS.Api/**'
+      - 'src/ZKTecoADMS.Application/**'
+      - 'src/ZKTecoADMS.Domain/**'
+      - 'src/ZKTecoADMS.Infrastructure/**'
+      - 'src/src.sln'
   workflow_dispatch:  # Allows manual trigger
 
 env:
@@ -66,8 +66,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./ZKTecoADMS.Api/Dockerfile
+          context: ./src
+          file: ./src/ZKTecoADMS.Api/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
