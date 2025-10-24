@@ -4,5 +4,5 @@ namespace ZKTecoADMS.Application.Commands.IClock.CDataPost.Strategy;
 
 public interface IPostStrategy
 {
-    Task ProcessDataAsync(Device device, string body);
+    Task<string> ProcessDataAsync(Device device, string body);
 }

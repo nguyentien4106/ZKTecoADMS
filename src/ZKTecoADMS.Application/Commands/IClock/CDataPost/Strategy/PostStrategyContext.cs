@@ -11,8 +11,8 @@ public class PostStrategyContext(IServiceProvider serviceProvider, string table)
         _ => new PostBiometricStrategy(serviceProvider)
     };
 
-    public async Task ExecuteAsync(Device device, string body)
+    public async Task<string> ExecuteAsync(Device device, string body)
     {
-        await _strategy.ProcessDataAsync(device, body);
+        return await _strategy.ProcessDataAsync(device, body);
     }
 }

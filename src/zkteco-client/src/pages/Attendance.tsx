@@ -73,7 +73,7 @@ export const Attendance = () => {
       />
 
       {/* Attendance Table */}
-      <AttendancesTable logs={data?.data.items} isLoading={isFetchingData}/>
+      <AttendancesTable logs={data?.items} isLoading={isFetchingData}/>
     </div>
   )
 }

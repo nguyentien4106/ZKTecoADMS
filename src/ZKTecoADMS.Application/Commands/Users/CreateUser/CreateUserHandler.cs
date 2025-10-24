@@ -8,9 +8,9 @@ namespace ZKTecoADMS.Application.Commands.Users.CreateUser;
 public class CreateUserHandler(
     IDeviceService deviceService, 
     IRepository<User> userRepository,
-    IRepository<DeviceCommand> deviceCmdRepository) : ICommandHandler<CreateUserCommand, List<AppResponse<UserDto>>>
+    IRepository<DeviceCommand> deviceCmdRepository) : ICommandHandler<CreateUserCommand, AppResponse<List<AppResponse<UserDto>>>>
 {
-    public async Task<List<AppResponse<UserDto>>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<AppResponse<List<AppResponse<UserDto>>>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var users = request.DeviceIds.Select(deviceId => new User
             {
@@ -51,6 +51,6 @@ public class CreateUserHandler(
             await deviceCmdRepository.AddAsync(cmd, cancellationToken);
         }
         
-        return userResults;
+        return AppResponse<List<AppResponse<UserDto>>>.Success(userResults);
     }
 }

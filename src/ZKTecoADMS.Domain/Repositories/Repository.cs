@@ -25,6 +25,10 @@ public abstract class Repository<TEntity> : IRepository<TEntity>
 
     public abstract Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
 
+    public abstract Task<bool> AddOrUpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
+
+    public abstract Task<bool> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
+
     public abstract Task<bool> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
 
     public abstract Task<bool> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);

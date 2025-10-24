@@ -12,6 +12,7 @@ using ZKTecoADMS.Application.Commands.Devices.AddDevice;
 using ZKTecoADMS.Application.Commands.Devices.CreateDeviceCmd;
 using ZKTecoADMS.Application.Commands.Devices.DeleteDevice;
 using ZKTecoADMS.Application.Queries.Devices.GetPendingCommands;
+using ZKTecoADMS.Application.Queries.Devices.GetDeviceInfo;
 
 namespace ZKTecoADMS.API.Controllers;
 
@@ -85,7 +86,14 @@ public class DevicesController(
     public async Task<ActionResult<AppResponse<IEnumerable<DeviceCommand>>>> GetPendingCommands(Guid deviceId)
     {
         var query = new GetPendingCmdQuery(deviceId);
-        
+
+        return Ok(await bus.Send(query));
+    }
+
+    [HttpGet("{deviceId}/device-info")]
+    public async Task<ActionResult<AppResponse<DeviceInfoDto>>> GetDeviceInfo(Guid deviceId)
+    {
+        var query = new GetDeviceInfoQuery(deviceId);
         return Ok(await bus.Send(query));
     }
 }

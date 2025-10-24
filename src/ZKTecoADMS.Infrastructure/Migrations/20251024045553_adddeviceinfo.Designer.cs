@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZKTecoADMS.Infrastructure;
@@ -11,9 +12,11 @@ using ZKTecoADMS.Infrastructure;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     [DbContext(typeof(ZKTecoDbContext))]
-    partial class ZKTecoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251024045553_adddeviceinfo")]
+    partial class adddeviceinfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -393,6 +396,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
+                    b.HasIndex("DeviceInfoId")
+                        .IsUnique();
+
                     b.HasIndex("SerialNumber")
                         .IsUnique();
 
@@ -517,9 +523,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeviceId")
-                        .IsUnique();
 
                     b.ToTable("DeviceInfos");
                 });
@@ -938,7 +941,15 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ZKTecoADMS.Domain.Entities.DeviceInfo", "DeviceInfo")
+                        .WithOne("Device")
+                        .HasForeignKey("ZKTecoADMS.Domain.Entities.Device", "DeviceInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("DeviceInfo");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceCommand", b =>
@@ -946,17 +957,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.HasOne("ZKTecoADMS.Domain.Entities.Device", "Device")
                         .WithMany("DeviceCommands")
                         .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Device");
-                });
-
-            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceInfo", b =>
-                {
-                    b.HasOne("ZKTecoADMS.Domain.Entities.Device", "Device")
-                        .WithOne("DeviceInfo")
-                        .HasForeignKey("ZKTecoADMS.Domain.Entities.DeviceInfo", "DeviceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1042,14 +1042,17 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.Navigation("DeviceCommands");
 
-                    b.Navigation("DeviceInfo")
-                        .IsRequired();
-
                     b.Navigation("DeviceSettings");
 
                     b.Navigation("SyncLogs");
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceInfo", b =>
+                {
+                    b.Navigation("Device")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.User", b =>

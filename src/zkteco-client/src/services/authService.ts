@@ -9,9 +9,7 @@ import type { AuthUser, ForgotPasswordResponse, LoginResponse } from '@/types/au
 export const authService = {
   login: async (userName: string, password: string): Promise<LoginResponse> => {
 
-    const result = await apiService.post<AppResponse<LoginResponse>>('/api/auth/login', { userName, password });
-    
-    return result.isSuccess ? result.data : Promise.reject(new Error(result.errors.join(', ')));
+    return await apiService.post<LoginResponse>('/api/auth/login', { userName, password });
   },
 
   logout: async (): Promise<void> => {

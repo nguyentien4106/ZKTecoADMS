@@ -129,24 +129,73 @@ public class EfRepository<TEntity>(
         {
             await dbSet.AddAsync(entity, cancellationToken);
             var result = await context.SaveChangesAsync(cancellationToken) > 0;
-            
+
             if (result)
             {
-                logger.LogInformation("Successfully inserted entity of type {EntityType} with ID: {Id}", 
+                logger.LogInformation("Successfully inserted entity of type {EntityType} with ID: {Id}",
                     typeof(TEntity).Name, entity.Id);
             }
             else
             {
-                logger.LogWarning("Insert operation for entity of type {EntityType} with ID: {Id} returned false", 
+                logger.LogWarning("Insert operation for entity of type {EntityType} with ID: {Id} returned false",
                     typeof(TEntity).Name, entity.Id);
             }
-            
+
             return entity;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error inserting entity of type {EntityType} with ID: {Id}",
                 typeof(TEntity).Name, entity.Id);
+
+            throw;
+        }
+    }
+
+    public async override Task<bool> AddOrUpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    {
+        var exists = await ExistsAsync(entity.Id);
+        if (exists)
+        {
+            return await UpdateAsync(entity, cancellationToken);
+        }
+        else
+        {
+            await AddAsync(entity, cancellationToken);
+            return true;
+        }
+    }
+    
+    public override async Task<bool> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    {
+        if (entities == null || !entities.Any())
+        {
+            logger.LogWarning("Attempted to insert null or empty entity collection of type {EntityType}", typeof(TEntity).Name);
+            throw new ArgumentNullException(nameof(entities));
+        }
+
+        try
+        {
+            await dbSet.AddRangeAsync(entities, cancellationToken);
+            var result = await context.SaveChangesAsync(cancellationToken) > 0;
+
+            if (result)
+            {
+                logger.LogInformation("Successfully inserted {Count} entities of type {EntityType}",
+                    entities.Count(), typeof(TEntity).Name);
+            }
+            else
+            {
+                logger.LogWarning("Insert operation for entities of type {EntityType} returned false",
+                    typeof(TEntity).Name);
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error inserting entities of type {EntityType}",
+                typeof(TEntity).Name);
 
             throw;
         }
@@ -217,7 +266,7 @@ public class EfRepository<TEntity>(
         {
             logger.LogError(ex, "Error deleting entity of type {EntityType} with ID: {Id}", 
                 typeof(TEntity).Name, entity.Id);
-            return false;
+            throw;
         }
     }
 
@@ -253,7 +302,7 @@ public class EfRepository<TEntity>(
         {
             logger.LogError(ex, "Error deleting entity of type {EntityType} by ID: {Id}", 
                 typeof(TEntity).Name, id);
-            return false;
+            throw;
         }
     }
     public override async Task<bool> ExistsAsync(Guid id)

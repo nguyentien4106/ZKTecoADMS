@@ -58,6 +58,19 @@ export interface DeviceCommand {
   completedAt?: string;
 }
 
+export interface DeviceInfo {
+  deviceId: string;
+  firmwareVersion?: string;
+  enrolledUserCount: number;
+  fingerprintCount: number;
+  attendanceCount: number;
+  deviceIp?: string;
+  fingerprintVersion?: string;
+  faceVersion?: string;
+  faceTemplateCount?: string;
+  devSupportData?: string;
+}
+
 export interface CreateDeviceRequest {
   serialNumber: string;
   deviceName: string;
@@ -70,7 +83,7 @@ export interface CreateDeviceRequest {
 
 export interface SendCommandRequest {
   commandType: string;
-  commandData?: string;
+  command?: string;
   priority?: number;
 }
 

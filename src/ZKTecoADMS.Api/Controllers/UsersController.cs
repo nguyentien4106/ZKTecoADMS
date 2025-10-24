@@ -23,7 +23,7 @@ public class UsersController(IUserService userService, ILogger<UsersController> 
     }
 
     [HttpPost]
-    public async Task<ActionResult<List<AppResponse<UserDto>>>> CreateUser([FromBody] CreateUserRequest request)
+    public async Task<ActionResult<AppResponse<List<AppResponse<UserDto>>>>> CreateUser([FromBody] CreateUserRequest request)
     {
         var command = request.Adapt<CreateUserCommand>();
         var created = await bus.Send(command);

@@ -11,4 +11,4 @@ public record CreateUserCommand(
     string? Email, 
     string? PhoneNumber, 
     string? Department,
-    List<Guid> DeviceIds) : ICommand<List<AppResponse<UserDto>>>;
+    List<Guid> DeviceIds) : ICommand<AppResponse<List<AppResponse<UserDto>>>>;

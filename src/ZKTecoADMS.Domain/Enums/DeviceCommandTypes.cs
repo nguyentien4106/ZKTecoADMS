@@ -4,5 +4,7 @@ public enum DeviceCommandTypes
 {
     AddUser,
     DeleteUser,
-    UpdateUser
+    UpdateUser,
+    InitialAttendances,
+    InitialUsers
 }

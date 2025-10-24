@@ -50,6 +50,10 @@ public class Device : AuditableEntity<Guid>
 
     public virtual ApplicationUser ApplicationUser { get; set; } = null!;
 
+    public Guid DeviceInfoId { get; set; }
+
+    public virtual DeviceInfo DeviceInfo { get; set; } = null!;
+
     // Navigation Properties
     public virtual ICollection<User> Users { get; set; } = new List<User>();
     public virtual ICollection<Attendance> AttendanceLogs { get; set; } = new List<Attendance>();

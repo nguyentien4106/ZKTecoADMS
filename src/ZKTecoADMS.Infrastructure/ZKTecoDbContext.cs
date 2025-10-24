@@ -20,6 +20,8 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
     public DbSet<DeviceSetting> DeviceSettings => Set<DeviceSetting>();
     public DbSet<SystemConfiguration> SystemConfigurations => Set<SystemConfiguration>();
 
+    public DbSet<DeviceInfo> DeviceInfos => Set<DeviceInfo>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

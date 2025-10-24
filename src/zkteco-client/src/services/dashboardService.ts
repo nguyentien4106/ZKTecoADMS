@@ -40,7 +40,7 @@ export const dashboardService = {
    */
   getAll: (params?: DashboardParams) => {
     const queryString = params ? `?${buildQueryString(params)}` : '';
-    return apiService.get<AppResponse<DashboardData>>(`/api/dashboard${queryString}`);
+    return apiService.get<DashboardData>(`/api/dashboard${queryString}`);
   },
 
   /**
@@ -48,7 +48,7 @@ export const dashboardService = {
    * @returns Summary of today's key metrics
    */
   getSummary: () => {
-    return apiService.get<AppResponse<DashboardSummary>>('/api/dashboard/summary');
+    return apiService.get<DashboardSummary>('/api/dashboard/summary');
   },
 
   /**
@@ -63,7 +63,7 @@ export const dashboardService = {
     department?: string;
   }) => {
     const queryString = params ? `?${buildQueryString(params)}` : '';
-    return apiService.get<AppResponse<EmployeePerformance[]>>(
+    return apiService.get<EmployeePerformance[]>(
       `/api/dashboard/top-performers${queryString}`
     );
   },
@@ -80,7 +80,7 @@ export const dashboardService = {
     department?: string;
   }) => {
     const queryString = params ? `?${buildQueryString(params)}` : '';
-    return apiService.get<AppResponse<EmployeePerformance[]>>(
+    return apiService.get<EmployeePerformance[]>(
       `/api/dashboard/late-employees${queryString}`
     );
   },
@@ -95,7 +95,7 @@ export const dashboardService = {
     endDate?: string;
   }) => {
     const queryString = params ? `?${buildQueryString(params)}` : '';
-    return apiService.get<AppResponse<DepartmentStatistics[]>>(
+    return apiService.get<DepartmentStatistics[]>(
       `/api/dashboard/department-stats${queryString}`
     );
   },
@@ -107,7 +107,7 @@ export const dashboardService = {
    */
   getAttendanceTrends: (days?: number) => {
     const queryString = days ? `?days=${days}` : '';
-    return apiService.get<AppResponse<AttendanceTrend[]>>(
+    return apiService.get<AttendanceTrend[]>(
       `/api/dashboard/attendance-trends${queryString}`
     );
   },
@@ -117,7 +117,7 @@ export const dashboardService = {
    * @returns List of devices with their current status
    */
   getDeviceStatus: () => {
-    return apiService.get<AppResponse<DeviceStatus[]>>('/api/dashboard/device-status');
+    return apiService.get<DeviceStatus[]>('/api/dashboard/device-status');
   },
 
   /**

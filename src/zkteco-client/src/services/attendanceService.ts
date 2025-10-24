@@ -20,7 +20,7 @@ const buildQueryString = (params: any) => {
 export const attendanceService = {
   getByDevices: (paginationRequest: PaginationRequest, filterParams: AttendancesFilterParams) => {
 
-    return apiService.post<AppResponse<PaginatedResponse<AttendanceLog>>>('/api/attendances/devices?' + buildQueryString(paginationRequest), filterParams);
+    return apiService.post<PaginatedResponse<AttendanceLog>>('/api/attendances/devices?' + buildQueryString(paginationRequest), filterParams);
   },
   
   getByUser: (userId: number, startDate?: string, endDate?: string) => {

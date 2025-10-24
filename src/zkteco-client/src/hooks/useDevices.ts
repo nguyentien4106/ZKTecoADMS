@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { deviceService } from '@/services/deviceService';
 import { toast } from 'sonner';
 import type { CreateDeviceRequest, SendCommandRequest } from '@/types';
+import { DeviceCommandRequest } from '@/types/device';
 
 export const useDevices = () => {
   return useQuery({
@@ -88,15 +89,16 @@ export const useDeleteDevice = () => {
 };
 
 export const useSendCommand = () => {
-  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ deviceId, data }: { deviceId: string; data: SendCommandRequest }) =>
+    mutationFn: ({ deviceId, data }: { deviceId: string; data: DeviceCommandRequest }) =>
       deviceService.sendCommand(deviceId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['commands'] });
       toast.success('Command sent successfully');
     },
+    onError: (error: any) => {
+      toast.error('Failed to send command', { description: error.message })
+    }
   });
 };
 
@@ -106,5 +108,84 @@ export const useDeviceCommands = (deviceId: string) => {
     queryFn: () => deviceService.getPendingCommands(deviceId),
     enabled: !!deviceId,
     refetchInterval: 10000, // Refetch every 10 seconds
+  });
+};
+
+export const useDeviceInfo = (deviceId: string | null) => {
+  return useQuery({
+    queryKey: ['deviceInfo', deviceId],
+    queryFn: () => {
+      if (!deviceId) throw new Error('Device ID is required');
+      return deviceService.getDeviceInfo(deviceId);
+    },
+    enabled: Boolean(deviceId),
+    staleTime: 30000, // Consider data stale after 30 seconds
+  });
+};
+
+// Device Command Actions Hooks
+export const useSyncUsers = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (deviceId: string) => deviceService.syncUsers(deviceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['commands'] });
+    },
+  });
+};
+
+export const useSyncAttendance = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (deviceId: string) => deviceService.syncAttendance(deviceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['commands'] });
+    },
+  });
+};
+
+export const useClearAttendance = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (deviceId: string) => deviceService.clearAttendance(deviceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['commands'] });
+    },
+  });
+};
+
+export const useRestartDevice = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (deviceId: string) => deviceService.restartDevice(deviceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['commands'] });
+    },
+  });
+};
+
+export const useLockDevice = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (deviceId: string) => deviceService.lockDevice(deviceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['commands'] });
+    },
+  });
+};
+
+export const useUnlockDevice = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (deviceId: string) => deviceService.unlockDevice(deviceId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['commands'] });
+    },
   });
 };

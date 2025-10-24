@@ -15,8 +15,7 @@ export const useDashboardData = (params?: DashboardParams) => {
   return useQuery({
     queryKey: ['dashboard', params],
     queryFn: async () => {
-      const response = await dashboardService.getAll(params)
-      return response.data
+      return  await dashboardService.getAll(params)
     },
   })
 }
@@ -26,8 +25,7 @@ export const useDashboardSummary = () => {
   return useQuery({
     queryKey: ['dashboard', 'summary'],
     queryFn: async () => {
-      const response = await dashboardService.getSummary()
-      return response.data
+      return  await dashboardService.getSummary()
     },
     refetchInterval: 60000, // Refetch every minute
   })
@@ -43,8 +41,7 @@ export const useTopPerformers = (params?: {
   return useQuery({
     queryKey: ['dashboard', 'top-performers', params],
     queryFn: async () => {
-      const response = await dashboardService.getTopPerformers(params)
-      return response.data
+      return  await dashboardService.getTopPerformers(params)
     },
   })
 }
@@ -59,8 +56,7 @@ export const useLateEmployees = (params?: {
   return useQuery({
     queryKey: ['dashboard', 'late-employees', params],
     queryFn: async () => {
-      const response = await dashboardService.getLateEmployees(params)
-      return response.data
+      return  await dashboardService.getLateEmployees(params)
     },
   })
 }
@@ -73,8 +69,7 @@ export const useDepartmentStats = (params?: {
   return useQuery({
     queryKey: ['dashboard', 'department-stats', params],
     queryFn: async () => {
-      const response = await dashboardService.getDepartmentStats(params)
-      return response.data
+      return  await dashboardService.getDepartmentStats(params)
     },
   })
 }
@@ -84,8 +79,7 @@ export const useAttendanceTrends = (days?: number) => {
   return useQuery({
     queryKey: ['dashboard', 'attendance-trends', days],
     queryFn: async () => {
-      const response = await dashboardService.getAttendanceTrends(days)
-      return response.data
+      return  await dashboardService.getAttendanceTrends(days)
     },
   })
 }
@@ -95,8 +89,7 @@ export const useDeviceStatus = () => {
   return useQuery({
     queryKey: ['dashboard', 'device-status'],
     queryFn: async () => {
-      const response = await dashboardService.getDeviceStatus()
-      return response.data
+      return  await dashboardService.getDeviceStatus()
     },
     refetchInterval: 60000, // Refetch every minute
   })
@@ -109,8 +102,7 @@ export const useWeeklyDashboard = () => {
   return useQuery({
     queryKey: ['dashboard', 'weekly'],
     queryFn: async () => {
-      const response = await dashboardService.getWeeklyData()
-      return response.data
+      return  await dashboardService.getWeeklyData()
     },
   })
 }
@@ -120,8 +112,7 @@ export const useMonthlyDashboard = () => {
   return useQuery({
     queryKey: ['dashboard', 'monthly'],
     queryFn: async () => {
-      const response = await dashboardService.getMonthlyData()
-      return response.data
+      return  await dashboardService.getMonthlyData()
     },
   })
 }
@@ -131,8 +122,7 @@ export const useQuarterlyDashboard = () => {
   return useQuery({
     queryKey: ['dashboard', 'quarterly'],
     queryFn: async () => {
-      const response = await dashboardService.getQuarterlyData()
-      return response.data
+      return  await dashboardService.getQuarterlyData()
     },
   })
 }
@@ -146,8 +136,7 @@ export const useDashboardByDateRange = (
   return useQuery({
     queryKey: ['dashboard', 'date-range', startDate, endDate, department],
     queryFn: async () => {
-      const response = await dashboardService.getByDateRange(startDate, endDate, department)
-      return response.data
+      return  await dashboardService.getByDateRange(startDate, endDate, department)
     },
     enabled: !!startDate && !!endDate,
   })
@@ -162,8 +151,7 @@ export const useDashboardByDepartment = (
   return useQuery({
     queryKey: ['dashboard', 'department', department, startDate, endDate],
     queryFn: async () => {
-      const response = await dashboardService.getByDepartment(department, startDate, endDate)
-      return response.data
+      return  await dashboardService.getByDepartment(department, startDate, endDate)
     },
     enabled: !!department,
   })

@@ -12,6 +12,11 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
         builder.HasIndex(e => e.SerialNumber).IsUnique();
         builder.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
         builder.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
-        
+
+        builder.HasOne(d => d.DeviceInfo)
+            .WithOne(di => di.Device)
+            .HasForeignKey<Device>(d => d.DeviceInfoId);
+
+
     }
 }

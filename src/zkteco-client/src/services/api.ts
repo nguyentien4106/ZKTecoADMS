@@ -4,6 +4,7 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
+import { AppResponse } from '../types/index';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
@@ -84,24 +85,37 @@ class ApiService {
 
   // Generic methods
   async get<T>(url: string, params?: any): Promise<T> {
-    const response = await this.client.get<T>(url, { params });
-    console.log('GET', url, response.data);
-    return response.data;
+    const response = await this.client.get<AppResponse<T>>(url, { params });
+    if(response.data.isSuccess === false){
+      throw new Error(response.data.errors.join(', '));
+    }
+    return response.data.data;
   }
 
   async post<T>(url: string, data?: any): Promise<T> {
-    const response = await this.client.post<T>(url, data);
-    return response.data;
+    const response = await this.client.post<AppResponse<T>>(url, data);
+    const resData = response.data;
+    if(resData.isSuccess === false){
+      throw new Error(resData.errors.join(', '));
+    }
+
+    return resData.data;
   }
 
   async put<T>(url: string, data?: any): Promise<T> {
-    const response = await this.client.put<T>(url, data);
-    return response.data;
+    const response = await this.client.put<AppResponse<T>>(url, data);
+    if(response.data.isSuccess === false){
+      throw new Error(response.data.errors.join(', '));
+    }
+    return response.data.data;
   }
 
   async delete<T>(url: string): Promise<T> {
-    const response = await this.client.delete<T>(url);
-    return response.data;
+    const response = await this.client.delete<AppResponse<T>>(url);
+    if(response.data.isSuccess === false){
+      throw new Error(response.data.errors.join(', '));
+    }
+    return response.data.data;
   }
 }
 

@@ -12,8 +12,8 @@ using ZKTecoADMS.Infrastructure;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     [DbContext(typeof(ZKTecoDbContext))]
-    [Migration("20251023150820_Initial")]
-    partial class Initial
+    [Migration("20251024052353_updatedeviceinfo")]
+    partial class updatedeviceinfo
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -314,6 +314,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
 
+                    b.Property<Guid>("DeviceInfoId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("DeviceName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -466,6 +469,62 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("DeviceCommands");
+                });
+
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AttendanceCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DevSupportData")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("DeviceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DeviceIp")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EnrolledUserCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FaceTemplateCount")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FaceVersion")
+                        .HasColumnType("text");
+
+                    b.Property<int>("FingerprintCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FingerprintVersion")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirmwareVersion")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceId")
+                        .IsUnique();
+
+                    b.ToTable("DeviceInfos");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceSetting", b =>
@@ -896,6 +955,17 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("Device");
                 });
 
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceInfo", b =>
+                {
+                    b.HasOne("ZKTecoADMS.Domain.Entities.Device", "Device")
+                        .WithOne("DeviceInfo")
+                        .HasForeignKey("ZKTecoADMS.Domain.Entities.DeviceInfo", "DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Device");
+                });
+
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceSetting", b =>
                 {
                     b.HasOne("ZKTecoADMS.Domain.Entities.Device", "Device")
@@ -974,6 +1044,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("AttendanceLogs");
 
                     b.Navigation("DeviceCommands");
+
+                    b.Navigation("DeviceInfo")
+                        .IsRequired();
 
                     b.Navigation("DeviceSettings");
 
