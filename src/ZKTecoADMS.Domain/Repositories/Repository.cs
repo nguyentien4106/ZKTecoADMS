@@ -11,13 +11,13 @@ public abstract class Repository<TEntity> : IRepository<TEntity>
         CancellationToken cancellationToken = default
     );
 
-    public abstract Task<TEntity> GetByIdAsync(
+    public abstract Task<TEntity?> GetByIdAsync(
         Guid id,
         string[]? includeProperties = null,
         CancellationToken cancellationToken = default
     );
 
-    public abstract Task<TEntity> GetSingleAsync(
+    public abstract Task<TEntity?> GetSingleAsync(
         Expression<Func<TEntity, bool>> filter,
         string[]? includeProperties = null,
         CancellationToken cancellationToken = default

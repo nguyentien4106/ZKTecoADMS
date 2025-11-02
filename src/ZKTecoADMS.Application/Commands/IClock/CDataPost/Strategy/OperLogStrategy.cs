@@ -13,7 +13,6 @@ public class OperLogStrategy(IServiceProvider serviceProvider) : IPostStrategy
 {
     private readonly IUserRepository _userRepository = serviceProvider.GetRequiredService<IUserRepository>();
     private readonly ILogger<OperLogStrategy> _logger = serviceProvider.GetRequiredService<ILogger<OperLogStrategy>>();
-
     // Field identifiers based on protocol
     private const string USER_PREFIX = "USER";
     private const string PIN_KEY = "PIN";
@@ -26,9 +25,13 @@ public class OperLogStrategy(IServiceProvider serviceProvider) : IPostStrategy
     public async Task<string> ProcessDataAsync(Device device, string body)
     {
         var userLines = ExtractUserLines(body);
-
+        _logger.LogInformation("Processing {Count} user records from device {DeviceId}",
+            userLines.Count, device.Id);
+            
         var users = await ProcessUserLinesAsync(device, userLines);
-
+        _logger.LogInformation("Successfully processed {Count} user records from device {DeviceId}",
+            users.Count, device.Id);
+            
         if (users.Count == 0)
         {
             _logger.LogWarning("No valid user records to save from device {DeviceId}", device.Id);

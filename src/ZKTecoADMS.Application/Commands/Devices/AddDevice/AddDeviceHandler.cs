@@ -30,15 +30,8 @@ public class AddDeviceHandler(
             Command = ClockCommandBuilder.BuildGetAllUsersCommand()
         };
 
-        var initialAttendances = new DeviceCommand
-        {
-            DeviceId = response.Id,
-            CommandType = DeviceCommandTypes.InitialAttendances,
-            Priority = 10,
-            Command = ClockCommandBuilder.BuildGetAttendanceCommand()
-        };
 
-        await deviceCommandRepository.AddRangeAsync([initialUsers, initialAttendances]);
+        await deviceCommandRepository.AddAsync(initialUsers, cancellationToken);
 
         return AppResponse<DeviceDto>.Success(response.Adapt<DeviceDto>());
     }

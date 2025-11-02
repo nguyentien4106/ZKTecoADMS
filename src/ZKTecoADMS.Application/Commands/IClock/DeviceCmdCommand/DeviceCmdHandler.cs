@@ -17,7 +17,7 @@ public class DeviceCmdHandler(
         
         await deviceCmdService.UpdateCommandAfterExecutedAsync(response);
         var (commandType, objectRefId) = await deviceCmdService.GetCommandTypesAndIdAsync(response.CommandId);
-        
+
         if (commandType == DeviceCommandTypes.AddUser)
         {
             var user = await userRepository.GetByIdAsync(objectRefId, cancellationToken: cancellationToken);
@@ -32,12 +32,17 @@ public class DeviceCmdHandler(
                 await userRepository.DeleteAsync(user, cancellationToken);
             }
         }
-        
+
         else if (commandType == DeviceCommandTypes.UpdateUser)
         {
             var user = await userRepository.GetByIdAsync(objectRefId, cancellationToken: cancellationToken);
             user.IsActive = response.IsSuccess;
             await userRepository.UpdateAsync(user, cancellationToken);
+        }
+        
+        else if(commandType == DeviceCommandTypes.InitialUsers)
+        {
+            
         }
         
         return ClockResponses.Ok;

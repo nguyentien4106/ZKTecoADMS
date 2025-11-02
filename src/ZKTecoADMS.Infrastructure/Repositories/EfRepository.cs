@@ -58,7 +58,7 @@ public class EfRepository<TEntity>(
         }
     }
 
-    public override async Task<TEntity> GetByIdAsync(Guid id, string[]? includeProperties = null, CancellationToken cancellationToken = default)
+    public override async Task<TEntity?> GetByIdAsync(Guid id, string[]? includeProperties = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -73,7 +73,8 @@ public class EfRepository<TEntity>(
 
             if (result == null)
             {
-                throw new NotFoundException(typeof(TEntity).Name, id);
+                logger.LogWarning("Entity of type {EntityType} with ID {Id} not found", 
+                    typeof(TEntity).Name, id);
             }
             
             return result;
@@ -87,7 +88,7 @@ public class EfRepository<TEntity>(
     }
 
 
-    public override async Task<TEntity> GetSingleAsync(Expression<Func<TEntity, bool>> filter, string[]? includeProperties = null, CancellationToken cancellationToken = default)
+    public override async Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> filter, string[]? includeProperties = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -104,7 +105,6 @@ public class EfRepository<TEntity>(
             {
                 logger.LogWarning("Entity of type {EntityType} with filter {Filter} not found", 
                     typeof(TEntity).Name, filter);
-                throw new NotFoundException(typeof(TEntity).Name, filter);
             }
 
             return result;

@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class adddeviceinfo : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -53,31 +53,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DeviceInfos",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    DeviceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    FirmwareVersion = table.Column<string>(type: "text", nullable: true),
-                    EnrolledUserCount = table.Column<int>(type: "integer", nullable: false),
-                    FingerprintCount = table.Column<int>(type: "integer", nullable: false),
-                    AttendanceCount = table.Column<int>(type: "integer", nullable: false),
-                    DeviceIp = table.Column<string>(type: "text", nullable: true),
-                    FingerprintVersion = table.Column<string>(type: "text", nullable: true),
-                    FaceVersion = table.Column<string>(type: "text", nullable: true),
-                    FaceTemplateCount = table.Column<string>(type: "text", nullable: true),
-                    DevSupportData = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DeviceInfos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -205,29 +180,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRefreshTokens",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RefreshToken = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserRefreshTokens", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserRefreshTokens_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Devices",
                 columns: table => new
                 {
@@ -268,10 +220,27 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ApplicationUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RefreshToken = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRefreshTokens", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Devices_DeviceInfos_DeviceInfoId",
-                        column: x => x.DeviceInfoId,
-                        principalTable: "DeviceInfos",
+                        name: "FK_UserRefreshTokens_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -303,6 +272,37 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     table.PrimaryKey("PK_DeviceCommands", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DeviceCommands_Devices_DeviceId",
+                        column: x => x.DeviceId,
+                        principalTable: "Devices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DeviceInfos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DeviceId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FirmwareVersion = table.Column<string>(type: "text", nullable: true),
+                    EnrolledUserCount = table.Column<int>(type: "integer", nullable: false),
+                    FingerprintCount = table.Column<int>(type: "integer", nullable: false),
+                    AttendanceCount = table.Column<int>(type: "integer", nullable: false),
+                    DeviceIp = table.Column<string>(type: "text", nullable: true),
+                    FingerprintVersion = table.Column<string>(type: "text", nullable: true),
+                    FaceVersion = table.Column<string>(type: "text", nullable: true),
+                    FaceTemplateCount = table.Column<string>(type: "text", nullable: true),
+                    DevSupportData = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeviceInfos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DeviceInfos_Devices_DeviceId",
                         column: x => x.DeviceId,
                         principalTable: "Devices",
                         principalColumn: "Id",
@@ -557,15 +557,15 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                 column: "Status");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DeviceInfos_DeviceId",
+                table: "DeviceInfos",
+                column: "DeviceId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Devices_ApplicationUserId",
                 table: "Devices",
                 column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Devices_DeviceInfoId",
-                table: "Devices",
-                column: "DeviceInfoId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Devices_SerialNumber",
@@ -650,6 +650,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                 name: "DeviceCommands");
 
             migrationBuilder.DropTable(
+                name: "DeviceInfos");
+
+            migrationBuilder.DropTable(
                 name: "DeviceSettings");
 
             migrationBuilder.DropTable(
@@ -678,9 +681,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "DeviceInfos");
         }
     }
 }
