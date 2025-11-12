@@ -9,22 +9,18 @@ import { Badge } from '@/components/ui/badge'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useDeviceInfo } from '@/hooks/useDevices'
 import { Info, Server, Users, Fingerprint, Calendar, Wifi, Cpu, Eye } from 'lucide-react'
+import { useDeviceContext } from '@/contexts/DeviceContext'
 
-interface DeviceInfoDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  deviceId: string | null
-  deviceName?: string
-}
+export const DeviceInfoDialog = () => {
 
-export const DeviceInfoDialog = ({
-  open,
-  onOpenChange,
-  deviceId,
-  deviceName,
-}: DeviceInfoDialogProps) => {
-  const { data: deviceInfo, isLoading, isError } = useDeviceInfo(deviceId)
-
+  const {
+    infoDialogOpen,
+    setInfoDialogOpen,
+    selectedDeviceId,
+    selectedDeviceName
+  } = useDeviceContext()
+  const { data: deviceInfo, isLoading, isError } = useDeviceInfo(selectedDeviceId)
+  
   const parseDevSupportData = (data?: string) => {
     if (!data || data.length < 3) return { fingerprint: false, face: false, userPicture: false }
     
@@ -38,7 +34,7 @@ export const DeviceInfoDialog = ({
   const supportData = parseDevSupportData(deviceInfo?.devSupportData)
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={infoDialogOpen} onOpenChange={setInfoDialogOpen}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -46,7 +42,7 @@ export const DeviceInfoDialog = ({
             Device Information
           </DialogTitle>
           <DialogDescription>
-            {deviceName ? `Details for ${deviceName}` : 'Detailed information about the device'}
+            {selectedDeviceName ? `Details for ${selectedDeviceName}` : 'Detailed information about the device'}
           </DialogDescription>
         </DialogHeader>
 

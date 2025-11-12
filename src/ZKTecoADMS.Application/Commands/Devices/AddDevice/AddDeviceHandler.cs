@@ -30,7 +30,6 @@ public class AddDeviceHandler(
             Command = ClockCommandBuilder.BuildGetAllUsersCommand()
         };
 
-
         await deviceCommandRepository.AddAsync(initialUsers, cancellationToken);
 
         return AppResponse<DeviceDto>.Success(response.Adapt<DeviceDto>());

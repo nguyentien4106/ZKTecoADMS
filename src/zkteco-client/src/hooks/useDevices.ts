@@ -4,8 +4,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { deviceService } from '@/services/deviceService';
 import { toast } from 'sonner';
-import type { CreateDeviceRequest, SendCommandRequest } from '@/types';
+import type { CreateDeviceRequest, Device, SendCommandRequest } from '@/types';
 import { DeviceCommandRequest } from '@/types/device';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const useDevices = () => {
   return useQuery({
@@ -14,41 +15,45 @@ export const useDevices = () => {
   });
 };
 
-export const useDevicesByUser = (userId: string | null) => {
+export const useDevicesByUser = () => {
+  const { applicationUserId } = useAuth()
+
   return useQuery({
-    queryKey: ['devices', 'user', userId],
+    queryKey: ['devices', 'user', applicationUserId],
     queryFn: () => {
-      if (!userId) throw new Error('User ID is required');
-      return deviceService.getByUserId(userId);
+      if (!applicationUserId) throw new Error('User ID is required');
+      return deviceService.getByUserId(applicationUserId);
     },
-    enabled: Boolean(userId),
+    enabled: Boolean(applicationUserId),
     gcTime: 0, // Immediately garbage collect
     retry: false, // Don't retry on error
     staleTime: 5000, // Consider data stale after 5 seconds
   });
 }
 
-export const useDevicesOnline = () => {
-  return useQuery({
-    queryKey: ['devices', 'online'],
-    queryFn: async () => {
-      const allDevices = await deviceService.getAll();
-      return allDevices.items.filter(device => device.deviceStatus === 'Online');
-    },
-  });
-}
-
 export const useActiveDevice = () => {
+  const { applicationUserId } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (deviceId: string) => deviceService.activeDevice(deviceId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['devices'] });
-      toast.success('Device created successfully');
+    onSuccess: (updatedDevice: Device) => {
+      console.log('Updated Device:', updatedDevice);
+      // Update the specific device in cache
+      queryClient.setQueryData(
+        ['devices', 'user', applicationUserId],
+        (oldData: Device[] | undefined) => {
+          if (!oldData) return [updatedDevice];
+          return oldData.map(device => 
+            device.id === updatedDevice.id ? updatedDevice : device
+          );
+        }
+      );
+      
+      toast.success('Device status updated successfully');
     },
     onError: (error: any) => {
-      toast.error('Failed to activate device', { description: error.message });
+      toast.error('Failed to update device status', { description: error.message });
     }
   });
 }
@@ -62,12 +67,21 @@ export const useDevice = (id: string) => {
 };
 
 export const useCreateDevice = () => {
+  const { applicationUserId } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: CreateDeviceRequest) => deviceService.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['devices'] });
+    onSuccess: (newDevice: Device) => {
+      // Update the user's devices cache directly
+      queryClient.setQueryData(
+        ['devices', 'user', applicationUserId],
+        (oldData: Device[] | undefined) => {
+          if (!oldData) return [newDevice];
+          return [...oldData, newDevice];
+        }
+      );
+      
       toast.success('Device created successfully');
     },
     onError: (error: any) => {
@@ -77,14 +91,26 @@ export const useCreateDevice = () => {
 };
 
 export const useDeleteDevice = () => {
+  const { applicationUserId } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: string) => deviceService.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['devices'] });
+    onSuccess: (_data, deletedId) => {
+      // Remove the deleted device from cache directly
+      queryClient.setQueryData(
+        ['devices', 'user', applicationUserId],
+        (oldData: Device[] | undefined) => {
+          if (!oldData) return [];
+          return oldData.filter(device => device.id !== deletedId);
+        }
+      );
+      
       toast.success('Device deleted successfully');
     },
+    onError: (error: any) => {
+      toast.error('Failed to delete device', { description: error.message });
+    }
   });
 };
 

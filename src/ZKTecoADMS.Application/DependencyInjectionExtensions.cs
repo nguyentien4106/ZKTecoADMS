@@ -1,4 +1,6 @@
 ﻿using ZKTecoADMS.Application.Behaviours;
+using ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand.Strategies;
+using ZKTecoADMS.Application.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using FluentValidation;
@@ -21,8 +23,24 @@ public static class DependencyInjectionExtensions
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
 
-        // Register Body Record Data Strategies
+        // Automatically register all IDeviceCommandStrategy implementations
+        RegisterDeviceCommandStrategies(services);
         
+        // Register the factory
+        services.AddScoped<IDeviceCommandStrategyFactory, DeviceCommandStrategyFactory>();
     }
+    
+    private static void RegisterDeviceCommandStrategies(IServiceCollection services)
+    {
+        var strategyType = typeof(IDeviceCommandStrategy);
+        var strategies = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && strategyType.IsAssignableFrom(t));
 
+        foreach (var strategy in strategies)
+        {
+            services.AddScoped(strategy);
+        }
+    }
 }
+

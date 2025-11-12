@@ -17,5 +17,13 @@
       <jdbc-url>Server=localhost,1433;Database=ZKTecoIntegration;User Id=sa;Password=YourStrong!Password123;TrustServerCertificate=True;MultipleActiveResultSets=true;ConnectRetryCount=3;ConnectRetryInterval=10;</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="ZKTecoIntegration@localhost [3]" uuid="c61e10b2-4276-4161-9b16-5500b302accc">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost/ZKTecoIntegration?password=Ti100600%40&amp;user=postgres</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

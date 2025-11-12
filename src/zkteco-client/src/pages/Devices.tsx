@@ -1,7 +1,6 @@
 // ==========================================
 // src/pages/Devices.tsx
 // ==========================================
-import { useState } from 'react'
 import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -10,35 +9,20 @@ import { useDevicesByUser } from '@/hooks/useDevices'
 import { Monitor, Plus } from 'lucide-react'
 import { CreateDeviceDialog } from '@/components/dialogs/CreateDeviceDialog'
 import { DevicesContent, DeviceInfoDialog } from '@/components/devices'
-import { useAuth } from '@/contexts/AuthContext'
 import { DeviceProvider, useDeviceContext } from '@/contexts/DeviceContext'
 
 const DevicesContent_Internal = () => {
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
-  const [infoDialogOpen, setInfoDialogOpen] = useState(false)
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null)
-  const [selectedDeviceName, setSelectedDeviceName] = useState<string | undefined>(undefined)
+  const { data: devices, isFetching, isError } = useDevicesByUser()
   
-  const { applicationUserId } = useAuth()
-  const { data: devices, isFetching, isError } = useDevicesByUser(applicationUserId)
-  
-  // Get device actions from context
+  // Get all state and actions from context
   const {
-    handleDelete,
-    handleToggleActive,
-    handleSyncUsers,
-    handleSyncAttendance,
-    handleClearAttendance,
-    handleRestartDevice,
-    handleLockDevice,
-    handleUnlockDevice,
+    openCreateDialog,
+    openInfoDialog,
   } = useDeviceContext()
 
   const handleShowInfo = (id: string) => {
     const device = devices?.find((d) => d.id === id)
-    setSelectedDeviceId(id)
-    setSelectedDeviceName(device?.deviceName)
-    setInfoDialogOpen(true)
+    openInfoDialog(id, device?.deviceName)
   }
 
   if (isError) {
@@ -61,7 +45,7 @@ const DevicesContent_Internal = () => {
         title="Devices"
         description="Mange your Biometric devices."
         action={
-          <Button onClick={() => setCreateDialogOpen(true)}>
+          <Button onClick={openCreateDialog}>
             <Plus className="w-4 h-4 mr-2" />
             Add Device
           </Button>
@@ -70,23 +54,11 @@ const DevicesContent_Internal = () => {
 
       <DevicesContent
         devices={devices}
-        onCreateDevice={() => setCreateDialogOpen(true)}
-        onDelete={handleDelete}
-        onToggleActive={handleToggleActive}
         onShowInfo={handleShowInfo}
       />
 
-      <CreateDeviceDialog
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
-      />
-
-      <DeviceInfoDialog
-        open={infoDialogOpen}
-        onOpenChange={setInfoDialogOpen}
-        deviceId={selectedDeviceId}
-        deviceName={selectedDeviceName}
-      />
+      <CreateDeviceDialog />
+      <DeviceInfoDialog />
     </div>
   )
 }

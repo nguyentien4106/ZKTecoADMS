@@ -5,42 +5,27 @@ import { Monitor, Trash2, InfoIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { Device } from '@/types'
 import { DeviceSettingsDropdown } from './DeviceSettingsDropdown'
-
-interface DeviceTableRowProps {
-  device: Device
-  onDelete: (id: string) => void
-  onToggleActive: (id: string) => void
-  onShowInfo?: (id: string) => void
-}
+import { useDeviceContext } from '@/contexts/DeviceContext'
 
 export const DeviceTableRow = ({
   device,
-  onDelete,
-  onToggleActive,
-  onShowInfo,
-}: DeviceTableRowProps) => {
+  onShowInfo
+}: {
+  device: Device
+  onShowInfo?: (id: string) => void
+}) => {
+  const {
+    handleDelete,
+    handleToggleActive,
+  } = useDeviceContext()
   return (
     <TableRow key={device.id}>
       <TableCell className="font-medium">{device.deviceName}</TableCell>
       <TableCell className="text-muted-foreground">
         {device.serialNumber}
       </TableCell>
-      <TableCell>{device.model || '-'}</TableCell>
-      <TableCell>{device.ipAddress || '-'}</TableCell>
       <TableCell>{device.location || '-'}</TableCell>
-      <TableCell>
-        <Badge
-          variant={
-            device.deviceStatus === 'Online'
-              ? 'default'
-              : device.deviceStatus === 'Offline'
-              ? 'secondary'
-              : 'destructive'
-          }
-        >
-          {device.deviceStatus}
-        </Badge>
-      </TableCell>
+      <TableCell>{device.description || '-'}</TableCell>
       <TableCell>
         <Badge variant={device.isActive ? 'default' : 'secondary'}>
           {device.isActive ? 'Active' : 'Inactive'}
@@ -66,7 +51,7 @@ export const DeviceTableRow = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => onToggleActive(device.id)}
+            onClick={() => handleToggleActive(device.id)}
           >
             <Monitor
               className={`w-4 h-4 ${
@@ -77,7 +62,7 @@ export const DeviceTableRow = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => onDelete(device.id)}
+            onClick={() => handleDelete(device.id)}
           >
             <Trash2 className="w-4 h-4 text-destructive" />
           </Button>

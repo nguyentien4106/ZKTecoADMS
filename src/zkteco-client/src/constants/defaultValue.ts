@@ -17,10 +17,8 @@ export const defaultNewUser: CreateUserRequest = {
 export const defaultNewDevice: CreateDeviceRequest = {
     serialNumber: '',
     deviceName: '',
-    model: '',
-    ipAddress: '',
-    port: 4370,
     location: '',
+    description: '',
     applicationUserId: ''
 }
 

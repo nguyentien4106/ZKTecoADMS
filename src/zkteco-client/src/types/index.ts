@@ -5,13 +5,10 @@ export interface Device {
   id: string;
   serialNumber: string;
   deviceName: string;
-  model?: string;
-  ipAddress?: string;
-  deviceStatus: string;
   lastOnline?: string;
   isActive: boolean;
   location?: string;
-  port?: number;
+  description?: string;
 }
 
 export interface User {
@@ -74,10 +71,8 @@ export interface DeviceInfo {
 export interface CreateDeviceRequest {
   serialNumber: string;
   deviceName: string;
-  model?: string;
-  ipAddress?: string;
-  port?: number;
   location?: string;
+  description?: string;
   applicationUserId: string
 }
 

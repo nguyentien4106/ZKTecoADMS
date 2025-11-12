@@ -14,19 +14,18 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Hash, Monitor, MapPin } from 'lucide-react'
 import type { CreateDeviceRequest } from '@/types'
 import { defaultNewDevice } from '@/constants/defaultValue'
 import { useAuth } from '@/contexts/AuthContext'
+import { useDeviceContext } from '@/contexts/DeviceContext'
 
-interface CreateDeviceDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
+export const CreateDeviceDialog = () => {
+  const {
+    createDialogOpen,
+    setCreateDialogOpen
+  } = useDeviceContext()
 
-export const CreateDeviceDialog = ({
-  open,
-  onOpenChange,
-}: CreateDeviceDialogProps) => {
   const createDevice = useCreateDevice()
   const { user } = useAuth()
   const [formData, setFormData] = useState<CreateDeviceRequest>(defaultNewDevice)
@@ -34,108 +33,114 @@ export const CreateDeviceDialog = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await createDevice.mutateAsync({ ...formData, applicationUserId: user?.id || '' })
-    onOpenChange(false)
+    setCreateDialogOpen(false)
     setFormData(defaultNewDevice)
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+    <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Add New Device</DialogTitle>
+          <DialogTitle className="text-xl">Add New Device</DialogTitle>
           <DialogDescription>
-            Register a new ZKTeco device to the system
+            Register a new ZKTeco device to the system. Fields marked with * are required.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5 mt-2">
+          {/* Serial Number */}
           <div className="space-y-2">
-            <Label htmlFor="serialNumber">Serial Number *</Label>
+            <Label htmlFor="serialNumber" className="text-sm font-medium flex items-center gap-2">
+              <Hash className="w-4 h-4 text-muted-foreground" />
+              Serial Number <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="serialNumber"
               value={formData.serialNumber}
               onChange={(e) =>
                 setFormData({ ...formData, serialNumber: e.target.value })
               }
-              placeholder="XXXXXXXXXX"
+              placeholder="e.g., XXXXXXXXXX"
               required
+              className="transition-all"
             />
           </div>
 
+          {/* Device Name */}
           <div className="space-y-2">
-            <Label htmlFor="deviceName">Device Name *</Label>
+            <Label htmlFor="deviceName" className="text-sm font-medium flex items-center gap-2">
+              <Monitor className="w-4 h-4 text-muted-foreground" />
+              Device Name <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="deviceName"
               value={formData.deviceName}
               onChange={(e) =>
                 setFormData({ ...formData, deviceName: e.target.value })
               }
-              placeholder="Main Entrance Device"
+              placeholder="e.g., Main Entrance Device"
               required
+              className="transition-all"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="model">Model</Label>
-              <Input
-                id="model"
-                value={formData.model}
-                onChange={(e) =>
-                  setFormData({ ...formData, model: e.target.value })
-                }
-                placeholder="MB560-VL"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="port">Port</Label>
-              <Input
-                id="port"
-                type="number"
-                value={formData.port}
-                onChange={(e) =>
-                  setFormData({ ...formData, port: parseInt(e.target.value) })
-                }
-                placeholder="4370"
-              />
-            </div>
-          </div>
-
+          {/* Location */}
           <div className="space-y-2">
-            <Label htmlFor="ipAddress">IP Address</Label>
-            <Input
-              id="ipAddress"
-              value={formData.ipAddress}
-              onChange={(e) =>
-                setFormData({ ...formData, ipAddress: e.target.value })
-              }
-              placeholder="192.168.1.100"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
+            <Label htmlFor="location" className="text-sm font-medium flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-muted-foreground" />
+              Location
+            </Label>
             <Input
               id="location"
               value={formData.location}
               onChange={(e) =>
                 setFormData({ ...formData, location: e.target.value })
               }
-              placeholder="Building A - Main Door"
+              placeholder="e.g., Building A - Main Door"
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          {/* Description */}
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-sm font-medium">
+              Description
+            </Label>
+            <Input
+              id="description"
+              value={formData.description || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              placeholder="e.g., Primary access control device for main entrance"
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3 pt-4 border-t">
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                setCreateDialogOpen(false)
+                setFormData(defaultNewDevice)
+              }}
+              disabled={createDevice.isPending}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={createDevice.isPending}>
-              {createDevice.isPending ? 'Creating...' : 'Create Device'}
+            <Button 
+              type="submit" 
+              disabled={createDevice.isPending}
+              className="min-w-[120px]"
+            >
+              {createDevice.isPending ? (
+                <>
+                  <span className="mr-2">Creating...</span>
+                  <span className="animate-spin">⏳</span>
+                </>
+              ) : (
+                'Create Device'
+              )}
             </Button>
           </div>
         </form>

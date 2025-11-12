@@ -10,16 +10,11 @@ import { Device } from '@/types'
 
 interface DevicesTableProps {
   devices: Device[]
-  onDelete: (id: string) => void
-  onToggleActive: (id: string) => void
   onShowInfo?: (id: string) => void
-
 }
 
 export const DevicesTable = ({
   devices,
-  onDelete,
-  onToggleActive,
   onShowInfo,
 }: DevicesTableProps) => {
   return (
@@ -28,10 +23,8 @@ export const DevicesTable = ({
         <TableRow>
           <TableHead>Device Name</TableHead>
           <TableHead>Serial Number</TableHead>
-          <TableHead>Model</TableHead>
-          <TableHead>IP Address</TableHead>
           <TableHead>Location</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead>Description</TableHead>
           <TableHead>Is Active</TableHead>
           <TableHead>Last Online</TableHead>
           <TableHead className="text-right">Actions</TableHead>
@@ -42,10 +35,7 @@ export const DevicesTable = ({
           <DeviceTableRow
             key={device.id}
             device={device}
-            onDelete={onDelete}
-            onToggleActive={onToggleActive}
             onShowInfo={onShowInfo}
-
           />
         ))}
       </TableBody>

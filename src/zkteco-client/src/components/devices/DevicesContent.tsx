@@ -4,22 +4,21 @@ import { EmptyState } from '@/components/EmptyState'
 import { DevicesTable } from './DevicesTable'
 import { Monitor, Plus } from 'lucide-react'
 import { Device } from '@/types'
+import { useDeviceContext } from '@/contexts/DeviceContext'
 
 interface DevicesContentProps {
   devices: Device[] | undefined
-  onCreateDevice: () => void
-  onDelete: (id: string) => void
-  onToggleActive: (id: string) => void
   onShowInfo?: (id: string) => void
 }
 
 export const DevicesContent = ({
   devices,
-  onCreateDevice,
-  onDelete,
-  onToggleActive,
   onShowInfo,
 }: DevicesContentProps) => {
+  const {
+    openCreateDialog,
+  } = useDeviceContext()
+  
   return (
     <Card>
       <CardContent className="p-0">
@@ -29,7 +28,7 @@ export const DevicesContent = ({
             title="No devices found"
             description="Get started by adding your own device."
             action={
-              <Button onClick={onCreateDevice}>
+              <Button onClick={openCreateDialog}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add Device
               </Button>
@@ -38,8 +37,6 @@ export const DevicesContent = ({
         ) : (
           <DevicesTable
             devices={devices}
-            onDelete={onDelete}
-            onToggleActive={onToggleActive}
             onShowInfo={onShowInfo}
           />
         )}

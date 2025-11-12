@@ -6,58 +6,162 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Settings, Users, Calendar, RefreshCw, Trash2, Lock, Unlock } from 'lucide-react'
+import { Settings, RefreshCw, Trash2, RefreshCcwDotIcon } from 'lucide-react'
 import { useDeviceContext } from '@/contexts/DeviceContext'
+import { useState } from 'react'
+import { DeviceCommandTypes } from '@/types/device'
 
 interface DeviceSettingsDropdownProps {
   deviceId: string
 }
 
+  const getConfirmationContent = (confirmAction: DeviceCommandTypes) => {
+    switch (confirmAction) {
+      case DeviceCommandTypes.CLEAR_ATTENDANCEs:
+        return {
+          title: 'Clear All Attendances?',
+          description: 'This will permanently delete all attendance records from this device. This action cannot be undone.',
+        }
+      case DeviceCommandTypes.CLEAR_USERS:
+        return {
+          title: 'Clear All Users?',
+          description: 'This will remove all user data from this device. This action cannot be undone.',
+        }
+      case DeviceCommandTypes.CLEAR_DATA:
+        return {
+          title: 'Clear All Data?',
+          description: 'This will permanently delete all data (users, attendances, etc.) from this device. This action cannot be undone.',
+        }
+      case DeviceCommandTypes.RESTART_DEVICE:
+        return {
+          title: 'Reboot Device',
+          description: 'This will restart the device. Any unsaved data may be lost.',
+        }
+      case DeviceCommandTypes.SYNC_ATTENDANCES:
+        return {
+          title: 'Sync Attendances',
+          description: 'This will synchronize attendance records from the device to the server.',
+        }
+      default:
+        return { title: '', description: '' }
+    }
+  }
+
 export const DeviceSettingsDropdown = ({
   deviceId,
 }: DeviceSettingsDropdownProps) => {
+    const [confirmAction, setConfirmAction] = useState<DeviceCommandTypes | null>(null)
+    
     const {
-        handleSyncAttendance,
         handleClearAttendance,
         handleRestartDevice,
-
+        handleSyncAttendances,
+        handleClearUsers,
+        handleClearData
     } = useDeviceContext()
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Settings className="w-4 h-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>Device Actions</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuItem onClick={() => handleClearAttendance(deviceId)}>
-          <Trash2 className="w-4 h-4 mr-2 text-red-500" />
-          Clear Attendances
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={() => handleSyncAttendance(deviceId)}>
-          <Trash2 className="w-4 h-4 mr-2 text-red-500" />
+  const handleConfirm = async () => {
+    switch (confirmAction) {
+      case DeviceCommandTypes.SYNC_ATTENDANCES:
+        await handleSyncAttendances(deviceId)
+        break
+      case DeviceCommandTypes.CLEAR_ATTENDANCEs:
+        await handleClearAttendance(deviceId)
+        break
+      case DeviceCommandTypes.CLEAR_USERS:
+        await handleClearUsers(deviceId)
+        break
+      case DeviceCommandTypes.CLEAR_DATA:
+        await handleClearData(deviceId)
+        break
+      case DeviceCommandTypes.RESTART_DEVICE:
+        await handleRestartDevice(deviceId)
+        break
+      default:
+        break
+    }
+    setConfirmAction(null)
+  }
+  const { title, description } = getConfirmationContent(confirmAction!);
+  
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <Settings className="w-4 h-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>Device Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.SYNC_ATTENDANCES)}>
+            <RefreshCcwDotIcon className="w-4 h-4 mr-2 text-green-500" />
+            Sync Attendances
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.CLEAR_ATTENDANCEs)}>
+            <Trash2 className="w-4 h-4 mr-2 text-red-500" />
+            Clear Attendances
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.CLEAR_USERS)}>
+            <Trash2 className="w-4 h-4 mr-2 text-red-500" />
             Clear Users
-        </DropdownMenuItem>
-        
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => handleSyncAttendance(deviceId)}>
-          <Trash2 className="w-4 h-4 mr-2 text-red-500" />
+          </DropdownMenuItem>
+          
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.CLEAR_DATA)}>
+            <Trash2 className="w-4 h-4 mr-2 text-red-500" />
             Clear All Data
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        
-        <DropdownMenuItem onClick={() => handleRestartDevice(deviceId)}>
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Reboot Device
-        </DropdownMenuItem>
-        
-      </DropdownMenuContent>
-    </DropdownMenu>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.RESTART_DEVICE)}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Reboot Device
+          </DropdownMenuItem>
+          
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={confirmAction !== null} onOpenChange={() => setConfirmAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-red-500" />
+              {title}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirm}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Yes
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

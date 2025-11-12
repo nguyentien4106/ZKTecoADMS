@@ -1,7 +1,14 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { DatePicker } from '@/components/date-picker'
-import { MultiSelect } from '@/components/multi-select'
+import { 
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectGroup,
+  MultiSelectItem,
+  MultiSelectTrigger,
+  MultiSelectValue,
+} from '@/components/ui/multi-select'
 import { Filter } from 'lucide-react'
 import { AttendancesFilterParams } from '@/types/attendance'
 import { Label } from '../ui/label'
@@ -44,11 +51,22 @@ export const AttendanceFilterBar = ({
               <div className="flex flex-col gap-3">
                 <Label className="text-sm font-medium px-1">Devices</Label>
                 <MultiSelect
-                  options={deviceOptions}
-                  defaultValue={filter.deviceIds}
-                  onValueChange={values => onSelectChange(values)}
-                  placeholder="Select devices..."
-                />
+                  values={filter.deviceIds}
+                  onValuesChange={values => onSelectChange(values)}
+                >
+                  <MultiSelectTrigger className="w-full max-w-[400px]">
+                    <MultiSelectValue placeholder="Select devices..." />
+                  </MultiSelectTrigger>
+                  <MultiSelectContent>
+                    <MultiSelectGroup>
+                      {deviceOptions.map((option) => (
+                        <MultiSelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MultiSelectItem>
+                      ))}
+                    </MultiSelectGroup>
+                  </MultiSelectContent>
+                </MultiSelect>
               </div>
             </div>
 

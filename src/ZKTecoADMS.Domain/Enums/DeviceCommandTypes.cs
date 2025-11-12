@@ -6,5 +6,10 @@ public enum DeviceCommandTypes
     DeleteUser,
     UpdateUser,
     InitialAttendances,
-    InitialUsers
+    InitialUsers,
+    ClearAttendances,
+    ClearUsers,
+    ClearData,
+    RestartDevice,
+    SyncAttendances
 }

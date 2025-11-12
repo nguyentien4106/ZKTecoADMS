@@ -68,7 +68,7 @@ public class DevicesController(
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id}/toggle-active")]
-    public async Task<ActionResult<AppResponse<bool>>> ActiveDevice(Guid id)
+    public async Task<ActionResult<AppResponse<DeviceDto>>> ActiveDevice(Guid id)
     {
         var cmd = new ToggleActiveCommand(id);
         return Ok(await bus.Send(cmd));
@@ -77,7 +77,7 @@ public class DevicesController(
     [HttpPost("{deviceId}/commands")]
     public async Task<ActionResult<DeviceCmdDto>> CreateDeviceCommand(Guid deviceId, [FromBody] DeviceCmdRequest request)
     {
-        var cmd = new CreateDeviceCmdCommand(deviceId, request.Command, request.Priority);
+        var cmd = new CreateDeviceCmdCommand(deviceId, request.CommandType, request.Priority);
         
         return Ok(await bus.Send(cmd));
     }
@@ -89,11 +89,12 @@ public class DevicesController(
 
         return Ok(await bus.Send(query));
     }
-
+    
     [HttpGet("{deviceId}/device-info")]
     public async Task<ActionResult<AppResponse<DeviceInfoDto>>> GetDeviceInfo(Guid deviceId)
     {
         var query = new GetDeviceInfoQuery(deviceId);
         return Ok(await bus.Send(query));
     }
+    
 }
