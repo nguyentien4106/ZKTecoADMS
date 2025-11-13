@@ -122,6 +122,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAttendanceService, AttendanceService>();
         services.AddScoped<IDeviceCmdService, DeviceCmdService>();
+        services.AddScoped<IUserOperationService, UserOperationService>();
         
         // Repository registration
         services.AddScoped(typeof(IRepositoryPagedQuery<>), typeof(PagedQueryRepository<>));

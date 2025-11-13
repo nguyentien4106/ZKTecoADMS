@@ -18,9 +18,9 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Settings, RefreshCw, Trash2, RefreshCcwDotIcon } from 'lucide-react'
-import { useDeviceContext } from '@/contexts/DeviceContext'
 import { useState } from 'react'
 import { DeviceCommandTypes } from '@/types/device'
+import { useDeviceCommands } from '@/hooks/useDeviceCommands'
 
 interface DeviceSettingsDropdownProps {
   deviceId: string
@@ -53,6 +53,11 @@ interface DeviceSettingsDropdownProps {
           title: 'Sync Attendances',
           description: 'This will synchronize attendance records from the device to the server.',
         }
+      case DeviceCommandTypes.SYNC_USERS:
+        return {
+          title: 'Sync Users',
+          description: 'This will synchronize user data from the device to the server.',
+        }
       default:
         return { title: '', description: '' }
     }
@@ -64,20 +69,24 @@ export const DeviceSettingsDropdown = ({
     const [confirmAction, setConfirmAction] = useState<DeviceCommandTypes | null>(null)
     
     const {
-        handleClearAttendance,
-        handleRestartDevice,
-        handleSyncAttendances,
-        handleClearUsers,
-        handleClearData
-    } = useDeviceContext()
+      handleSyncAttendances,
+      handleSyncUsers,
+      handleClearAttendances,
+      handleRestartDevice,
+      handleClearUsers,
+      handleClearData
+    } = useDeviceCommands()
 
   const handleConfirm = async () => {
     switch (confirmAction) {
       case DeviceCommandTypes.SYNC_ATTENDANCES:
         await handleSyncAttendances(deviceId)
         break
+      case DeviceCommandTypes.SYNC_USERS:
+        await handleSyncUsers(deviceId)
+        break
       case DeviceCommandTypes.CLEAR_ATTENDANCEs:
-        await handleClearAttendance(deviceId)
+        await handleClearAttendances(deviceId)
         break
       case DeviceCommandTypes.CLEAR_USERS:
         await handleClearUsers(deviceId)
@@ -113,6 +122,12 @@ export const DeviceSettingsDropdown = ({
 
           <DropdownMenuSeparator />
 
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.SYNC_USERS)}>
+            <RefreshCcwDotIcon className="w-4 h-4 mr-2 text-green-500" />
+            Sync Users
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
           
           <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.CLEAR_ATTENDANCEs)}>
             <Trash2 className="w-4 h-4 mr-2 text-red-500" />

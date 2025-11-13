@@ -8,13 +8,11 @@ import { useAttendancesByDevices } from '@/hooks/useAttendance'
 import { useDevicesByUser } from '@/hooks/useDevices'
 import { AttendancesFilterParams } from '@/types/attendance'
 import { defaultAttendanceFilter, defaultAttendancePaginationRequest } from '@/constants/defaultValue'
-import { useAuth } from '@/contexts/AuthContext'
 
 export const Attendance = () => {
 
   const [filter, setFilter] = useState<AttendancesFilterParams>(defaultAttendanceFilter)
-  const { applicationUserId } = useAuth()
-  const { data: userDevices } = useDevicesByUser(applicationUserId)
+  const { data: userDevices } = useDevicesByUser()
   const [appliedFilters, setAppliedFilters] = useState<AttendancesFilterParams>(filter)
 
   const { data, isFetching: isFetchingData } = useAttendancesByDevices(

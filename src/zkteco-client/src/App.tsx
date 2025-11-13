@@ -12,6 +12,7 @@ import { Users } from './pages/Users'
 import { Attendance } from './pages/Attendance'
 import { Reports } from './pages/Reports'
 import { Settings } from './pages/Settings'
+import { DeviceCommands } from './pages/DeviceCommands'
 import { ForgotPassword } from './pages/auth/ForgotPassword'
 import { ResetPassword } from './pages/auth/ResetPassword'
 
@@ -33,6 +34,7 @@ function App() {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="devices" element={<Devices />} />
+        <Route path="device-commands" element={<DeviceCommands />} />
         <Route path="users" element={<Users />} />
         <Route path="attendance" element={<Attendance />} />
         <Route path="reports" element={<Reports />} />

@@ -19,16 +19,13 @@ import { CreateUserDialog } from "@/components/dialogs/CreateUserDialog";
 import { toast } from "sonner";
 import { User } from "@/types";
 import FilterBar from "@/components/users/FilterBar";
-import { useAuth } from "@/contexts/AuthContext";
 import { useDevicesByUser } from "@/hooks/useDevices";
 import { CreateUserRequest, UpdateUserRequest } from "@/types/user";
 
 export const Users = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [userToEdit, setUserToEdit] = useState<User | null>(null);
-  const { applicationUserId } = useAuth();
-  const { data: devices, isFetching: devicesFetching } =
-    useDevicesByUser(applicationUserId);
+  const { data: devices, isFetching: devicesFetching } = useDevicesByUser();
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
   const deleteUser = useDeleteUser();
   const { data: users, isLoading } = useUsers(selectedDeviceIds);
@@ -82,10 +79,6 @@ export const Users = () => {
   const handleSubmit = (deviceIds: string[]) => {
     setSelectedDeviceIds(deviceIds);
   };
-
-  if (devicesFetching) {
-    return <LoadingSpinner />;
-  }
 
   return (
     <div>

@@ -10,7 +10,8 @@ import {
   Clock, 
   FileText, 
   Settings,
-  X
+  X,
+  Terminal
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from '@/contexts/SidebarContext'
@@ -19,6 +20,7 @@ import { Button } from '@/components/ui/button'
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/devices', icon: Monitor, label: 'Devices' },
+  { to: '/device-commands', icon: Terminal, label: 'Device Commands' },
   { to: '/users', icon: Users, label: 'Users' },
   { to: '/attendance', icon: Clock, label: 'Attendance' },
   { to: '/reports', icon: FileText, label: 'Reports' },

@@ -115,7 +115,6 @@ export const useDeleteDevice = () => {
 };
 
 export const useSendCommand = () => {
-
   return useMutation({
     mutationFn: ({ deviceId, data }: { deviceId: string; data: DeviceCommandRequest }) =>
       deviceService.sendCommand(deviceId, data),
@@ -128,7 +127,7 @@ export const useSendCommand = () => {
   });
 };
 
-export const useDeviceCommands = (deviceId: string) => {
+export const useDevicePendingCommands = (deviceId: string) => {
   return useQuery({
     queryKey: ['commands', deviceId],
     queryFn: () => deviceService.getPendingCommands(deviceId),
@@ -149,69 +148,69 @@ export const useDeviceInfo = (deviceId: string | null) => {
   });
 };
 
-// Device Command Actions Hooks
-export const useSyncUsers = () => {
-  const queryClient = useQueryClient();
+// // Device Command Actions Hooks
+// export const useSyncUsers = () => {
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (deviceId: string) => deviceService.syncUsers(deviceId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['commands'] });
-    },
-  });
-};
+//   return useMutation({
+//     mutationFn: (deviceId: string) => deviceService.syncUsers(deviceId),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ['commands'] });
+//     },
+//   });
+// };
 
-export const useSyncAttendance = () => {
-  const queryClient = useQueryClient();
+// export const useSyncAttendance = () => {
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (deviceId: string) => deviceService.syncAttendance(deviceId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['commands'] });
-    },
-  });
-};
+//   return useMutation({
+//     mutationFn: (deviceId: string) => deviceService.syncAttendance(deviceId),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ['commands'] });
+//     },
+//   });
+// };
 
-export const useClearAttendance = () => {
-  const queryClient = useQueryClient();
+// export const useClearAttendance = () => {
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (deviceId: string) => deviceService.clearAttendance(deviceId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['commands'] });
-    },
-  });
-};
+//   return useMutation({
+//     mutationFn: (deviceId: string) => deviceService.clearAttendance(deviceId),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ['commands'] });
+//     },
+//   });
+// };
 
-export const useRestartDevice = () => {
-  const queryClient = useQueryClient();
+// export const useRestartDevice = () => {
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (deviceId: string) => deviceService.restartDevice(deviceId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['commands'] });
-    },
-  });
-};
+//   return useMutation({
+//     mutationFn: (deviceId: string) => deviceService.restartDevice(deviceId),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ['commands'] });
+//     },
+//   });
+// };
 
-export const useLockDevice = () => {
-  const queryClient = useQueryClient();
+// export const useLockDevice = () => {
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (deviceId: string) => deviceService.lockDevice(deviceId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['commands'] });
-    },
-  });
-};
+//   return useMutation({
+//     mutationFn: (deviceId: string) => deviceService.lockDevice(deviceId),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ['commands'] });
+//     },
+//   });
+// };
 
-export const useUnlockDevice = () => {
-  const queryClient = useQueryClient();
+// export const useUnlockDevice = () => {
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (deviceId: string) => deviceService.unlockDevice(deviceId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['commands'] });
-    },
-  });
-};
+//   return useMutation({
+//     mutationFn: (deviceId: string) => deviceService.unlockDevice(deviceId),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ['commands'] });
+//     },
+//   });
+// };

@@ -2,9 +2,8 @@
 // ==========================================
 // src/services/deviceService.ts
 // ==========================================
-import { toast } from 'sonner';
 import { apiService } from './api';
-import type { Device, CreateDeviceRequest, DeviceCommand, SendCommandRequest, AppResponse, PaginatedResponse, DeviceInfo } from '@/types';
+import type { Device, CreateDeviceRequest, DeviceCommand, AppResponse, PaginatedResponse, DeviceInfo } from '@/types';
 import { DeviceCommandRequest } from '@/types/device';
 
 export const deviceService = {

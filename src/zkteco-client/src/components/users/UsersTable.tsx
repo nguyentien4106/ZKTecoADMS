@@ -36,48 +36,53 @@ export const UsersTable = ({
   onAddUser,
   isLoading,
 }: UsersTableProps) => {
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="p-0">
-          <div className="flex items-center justify-center h-48"></div>
-          <span className="text-muted-foreground">Loading users...</span>
-        </CardContent>
-      </Card>
-    );
-  }
   return (
     <Card>
       <CardContent className="p-0">
-        {!users || users.length === 0 ? (
-          <EmptyState
-            icon={UsersIcon}
-            title="No users found"
-            description="Get started by adding your first user"
-            action={
-              <Button onClick={onAddUser}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add User
-              </Button>
-            }
-          />
-        ) : (
-          <Table>
-            <TableHeader>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>PIN</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Privilege</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Card Number</TableHead>
+              <TableHead>Device</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
               <TableRow>
-                <TableHead>PIN</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Privilege</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Card Number</TableHead>
-                <TableHead>Device</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableCell colSpan={9} className="h-48">
+                  <div className="flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <span className="text-muted-foreground">Loading users...</span>
+                    </div>
+                  </div>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user: User) => (
+            ) : !users || users.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} className="h-48">
+                  <EmptyState
+                    icon={UsersIcon}
+                    title="No users found"
+                    description="Get started by adding your first user"
+                    action={
+                      <Button onClick={onAddUser}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add User
+                      </Button>
+                    }
+                  />
+                </TableCell>
+              </TableRow>
+            ) : (
+              users.map((user: User) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-mono font-medium">
                     {user.pin}
@@ -103,14 +108,6 @@ export const UsersTable = ({
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      {/* <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onSync(user.id, user.fullName)}
-                        disabled={isSyncPending}
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                      </Button> */}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -129,10 +126,10 @@ export const UsersTable = ({
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+              ))
+            )}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );

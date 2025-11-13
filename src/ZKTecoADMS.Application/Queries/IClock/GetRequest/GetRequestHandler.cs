@@ -48,12 +48,13 @@ public class GetRequestHandler(
     
     private async Task UpdateDeviceInfoAsync(Guid deviceId, string info)
     {
-        // INFO format: [firmware version],[enrolled users],[fingerprints],[attendance records],[device IP],[fingerprint version],[face version],[face templates count],[dev support data]
-        var infoParts = info.Split(',', StringSplitOptions.None);
-        var deviceInfo = new DeviceInfo
+        var deviceInfo = await deviceInfoRepository.GetSingleAsync(di => di.DeviceId == deviceId) ?? new DeviceInfo
         {
             DeviceId = deviceId
         };
+
+        // INFO format: [firmware version],[enrolled users],[fingerprints],[attendance records],[device IP],[fingerprint version],[face version],[face templates count],[dev support data]
+        var infoParts = info.Split(',', StringSplitOptions.None);
 
         // Parse each field based on position
         if (infoParts.Length > 0 && !string.IsNullOrWhiteSpace(infoParts[0]))

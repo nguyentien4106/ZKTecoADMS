@@ -53,12 +53,12 @@ public class ZKTecoDbInitializer(
         {
             await SeedRolesAsync();
             await SeedAdminUserAsync();
-            await SeedDevicesAsync();
-            await SeedUserDevicesAsync();
-            await SeedAttendancesAsync();
-            await SeedSystemConfigurationsAsync();
-            await SeedDeviceSettingsAsync();
-            await SeedSyncLogsAsync();
+            //await SeedDevicesAsync();
+            //await SeedUserDevicesAsync();
+            //await SeedAttendancesAsync();
+            //await SeedSystemConfigurationsAsync();
+            //await SeedDeviceSettingsAsync();
+            //await SeedSyncLogsAsync();
 
             await context.SaveChangesAsync();
             logger.LogInformation("Database seeding completed successfully.");

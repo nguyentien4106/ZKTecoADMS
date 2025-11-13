@@ -16,7 +16,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasOne(i => i.Device)
             .WithMany(i => i.Users)
             .HasForeignKey(i => i.DeviceId)
-            .OnDelete(DeleteBehavior.Restrict); // Change to Restrict to prevent deletion of Device when Users exist
+            .OnDelete(DeleteBehavior.Cascade); // Change to Restrict to prevent deletion of Device when Users exist
         
     }
 }

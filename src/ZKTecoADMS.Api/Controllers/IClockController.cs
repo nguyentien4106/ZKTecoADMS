@@ -39,7 +39,7 @@ public class ClockController(
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync();
 
-        logger.LogInformation("Receiving data from device {SerialNumber}, Table: {Table}, Stamp: {Stamp}, Body: {Body}", 
+        logger.LogInformation("CDataPost receiving data from device {SerialNumber}, Table: {Table}, Stamp: {Stamp}, Body: {Body}", 
             SN, table, Stamp, body);
 
         var command = new CDataPostCommand(SN, table, Stamp, body);
@@ -69,6 +69,8 @@ public class ClockController(
     {
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync();
+        logger.LogInformation("DeviceCmd receiving data from {SerialNumber}, Body: {Body}", 
+            SN, body);
         var response = await bus.Send(new DeviceCmdCommand(SN, body));
             
         return Content(response, "text/plain");

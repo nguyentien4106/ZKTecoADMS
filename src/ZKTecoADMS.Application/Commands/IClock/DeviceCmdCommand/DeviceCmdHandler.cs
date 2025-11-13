@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand.Strategies;
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.Extensions;
@@ -7,11 +8,20 @@ namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand;
 
 public class DeviceCmdHandler(
     IDeviceCmdService deviceCmdService,
-    IDeviceCommandStrategyFactory strategyFactory
+    IDeviceCommandStrategyFactory strategyFactory,
+    IDeviceService deviceService,
+    ILogger<DeviceCmdHandler> logger
     ) : ICommandHandler<DeviceCmdCommand, string>
 {
     public async Task<string> Handle(DeviceCmdCommand request, CancellationToken cancellationToken)
     {
+        var device = await deviceService.GetDeviceBySerialNumberAsync(request.SN);
+        if (device == null)
+        {
+            logger.LogWarning("Received DeviceCmd for unknown device SN: {SN}", request.SN);
+            return ClockResponses.Fail;
+        }
+        
         var response = request.Body.ParseClockResponse();
         
         await deviceCmdService.UpdateCommandAfterExecutedAsync(response);
@@ -20,7 +30,7 @@ public class DeviceCmdHandler(
         var strategy = strategyFactory.GetStrategy(commandType);
         if (strategy != null)
         {
-            await strategy.ExecuteAsync(objectRefId, response, cancellationToken);
+            await strategy.ExecuteAsync(device, objectRefId, response, cancellationToken);
         }
         
         return ClockResponses.Ok;

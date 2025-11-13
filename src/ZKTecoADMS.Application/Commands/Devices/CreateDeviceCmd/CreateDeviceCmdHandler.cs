@@ -9,12 +9,13 @@ public class CreateDeviceCmdHandler(IRepository<Device> deviceRepository, IRepos
     public async Task<AppResponse<DeviceCmdDto>> Handle(CreateDeviceCmdCommand request, CancellationToken cancellationToken)
     {
         var device = await deviceRepository.GetByIdAsync(request.DeviceId, cancellationToken: cancellationToken);
-
+        var commandType = (DeviceCommandTypes)request.CommandType;
         var command = new DeviceCommand
         {
             DeviceId = device.Id,
-            Command = GetCommand((DeviceCommandTypes)request.CommandType),
-            Priority = request.Priority
+            Command = GetCommand(commandType),
+            Priority = request.Priority,
+            CommandType = commandType
         };
         
         var created = await deviceCmdRepository.AddAsync(command, cancellationToken);
@@ -31,7 +32,8 @@ public class CreateDeviceCmdHandler(IRepository<Device> deviceRepository, IRepos
             DeviceCommandTypes.ClearData => "CLEAR DATA",
             DeviceCommandTypes.RestartDevice => "REBOOT",
             DeviceCommandTypes.SyncAttendances => ClockCommandBuilder.BuildGetAttendanceCommand(DateTime.UtcNow.AddYears(-5), DateTime.UtcNow),
-            _ => ""
+            DeviceCommandTypes.SyncUsers => ClockCommandBuilder.BuildGetAllUsersCommand(),
+            _ => "NOT IMPLEMENTED"
         };
     }
 }

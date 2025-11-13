@@ -1,5 +1,8 @@
 // ==========================================
 // src/types/index.ts
+
+import { DeviceCommandTypes } from "./device";
+
 // ==========================================
 export interface Device {
   id: string;
@@ -47,12 +50,13 @@ export interface DeviceCommand {
   deviceId: number;
   command: string;
   priority: number;
-  status: string;
+  status: number;
   responseData?: string;
   errorMessage?: string;
   createdAt: string;
   sentAt?: string;
   completedAt?: string;
+  commandType: DeviceCommandTypes
 }
 
 export interface DeviceInfo {

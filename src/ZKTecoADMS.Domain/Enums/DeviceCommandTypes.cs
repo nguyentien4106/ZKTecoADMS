@@ -11,5 +11,6 @@ public enum DeviceCommandTypes
     ClearUsers,
     ClearData,
     RestartDevice,
-    SyncAttendances
+    SyncAttendances,
+    SyncUsers,
 }

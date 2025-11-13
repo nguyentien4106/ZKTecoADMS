@@ -30,7 +30,7 @@ public class DevicesController(
         return Ok(await bus.Send(query));
     }
 
-    [HttpGet("{id}/commands")]
+    [HttpGet("{deviceId}/commands")]
     public async Task<ActionResult<AppResponse<IEnumerable<DeviceCmdDto>>>> GetCommandsByDevice(Guid deviceId)
     {
         var query = new GetCommandsByDeviceQuery(deviceId);

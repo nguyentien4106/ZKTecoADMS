@@ -22,15 +22,15 @@ public class AddDeviceHandler(
         var device = request.Adapt<Device>();
 
         var response = await repository.AddAsync(device, cancellationToken);
-        var initialUsers = new DeviceCommand
+        var syncUsersCommand = new DeviceCommand
         {
             DeviceId = response.Id,
-            CommandType = DeviceCommandTypes.InitialUsers,
+            CommandType = DeviceCommandTypes.SyncUsers,
             Priority = 10,
             Command = ClockCommandBuilder.BuildGetAllUsersCommand()
         };
 
-        await deviceCommandRepository.AddAsync(initialUsers, cancellationToken);
+        await deviceCommandRepository.AddAsync(syncUsersCommand, cancellationToken);
 
         return AppResponse<DeviceDto>.Success(response.Adapt<DeviceDto>());
     }
