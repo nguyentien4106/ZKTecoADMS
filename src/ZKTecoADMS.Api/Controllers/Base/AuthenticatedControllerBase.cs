@@ -8,6 +8,12 @@ namespace ZKTecoADMS.Api.Controllers.Base;
 public abstract class AuthenticatedControllerBase : ControllerBase
 {
     protected Guid CurrentUserId => GetCurrentUserId();
+    
+    protected string CurrentUserRole => GetCurrentUserRole();
+    
+    protected bool IsAdmin => CurrentUserRole.Equals("Admin", StringComparison.OrdinalIgnoreCase);
+    
+    protected bool IsManager => CurrentUserRole.Equals("Manager", StringComparison.OrdinalIgnoreCase);
 
     private Guid GetCurrentUserId()
     {
@@ -17,5 +23,15 @@ public abstract class AuthenticatedControllerBase : ControllerBase
             throw new UnauthorizedException("User ID not found in token.");
         }
         return userId;
+    }
+    
+    private string GetCurrentUserRole()
+    {
+        var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (string.IsNullOrEmpty(roleClaim))
+        {
+            throw new UnauthorizedException("User role not found in token.");
+        }
+        return roleClaim;
     }
 } 

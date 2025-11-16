@@ -5,7 +5,7 @@ import { subMonths } from "date-fns";
 
 export const defaultNewUser: CreateUserRequest = {
     pin: '',
-    fullName: '',
+    name: '',
     cardNumber: '',
     password: '',
     email: '',

@@ -9,13 +9,13 @@ public class UserMappingConfig : IRegister
     {
         config.NewConfig<User, UserDto>()
             .Map(dest => dest.DeviceName, src => src.Device.DeviceName)
-            .Map(dest => dest.PIN, src => src.PIN)
+            .Map(dest => dest.Pin, src => src.Pin)
             .Map(dest => dest, src => src);
 
         // Explicit mapping for CreateUserRequest to CreateUserCommand
         config.NewConfig<CreateUserRequest, CreateUserCommand>()
-            .Map(dest => dest.PIN, src => src.PIN)
-            .Map(dest => dest.FullName, src => src.FullName)
+            .Map(dest => dest.Pin, src => src.Pin)
+            .Map(dest => dest.Name, src => src.Name)
             .Map(dest => dest.CardNumber, src => src.CardNumber)
             .Map(dest => dest.Password, src => src.Password)
             .Map(dest => dest.Privilege, src => src.Privilege)

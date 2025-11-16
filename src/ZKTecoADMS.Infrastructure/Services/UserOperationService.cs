@@ -8,26 +8,20 @@ namespace ZKTecoADMS.Core.Services;
 /// <summary>
 /// Service for parsing and processing user data from device OPERLOG data.
 /// </summary>
-public class UserOperationService : IUserOperationService
+public class UserOperationService(ILogger<UserOperationService> logger) : IUserOperationService
 {
-    private readonly IUserRepository _userRepository;
-    private readonly ILogger<UserOperationService> _logger;
-
     // Field identifiers based on protocol
     private const string USER_PREFIX = "USER";
     private const string PIN_KEY = "PIN";
     private const string NAME_KEY = "Name";
+    private const string PRI_KEY = "Pri";
     private const string PASSWORD_KEY = "Passwd";
     private const string CARD_KEY = "Card";
     private const string GROUP_KEY = "Grp";
     private const string TIMEZONE_KEY = "TZ";
-    private const int MIN_FIELDS = 6; // At least PIN, Name, Passwd, Card, Grp, and TZ
-
-    public UserOperationService(IUserRepository userRepository, ILogger<UserOperationService> logger)
-    {
-        _userRepository = userRepository;
-        _logger = logger;
-    }
+    private const string VERIFY_KEY = "Verify";
+    private const string VICECARD_KEY = "ViceCard";
+    private const int MIN_FIELDS = 6; // At least PIN, Name, Passwd, Card, Grp, and Pri
 
     /// <summary>
     /// Parses and processes user data from device OPERLOG format.
@@ -35,17 +29,17 @@ public class UserOperationService : IUserOperationService
     public async Task<List<User>> ProcessUsersFromDeviceAsync(Device device, string body)
     {
         var userLines = ExtractUserLines(body);
-        _logger.LogInformation("Processing {Count} user records from device {DeviceId}",
+        logger.LogInformation("Processing {Count} user records from device {DeviceId}",
             userLines.Count, device.Id);
 
         var users = await ProcessUserLinesAsync(device, userLines);
-        _logger.LogInformation("Successfully processed {Count} user records from device {DeviceId}",
+        logger.LogInformation("Successfully processed {Count} user records from device {DeviceId}",
             users.Count, device.Id);
 
         return users;
     }
 
-    private List<string> ExtractUserLines(string body)
+    private static List<string> ExtractUserLines(string body)
     {
         return body.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries)
                    .Where(line => !string.IsNullOrWhiteSpace(line) && line.TrimStart().StartsWith(USER_PREFIX))
@@ -68,7 +62,7 @@ public class UserOperationService : IUserOperationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error processing user line from device {DeviceId}: {Line}",
+                logger.LogError(ex, "Unexpected error processing user line from device {DeviceId}: {Line}",
                     device.Id, line);
             }
         }
@@ -76,23 +70,16 @@ public class UserOperationService : IUserOperationService
         return users;
     }
 
-    private async Task<User?> TryProcessUserLineAsync(Device device, string line)
+    private Task<User?> TryProcessUserLineAsync(Device device, string line)
     {
         var userFields = ParseUserLine(line);
 
         if (userFields == null || !ValidateUserFields(userFields))
         {
-            return null;
+            return Task.FromResult<User?>(null);
         }
 
-        var userData = ExtractUserData(userFields);
-        if (userData == null)
-        {
-            _logger.LogWarning("Failed to extract user data from line: {Line}", line);
-            return null;
-        }
-
-        return await CreateOrUpdateUserAsync(device, userData);
+        return Task.FromResult(ExtractUserData(userFields, device.Id));
     }
 
     /// <summary>
@@ -112,65 +99,65 @@ public class UserOperationService : IUserOperationService
             foreach (var part in parts)
             {
                 var keyValue = part.Split('=', 2);
-                if (keyValue.Length == 2)
-                {
-                    var key = keyValue[0].Trim();
-                    var value = keyValue[1].Trim();
-                    fields[key] = value;
-                }
+                if (keyValue.Length != 2) continue;
+                var key = keyValue[0].Trim();
+                var value = keyValue[1].Trim();
+                fields[key] = value;
             }
 
             return fields;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error parsing user line: {Line}", line);
+            logger.LogError(ex, "Error parsing user line: {Line}", line);
             return null;
         }
     }
 
     private bool ValidateUserFields(Dictionary<string, string> fields)
     {
-        if (!fields.ContainsKey(PIN_KEY) || string.IsNullOrWhiteSpace(fields[PIN_KEY]))
+        if (!fields.TryGetValue(PIN_KEY, out var pinValue) || string.IsNullOrWhiteSpace(pinValue))
         {
-            _logger.LogWarning("User record missing required PIN field");
+            logger.LogWarning("User record missing required PIN field");
             return false;
         }
 
-        if (!fields.ContainsKey(NAME_KEY) || string.IsNullOrWhiteSpace(fields[NAME_KEY]))
+        if (!fields.TryGetValue(NAME_KEY, out var nameValue) || string.IsNullOrWhiteSpace(nameValue))
         {
-            _logger.LogWarning("User record missing required Name field for PIN: {PIN}",
+            logger.LogWarning("User record missing required Name field for PIN: {PIN}",
                 fields.GetValueOrDefault(PIN_KEY));
             return false;
         }
 
-        if (fields.Count < MIN_FIELDS)
-        {
-            _logger.LogWarning("User record has fewer than minimum required fields ({Min}). PIN: {PIN}",
-                MIN_FIELDS, fields.GetValueOrDefault(PIN_KEY));
-            return false;
-        }
+        if (fields.Count >= MIN_FIELDS) 
+            return true;
+        
+        logger.LogWarning("User record has fewer than minimum required fields ({Min}). PIN: {PIN}",
+            MIN_FIELDS, fields.GetValueOrDefault(PIN_KEY));
+        return false;
 
-        return true;
     }
 
-    private UserData? ExtractUserData(Dictionary<string, string> fields)
+    private User? ExtractUserData(Dictionary<string, string> fields, Guid deviceId)
     {
         try
         {
-            return new UserData
+            var user = new User
             {
-                PIN = ExtractField(fields, PIN_KEY, string.Empty)!,
+                Pin = ExtractField(fields, PIN_KEY, string.Empty),
                 Name = ExtractField(fields, NAME_KEY, string.Empty)!,
                 Password = ExtractField(fields, PASSWORD_KEY),
                 CardNumber = ExtractField(fields, CARD_KEY),
                 GroupId = ExtractIntField(fields, GROUP_KEY, 1),
-                TimeZone = ExtractField(fields, TIMEZONE_KEY)
+                Privilege = ExtractIntField(fields, PRI_KEY),
+                DeviceId = deviceId,
+                IsActive = true
             };
+            return user;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error extracting user data from fields");
+            logger.LogError(ex, "Error extracting user data from fields");
             return null;
         }
     }
@@ -193,72 +180,10 @@ public class UserOperationService : IUserOperationService
 
         if (!string.IsNullOrWhiteSpace(value))
         {
-            _logger.LogDebug("Failed to parse integer field {Key}: {Value}. Using default: {Default}",
+            logger.LogDebug("Failed to parse integer field {Key}: {Value}. Using default: {Default}",
                 key, value, defaultValue);
         }
 
         return defaultValue;
-    }
-
-    private async Task<User?> CreateOrUpdateUserAsync(Device device, UserData userData)
-    {
-        // Check if user already exists
-        var existingUser = await _userRepository.GetUserByPinAsync(userData.PIN);
-
-        if (existingUser != null)
-        {
-            // Update existing user
-            UpdateUserProperties(existingUser, userData);
-            _logger.LogDebug("Updated existing user with PIN: {PIN}", userData.PIN);
-            return existingUser;
-        }
-
-        // Create new user
-        var newUser = new User
-        {
-            Id = Guid.NewGuid(),
-            DeviceId = device.Id,
-            PIN = userData.PIN,
-            FullName = userData.Name,
-            Password = userData.Password,
-            CardNumber = userData.CardNumber,
-            GroupId = userData.GroupId,
-            IsActive = true,
-            Privilege = 0, // Default user privilege
-            VerifyMode = 0 // Will be set by device
-        };
-
-        return newUser;
-    }
-
-    private void UpdateUserProperties(User user, UserData userData)
-    {
-        user.FullName = userData.Name;
-
-        if (!string.IsNullOrWhiteSpace(userData.Password))
-        {
-            user.Password = userData.Password;
-        }
-
-        if (!string.IsNullOrWhiteSpace(userData.CardNumber))
-        {
-            user.CardNumber = userData.CardNumber;
-        }
-
-        user.GroupId = userData.GroupId;
-        user.IsActive = true;
-    }
-
-    /// <summary>
-    /// Internal data transfer object for parsed user data
-    /// </summary>
-    private class UserData
-    {
-        public required string PIN { get; set; }
-        public required string Name { get; set; }
-        public string? Password { get; set; }
-        public string? CardNumber { get; set; }
-        public int GroupId { get; set; } = 1;
-        public string? TimeZone { get; set; }
     }
 }

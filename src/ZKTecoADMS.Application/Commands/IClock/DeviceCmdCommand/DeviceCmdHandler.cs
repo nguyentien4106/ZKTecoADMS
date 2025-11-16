@@ -25,12 +25,21 @@ public class DeviceCmdHandler(
         var response = request.Body.ParseClockResponse();
         
         await deviceCmdService.UpdateCommandAfterExecutedAsync(response);
-        var (commandType, objectRefId) = await deviceCmdService.GetCommandTypesAndIdAsync(response.CommandId);
-
-        var strategy = strategyFactory.GetStrategy(commandType);
-        if (strategy != null)
+        try
         {
-            await strategy.ExecuteAsync(device, objectRefId, response, cancellationToken);
+            var (commandType, objectRefId) = await deviceCmdService.GetCommandTypesAndIdAsync(response.CommandId);
+
+            var strategy = strategyFactory.GetStrategy(commandType);
+            if (strategy != null)
+            {
+                logger.LogInformation("Processing DeviceCmd for device SN: {SN}, CommandId: {CommandId}, CommandType: {CommandType}", request.SN, response.CommandId, commandType.ToString());
+                await strategy.ExecuteAsync(device, objectRefId, response, cancellationToken);
+            }
+        }
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogError(ex, "Error processing DeviceCmd for device SN: {SN}, CommandId: {CommandId}", request.SN, response.CommandId);
+            return ClockResponses.Fail;
         }
         
         return ClockResponses.Ok;

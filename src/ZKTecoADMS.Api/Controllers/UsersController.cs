@@ -1,7 +1,10 @@
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
+using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Commands.Users.CreateUser;
 using ZKTecoADMS.Application.Commands.Users.DeleteUser;
 using ZKTecoADMS.Application.Commands.Users.UpdateUser;
+using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Users;
 using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Application.Models;
@@ -12,9 +15,11 @@ namespace ZKTecoADMS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(IUserService userService, ILogger<UsersController> logger, IMediator bus) : ControllerBase
+[Authorize(Policy = PolicyNames.AtLeastManager)]
+public class UsersController(IUserService userService, ILogger<UsersController> logger, IMediator bus) : AuthenticatedControllerBase
 {
     [HttpPost("devices")]
+    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<IEnumerable<User>>> GetUsersByDevices([FromBody] GetUsersByDevicesRequest request)
     {
         var query = request.Adapt<GetUserDevicesQuery>();

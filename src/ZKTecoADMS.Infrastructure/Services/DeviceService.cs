@@ -4,6 +4,7 @@ using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Application.Models;
 using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
+using ZKTecoADMS.Domain.Repositories;
 using ZKTecoADMS.Infrastructure;
 using ZKTecoADMS.Infrastructure.Repositories;
 
@@ -11,63 +12,28 @@ namespace ZKTecoADMS.Core.Services;
 
 
 public class DeviceService(
-    IDeviceRepository deviceRepository,
+    IRepository<Device> deviceRepository,
     ILogger<DeviceService> logger,
     ZKTecoDbContext context)
     : IDeviceService
 {
-    public async Task<Device> GetOrCreateDeviceAsync(string serialNumber)
-    {
-        var device = await deviceRepository.GetBySerialNumberAsync(serialNumber);
-        
-        if (device == null)
-        {
-            logger.LogInformation("Creating new device with SN: {SerialNumber}", serialNumber);
-            device = new Device
-            {
-                SerialNumber = serialNumber,
-                DeviceName = $"Device-{serialNumber}",
-                IsActive = true,
-                DeviceStatus = "Online"
-            };
-            await deviceRepository.AddAsync(device);
-        }
-
-        return device;
-    }
 
     public async Task<Device?> GetDeviceBySerialNumberAsync(string serialNumber)
     {
-        return await deviceRepository.GetBySerialNumberAsync(serialNumber);
-    }
-
-    public async Task<Device?> GetDeviceByIdAsync(Guid id)
-    {
-        return await deviceRepository.GetByIdAsync(id);
-    }
-
-    public async Task<IEnumerable<Device>> GetAllDevicesAsync()
-    {
-        return await deviceRepository.GetAllAsync();
-    }
-
-    public async Task<Device> RegisterDeviceAsync(Device device)
-    {
-        var existing = await deviceRepository.GetBySerialNumberAsync(device.SerialNumber);
-        if (existing != null)
-        {
-            throw new InvalidOperationException($"Device with serial number {device.SerialNumber} already exists");
-        }
-
-        return await deviceRepository.AddAsync(device);
+        return await deviceRepository.GetSingleAsync(d => d.SerialNumber == serialNumber
+        );
+        // return await deviceRepository.GetBySerialNumberAsync(serialNumber);
     }
 
     public async Task UpdateDeviceHeartbeatAsync(string serialNumber)
     {
-        var device = await deviceRepository.GetBySerialNumberAsync(serialNumber);
+        var device = await GetDeviceBySerialNumberAsync(serialNumber);
         if (device != null)
         {
-            await deviceRepository.UpdateLastOnlineAsync(device.Id, DateTime.UtcNow);
+            device.LastOnline = DateTime.Now;
+            device.DeviceStatus = "Online";
+            device.UpdatedAt = DateTime.Now;
+            await deviceRepository.UpdateAsync(device);
         }
     }
 
@@ -106,7 +72,7 @@ public class DeviceService(
         if (command != null)
         {
             command.Status = CommandStatus.Sent;
-            command.SentAt = DateTime.UtcNow;
+            command.SentAt = DateTime.Now;
             await context.SaveChangesAsync();
         }
     }
@@ -118,7 +84,7 @@ public class DeviceService(
         {
             command.Status = status;
             command.ResponseData = responseData;
-            command.CompletedAt = DateTime.UtcNow;
+            command.CompletedAt = DateTime.Now;
             command.ErrorMessage = errorMessage;
             await context.SaveChangesAsync();
         }
@@ -132,8 +98,18 @@ public class DeviceService(
 
     public async Task<AppResponse<bool>> IsValidUserAsync(User user)
     {
-        var existing = await context.UserDevices.Include(i => i.Device).FirstOrDefaultAsync(i => i.DeviceId == user.DeviceId && i.PIN == user.PIN);
+        var existing = await context.UserDevices.Include(i => i.Device).FirstOrDefaultAsync(i => i.DeviceId == user.DeviceId && i.Pin == user.Pin);
         
-        return existing == null ? AppResponse<bool>.Success() : AppResponse<bool>.Error($"User PIN ({user.PIN}) is existed in device {existing.Device.DeviceName}).");
+        return existing == null ? AppResponse<bool>.Success() : AppResponse<bool>.Error($"User PIN ({user.Pin}) is existed in device {existing.Device.DeviceName}).");
+    }
+
+    public async Task<IEnumerable<Device>> GetAllDevicesByUserAsync(Guid userId)
+    {
+        return await context.Devices.Where(d => d.ApplicationUserId == userId).ToListAsync();
+    }
+
+    public async Task<bool> IsExistDeviceAsync(string serialNumber)
+    {
+        return await GetDeviceBySerialNumberAsync(serialNumber) != null;
     }
 }

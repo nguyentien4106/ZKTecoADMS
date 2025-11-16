@@ -1,6 +1,6 @@
 using ZKTecoADMS.Application.DTOs.Devices;
 
-namespace ZKTecoADMS.Application.Commands.Devices.ActiveDeviceCommand;
+namespace ZKTecoADMS.Application.Commands.Devices.ToggleActive;
 
 public class ToggleActiveHandler(IRepository<Device> deviceRepository) : ICommandHandler<ToggleActiveCommand, AppResponse<DeviceDto>>
 {

@@ -14,6 +14,7 @@ public class UserService(
     ZKTecoDbContext context,
     IDeviceService deviceService,
     IRepository<Device> deviceRepository,
+    IRepository<User> userRepository,
     ILogger<UserService> logger) : IUserService
 {
     public async Task<User?> GetUserByIdAsync(Guid id)
@@ -21,9 +22,9 @@ public class UserService(
         return await context.UserDevices.FindAsync(id);
     }
 
-    public async Task<User?> GetUserByPINAsync(string pin)
+    public async Task<User?> GetUserByPinAsync(Guid deviceId, string pin)
     {
-        return await context.UserDevices.FirstOrDefaultAsync(u => u.PIN == pin);
+        return await context.UserDevices.FirstOrDefaultAsync(u => u.Pin == pin && u.DeviceId == deviceId);
     }
 
     public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -33,27 +34,45 @@ public class UserService(
 
     public async Task<User> CreateUserAsync(User user)
     {
-        var existing = await GetUserByPINAsync(user.PIN);
+        var existing = await GetUserByPinAsync(Guid.Empty, user.Pin);
         if (existing != null)
         {
-            throw new InvalidOperationException($"User with PIN {user.PIN} already exists");
+            logger.LogWarning("{service} User with PIN {pin} already exists", "UserService", user.Pin);
         }
 
         await context.UserDevices.AddAsync(user);
         await context.SaveChangesAsync();
 
-        //deviceService.CreateCommandAsync();
-        logger.LogInformation("Created user: {UserName} (PIN: {PIN})", user.FullName, user.PIN);
+        logger.LogInformation("Created user: {UserName} (PIN: {PIN})", user.Name, user.Pin);
         return user;
+    }
+
+    public async Task<IEnumerable<User>> CreateUsersAsync(Guid deviceId, IEnumerable<User> newUsers)
+    {
+        // Filter out users with duplicate PINs
+        var userPins = await context.UserDevices
+            .Where(u => u.DeviceId == deviceId)
+            .Select(u => u.Pin)
+            .ToListAsync();
+        
+        var validUsers = newUsers.Where(u => !userPins.Contains(u.Pin)).ToList();
+        if (validUsers.Count != 0)
+        {
+            await context.UserDevices.AddRangeAsync(validUsers);
+            await context.SaveChangesAsync();
+        }
+
+        logger.LogInformation("Created {Count} users", validUsers.Count);
+        return validUsers;
     }
 
     public async Task UpdateUserAsync(User user)
     {
         context.UserDevices.Update(user);
-        user.UpdatedAt = DateTime.UtcNow;
+        user.UpdatedAt = DateTime.Now;
         await context.SaveChangesAsync();
         
-        logger.LogInformation("Updated user: {UserName} (PIN: {PIN})", user.FullName, user.PIN);
+        logger.LogInformation("Updated user: {UserName} (PIN: {PIN})", user.Name, user.Pin);
     }
 
     public async Task DeleteUserAsync(Guid userId)
@@ -61,9 +80,7 @@ public class UserService(
         var user = await GetUserByIdAsync(userId);
         if (user != null)
         {
-           
-            
-            logger.LogInformation("Deleted user: {UserName} (PIN: {PIN})", user.FullName, user.PIN);
+            logger.LogInformation("Deleted user: {UserName} (PIN: {PIN})", user.Name, user.Pin);
         }
     }
 
@@ -84,7 +101,7 @@ public class UserService(
         var userCommand = new DeviceCommand
         {
             DeviceId = deviceId,
-            Command = $"DATA UPDATE USERINFO PIN={user.PIN}\tName={user.FullName}\tPri={user.Privilege}\tPasswd={user.Password}\tCard={user.CardNumber}\tGrp={user.GroupId}",
+            Command = $"DATA UPDATE USERINFO PIN={user.Pin}\tName={user.Name}\tPri={user.Privilege}\tPasswd={user.Password}\tCard={user.CardNumber}\tGrp={user.GroupId}",
             Priority = 3
         };
         await deviceService.CreateCommandAsync(userCommand);
@@ -95,7 +112,7 @@ public class UserService(
             var fpCommand = new DeviceCommand
             {
                 DeviceId = deviceId,
-                Command = $"DATA UPDATE FP PIN={user.PIN}\tFID={fp.FingerIndex}\tSize={fp.TemplateSize}\tValid=1\tTMP={fp.Template}",
+                Command = $"DATA UPDATE FP PIN={user.Pin}\tFID={fp.FingerIndex}\tSize={fp.TemplateSize}\tValid=1\tTMP={fp.Template}",
                 Priority = 2
             };
             await deviceService.CreateCommandAsync(fpCommand);
@@ -107,7 +124,7 @@ public class UserService(
             var faceCommand = new DeviceCommand
             {
                 DeviceId = deviceId,
-                Command = $"DATA UPDATE FACE PIN={user.PIN}\tFID={face.FaceIndex}\tSize={face.TemplateSize}\tValid=1\tTMP={face.Template}",
+                Command = $"DATA UPDATE FACE PIN={user.Pin}\tFID={face.FaceIndex}\tSize={face.TemplateSize}\tValid=1\tTMP={face.Template}",
                 Priority = 2
             };
             await deviceService.CreateCommandAsync(faceCommand);
@@ -115,19 +132,7 @@ public class UserService(
 
         await context.SaveChangesAsync();
 
-        logger.LogInformation("Initiated sync for user {UserName} to device {DeviceId}", user.FullName, deviceId);
-    }
-
-    public async Task SyncUserToAllDevicesAsync(Guid userId)
-    {
-        var devices = await context.Devices
-            .Where(d => d.IsActive)
-            .ToListAsync();
-
-        foreach (var device in devices)
-        {
-            await SyncUserToDeviceAsync(userId, device.Id);
-        }
+        logger.LogInformation("Initiated sync for user {UserName} to device {DeviceId}", user.Name, deviceId);
     }
 
     public async Task<bool> IsPinValidAsync(string pin, Guid deviceId)

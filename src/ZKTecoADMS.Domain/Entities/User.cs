@@ -9,15 +9,15 @@ using ZKTecoADMS.Domain.Entities.Base;
 namespace ZKTecoADMS.Domain.Entities;
 
 // ZKTecoADMS.Domain/Entities/User.cs
-public class User : Entity<Guid>
+public class User : AuditableEntity<Guid>
 {
     [Required]
     [MaxLength(20)]
-    public string PIN { get; set; } = string.Empty;
+    public string Pin { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(200)]
-    public string FullName { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     [MaxLength(50)]
     public string? CardNumber { get; set; }
@@ -26,9 +26,8 @@ public class User : Entity<Guid>
     public string? Password { get; set; }
 
     public int GroupId { get; set; } = 1;
-    public int Privilege { get; set; } = 0;
-    public int VerifyMode { get; set; } = 0;
-    public bool IsActive { get; set; }
+    public int Privilege { get; set; }
+    public int VerifyMode { get; set; }
     
     [MaxLength(100)]
     public string? Email { get; set; }

@@ -36,4 +36,10 @@ public abstract class Repository<TEntity> : IRepository<TEntity>
     public abstract Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     public abstract Task<bool> ExistsAsync(Guid id);
+
+    public abstract Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter,
+        CancellationToken cancellationToken = default);
+
+    public abstract Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> filter,
+        CancellationToken cancellationToken = default);
 }

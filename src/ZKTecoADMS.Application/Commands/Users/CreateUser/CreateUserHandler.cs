@@ -14,8 +14,8 @@ public class CreateUserHandler(
     {
         var users = request.DeviceIds.Select(deviceId => new User
             {
-                PIN = request.PIN,
-                FullName = request.FullName,
+                Pin = request.Pin,
+                Name = request.Name,
                 CardNumber = request.CardNumber,
                 Password = request.Password,
                 Privilege = request.Privilege,

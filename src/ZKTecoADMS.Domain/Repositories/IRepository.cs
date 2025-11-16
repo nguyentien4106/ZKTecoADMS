@@ -36,4 +36,8 @@ public interface IRepository<TEntity>
     Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<bool> ExistsAsync(Guid id);
+    
+    Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default);
+    
+    Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default);
 }

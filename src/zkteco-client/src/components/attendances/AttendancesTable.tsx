@@ -44,11 +44,11 @@ interface AttendancesTableProps {
 
 export const AttendancesTable = ({ logs, isLoading }: AttendancesTableProps) => {
 
-    if(isLoading){
-        return (
-            <LoadingSpinner></LoadingSpinner>
-        )
-    }
+  if(isLoading){
+      return (
+          <LoadingSpinner></LoadingSpinner>
+      )
+  }
   return (
     <Card>
       <CardContent className="p-0">

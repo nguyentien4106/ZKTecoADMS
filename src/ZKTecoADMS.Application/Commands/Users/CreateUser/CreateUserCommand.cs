@@ -3,8 +3,8 @@ using ZKTecoADMS.Application.DTOs.Users;
 namespace ZKTecoADMS.Application.Commands.Users.CreateUser;
 
 public record CreateUserCommand(
-    string PIN, 
-    string FullName, 
+    string Pin, 
+    string Name, 
     string? CardNumber, 
     string? Password, 
     int Privilege, 

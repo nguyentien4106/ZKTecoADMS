@@ -2,8 +2,9 @@
 // src/hooks/useDeviceCommands.ts
 // ==========================================
 import { toast } from 'sonner'
-import { useSendCommand } from './useDevices'
-import { DeviceCommandTypes } from '@/types/device'
+import { DeviceCommandRequest, DeviceCommandTypes } from '@/types/device'
+import { deviceCommandService } from '@/services/deviceCommandService'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 export interface DeviceCommandHandlers {
   handleSyncUsers: (deviceId: string) => Promise<void>
@@ -11,8 +12,8 @@ export interface DeviceCommandHandlers {
   handleClearAttendances: (deviceId: string) => Promise<void>
   handleClearUsers: (deviceId: string) => Promise<void>
   handleClearData: (deviceId: string) => Promise<void>
-  handleRestartDevice: (deviceId: string) => Promise<void>}
-
+  handleRestartDevice: (deviceId: string) => Promise<void>
+}
 /**
  * Custom hook that provides device command handlers and their loading states.
  * Can be used in any component that needs to execute device commands.
@@ -27,7 +28,7 @@ export const useDeviceCommands = (options?: {
   const { onSuccess, validateDeviceId = true } = options || {}
 
   // Command mutations
-    const sendCommand = useSendCommand()    
+    const createCommand = useCreateCommand()    
   /**
    * Generic command handler that validates device ID and handles success/error
    */
@@ -42,7 +43,7 @@ export const useDeviceCommands = (options?: {
     }
 
     try {
-      await sendCommand.mutateAsync({
+      await createCommand.mutateAsync({
         deviceId: deviceId,
         data: {
           commandType: commandType
@@ -65,3 +66,19 @@ export const useDeviceCommands = (options?: {
     handleRestartDevice: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.RESTART_DEVICE, 'Restart Device')
   }
 }
+
+export const useGetDeviceCommands = (deviceId: string) => {
+  return useQuery({
+    queryKey: ['commands', deviceId],
+    queryFn: () => deviceCommandService.getByDevice(deviceId),
+    enabled: !!deviceId,
+    refetchInterval: 3000, // Refetch every 10 seconds
+  });
+};
+
+export const useCreateCommand = () => {
+  return useMutation({
+    mutationFn: ({ deviceId, data }: { deviceId: string; data: DeviceCommandRequest }) =>
+      deviceCommandService.createDeviceCommand(deviceId, data),
+  });
+};

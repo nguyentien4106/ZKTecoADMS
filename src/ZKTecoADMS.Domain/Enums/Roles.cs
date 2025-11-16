@@ -4,4 +4,6 @@ public enum Roles
 {
     User,
     Admin,
+    Manager,
+    Employee
 }

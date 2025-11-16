@@ -2,7 +2,6 @@
 // ==========================================
 // src/services/authService.ts
 // ==========================================
-import { AppResponse } from '@/types';
 import { apiService } from './api';
 import type { AuthUser, ForgotPasswordResponse, LoginResponse } from '@/types/auth';
 

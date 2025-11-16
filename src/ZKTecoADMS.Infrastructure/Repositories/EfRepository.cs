@@ -310,4 +310,45 @@ public class EfRepository<TEntity>(
         return await dbSet.FindAsync(id) != null;
     }
 
+    public override async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default)
+    {
+        return await dbSet.AnyAsync(filter, cancellationToken);
+    }
+
+    public async override Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var entities = await dbSet.Where(filter).ToListAsync(cancellationToken);
+            
+            if (!entities.Any())
+            {
+                logger.LogWarning("No entities of type {EntityType} found matching the filter for deletion", 
+                    typeof(TEntity).Name);
+                return false;
+            }
+
+            dbSet.RemoveRange(entities);
+            var result = await context.SaveChangesAsync(cancellationToken) > 0;
+            
+            if (result)
+            {
+                logger.LogInformation("Successfully deleted {Count} entities of type {EntityType}", 
+                    entities.Count, typeof(TEntity).Name);
+            }
+            else
+            {
+                logger.LogWarning("Delete operation for entities of type {EntityType} returned false", 
+                    typeof(TEntity).Name);
+            }
+            
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting entities of type {EntityType} with filter", 
+                typeof(TEntity).Name);
+            throw;
+        }
+    }
 } 

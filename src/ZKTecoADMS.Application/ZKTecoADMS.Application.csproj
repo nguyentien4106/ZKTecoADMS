@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Commands\Attendances\" />
     <Folder Include="Commands\IClock\DeviceCmdCommand\Strategy\" />
+    <Folder Include="Queries\Attendances\" />
     <Folder Include="Queries\Devices\GetCommandsByDevice\" />
     <Folder Include="Settings\" />
   </ItemGroup>

@@ -1,8 +1,8 @@
 namespace ZKTecoADMS.Application.DTOs.Users;
 
 public record CreateUserRequest(
-    string PIN, 
-    string FullName,
+    string Pin, 
+    string Name,
     string? CardNumber,
     string? Password,
     int Privilege,

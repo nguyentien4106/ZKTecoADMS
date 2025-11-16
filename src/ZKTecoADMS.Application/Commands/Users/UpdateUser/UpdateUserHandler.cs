@@ -12,8 +12,8 @@ public class UpdateUserHandler(
     public async Task<AppResponse<UserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken: cancellationToken);
-        user.PIN = request.PIN;
-        user.FullName = request.FullName;
+        user.Pin = request.PIN;
+        user.Name = request.FullName;
         user.Email = request.Email;
         user.CardNumber = request.CardNumber;
         user.Password = request.Password;

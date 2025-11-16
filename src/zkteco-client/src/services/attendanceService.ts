@@ -4,7 +4,7 @@
 // ==========================================
 import { AttendancesFilterParams } from '@/types/attendance';
 import { apiService } from './api';
-import type { AppResponse, AttendanceLog, PaginatedResponse, PaginationRequest } from '@/types';
+import type { AttendanceLog, PaginatedResponse, PaginationRequest } from '@/types';
 
 const buildQueryString = (params: any) => {
   return Object.entries(params)
@@ -19,7 +19,6 @@ const buildQueryString = (params: any) => {
 
 export const attendanceService = {
   getByDevices: (paginationRequest: PaginationRequest, filterParams: AttendancesFilterParams) => {
-
     return apiService.post<PaginatedResponse<AttendanceLog>>('/api/attendances/devices?' + buildQueryString(paginationRequest), filterParams);
   },
   

@@ -26,8 +26,7 @@ import {
 import { UserPrivileges } from "@/constants";
 import { defaultNewUser } from "@/constants/defaultValue";
 import { Button } from "../ui/button";
-import { useDevicesByUser } from "@/hooks/useDevices";
-import { useAuth } from "@/contexts/AuthContext";
+import { useDevices } from "@/hooks/useDevices";
 import { MultiSelect } from "../multi-select";
 import {
   Form,
@@ -79,8 +78,7 @@ export const CreateUserDialog = ({
   handleAddUser,
   handleUpdateUser
 }: CreateUserDialogProps) => {
-  const { applicationUserId } = useAuth();
-  const { data: devices } = useDevicesByUser(applicationUserId);
+  const { data: devices } = useDevices();
 
   const FormSchema = user ? updateFormSchema : createFormSchema;
 
@@ -302,7 +300,7 @@ export const CreateUserDialog = ({
                         <MultiSelect
                           options={
                             devices
-                              ? devices.map((device) => ({
+                              ? devices.items.map((device) => ({
                                   value: device.id,
                                   label: device.deviceName,
                                 }))

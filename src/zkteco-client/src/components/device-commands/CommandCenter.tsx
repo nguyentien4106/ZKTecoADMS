@@ -5,7 +5,7 @@ import { Device } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { RefreshCw, Users, Download, Trash2, Power, Lock, Unlock, RefreshCcwDot } from 'lucide-react'
+import { RefreshCw, Users, Download, Trash2, RefreshCcwDot } from 'lucide-react'
 import { useDeviceCommands } from '@/hooks/useDeviceCommands'
 
 interface CommandCenterProps {
@@ -13,6 +13,7 @@ interface CommandCenterProps {
   selectedDeviceId: string
   onDeviceChange: (deviceId: string) => void
   onRefresh: () => void
+  isDeviceInactive?: boolean
 }
 
 export const CommandCenter = ({
@@ -20,12 +21,12 @@ export const CommandCenter = ({
   selectedDeviceId,
   onDeviceChange,
   onRefresh,
+  isDeviceInactive = false,
 }: CommandCenterProps) => {
   const {
     handleSyncUsers,
     handleClearAttendances,
     handleClearUsers,
-    handleClearData,
     handleSyncAttendances,
     handleRestartDevice,
   } = useDeviceCommands({
@@ -60,7 +61,7 @@ export const CommandCenter = ({
             variant="outline"
             size="icon"
             onClick={onRefresh}
-            disabled={!selectedDeviceId}
+            disabled={!selectedDeviceId || isDeviceInactive}
           >
             <RefreshCw className="w-4 h-4" />
           </Button>
@@ -75,6 +76,7 @@ export const CommandCenter = ({
                 variant="outline"
                 className="flex items-center gap-2"
                 onClick={() => handleSyncUsers(selectedDeviceId)}
+                disabled={isDeviceInactive}
               >
                 <Users className="w-4 h-4" />
                 Sync Users
@@ -83,22 +85,25 @@ export const CommandCenter = ({
                 variant="outline"
                 className="flex items-center gap-2"
                 onClick={() => handleSyncAttendances(selectedDeviceId)}
+                disabled={isDeviceInactive}
               >
                 <Download className="w-4 h-4" />
                 Sync Attendance
               </Button>
               <Button
                 variant="outline"
-                className="flex items-center gap-2 bg-red-500"
+                className="flex items-center gap-2"
                 onClick={() => handleClearAttendances(selectedDeviceId)}
+                disabled={isDeviceInactive}
               >
                 <Trash2 className="w-4 h-4 text-red-500" />
                 Clear Attendance
               </Button>
               <Button
                 variant="outline"
-                className="flex items-center gap-2 bg-red-500"
+                className="flex items-center gap-2"
                 onClick={() => handleClearUsers(selectedDeviceId)}
+                disabled={isDeviceInactive}
               >
                 <Trash2 className="w-4 h-4 text-red-500" />
                 Clear Users
@@ -107,6 +112,7 @@ export const CommandCenter = ({
                 variant="outline"
                 className="flex items-center gap-2"
                 onClick={() => handleRestartDevice(selectedDeviceId)}
+                disabled={isDeviceInactive}
               >
                 <RefreshCcwDot className="w-4 h-4 text-red-500" />
                 Restart

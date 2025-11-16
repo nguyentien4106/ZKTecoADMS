@@ -21,7 +21,7 @@ public class CDataGetHandler(IDeviceService deviceService) : IQueryHandler<CData
         var response = $"GET OPTION FROM: {sn}\r\n" +
                        "ATTLOGStamp=9999\r\n" + 
                        "OPERLOGStamp=9999\r\n" + 
-                       "ErrorDelay=60\r\n" +
+                       "ErrorDelay=30\r\n" +
                        "Delay=5\r\n" +
                        "TransTimes=0\r\n" +
                        "TransInterval=0\r\n" +

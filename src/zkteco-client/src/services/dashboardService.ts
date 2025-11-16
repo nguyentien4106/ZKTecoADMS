@@ -2,7 +2,6 @@
 // src/services/dashboardService.ts
 // ==========================================
 import { apiService } from './api';
-import type { AppResponse } from '@/types';
 import type {
   DashboardData,
   DashboardSummary,

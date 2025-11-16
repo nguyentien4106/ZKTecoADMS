@@ -1,8 +1,5 @@
 using Microsoft.Extensions.Logging;
 using ZKTecoADMS.Application.Interfaces;
-using ZKTecoADMS.Application.Models;
-using ZKTecoADMS.Domain.Entities;
-using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand.Strategies;
 
@@ -12,7 +9,7 @@ namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand.Strategies;
 /// Format: USER PIN=%s\tName=%s\tPasswd=%d\tCard=%d\tGrp=%d\tTZ=%s
 /// </summary>
 public class SyncUsersStrategy(
-    IUserRepository userRepository,
+    IRepository<User> userRepository,
     IUserOperationService userOperationService,
     ILogger<SyncUsersStrategy> logger) : IDeviceCommandStrategy
 {

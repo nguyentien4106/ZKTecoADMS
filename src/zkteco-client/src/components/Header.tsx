@@ -15,6 +15,7 @@ import { useDarkMode } from '@/hooks/useDarkMode'
 import { useAuth } from '@/contexts/AuthContext'
 import { useSidebar } from '@/contexts/SidebarContext'
 import { useNavigate } from 'react-router-dom'
+import { JWT_CLAIMS } from '@/constants/auth'
 
 export const Header = () => {
   const { isDark, toggleDark } = useDarkMode()
@@ -34,7 +35,7 @@ export const Header = () => {
       .map((n) => n[0])
       .join('')
       .toUpperCase()
-      .slice(0, 2) : "Admin"
+      .slice(0, 2) : "A"
   }
 
   return (
@@ -72,11 +73,11 @@ export const Header = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2 md:gap-3">
               <div className="text-right hidden md:block">
-                <p className="text-sm font-medium">{user?.name}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
+                <p className="text-sm font-medium">{user?.[JWT_CLAIMS.NAME]}</p>
+                <p className="text-xs text-muted-foreground">{user?.[JWT_CLAIMS.EMAIL]}</p>
               </div>
               <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm md:text-base">
-                {user ? getInitials(user.name) : 'U'}
+                {user ? getInitials(String(user[JWT_CLAIMS.NAME])) : 'U'}
               </div>
             </Button>
           </DropdownMenuTrigger>

@@ -16,8 +16,8 @@ export const Login = () => {
   const location = useLocation();
   const { login, isAuthenticated } = useAuth();
   
-  const [email, setEmail] = useState('admin@zkteco.com');
-  const [password, setPassword] = useState('Admin@123');
+  const [email, setEmail] = useState('admin@gmail.com');
+  const [password, setPassword] = useState('Ti100600@');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 

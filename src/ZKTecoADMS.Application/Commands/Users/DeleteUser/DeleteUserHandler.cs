@@ -17,7 +17,7 @@ public class DeleteUserHandler(
         var cmd = new DeviceCommand
         {
             DeviceId = user.DeviceId,
-            Command = ClockCommandBuilder.BuildDeleteUserCommand(user.PIN),
+            Command = ClockCommandBuilder.BuildDeleteUserCommand(user.Pin),
             Status = CommandStatus.Created,
             CommandType = DeviceCommandTypes.DeleteUser,
             ObjectReferenceId = user.Id

@@ -8,51 +8,31 @@ namespace ZKTecoADMS.Infrastructure.Services;
 
 
 public class AttendanceService(
-    IAttendanceRepository attendanceRepository,
-    ZKTecoDbContext context,
-    ILogger<AttendanceService> logger)
+    IRepository<Attendance> attendanceRepository)
     : IAttendanceService
 {
-    public async Task SaveAttendanceLogsAsync(IEnumerable<Attendance> logs)
-    {
-        foreach (var log in logs)
-        {
-            // Check for duplicates
-            var exists = await attendanceRepository.LogExistsAsync(
-                log.DeviceId, log.PIN, log.AttendanceTime);
-
-            if (!exists)
-            {
-                // Try to find user by PIN
-                var user = await context.UserDevices
-                    .FirstOrDefaultAsync(u => u.PIN == log.PIN);
-                
-                if (user != null)
-                {
-                    log.UserId = user.Id;
-                }
-
-                await attendanceRepository.AddAsync(log);
-                logger.LogInformation("Saved attendance log: Device={DeviceId}, PIN={PIN}, Time={Time}", 
-                    log.DeviceId, log.PIN, log.AttendanceTime);
-            }
-            else
-            {
-                logger.LogDebug("Duplicate attendance log skipped: Device={DeviceId}, PIN={PIN}, Time={Time}", 
-                    log.DeviceId, log.PIN, log.AttendanceTime);
-            }
-        }
-    }
-
     public async Task<IEnumerable<Attendance>> GetAttendanceByDeviceAsync(
         Guid deviceId, DateTime? startDate, DateTime? endDate)
     {
-        return await attendanceRepository.GetByDeviceIdAsync(deviceId, startDate, endDate);
+        return await attendanceRepository.GetAllAsync(
+            a => a.DeviceId == deviceId && a.AttendanceTime.Date >= startDate && a.AttendanceTime.Date <= endDate,
+            orderBy: query => query.OrderByDescending(a => a.AttendanceTime.Date)
+        );
     }
 
     public async Task<IEnumerable<Attendance>> GetAttendanceByUserAsync(
-        Guid userId, DateTime? startDate, DateTime? endDate)
+        Guid deviceId, Guid userId, DateTime? startDate, DateTime? endDate)
     {
-        return await attendanceRepository.GetByUserIdAsync(userId, startDate, endDate);
+        return await attendanceRepository.GetAllAsync(
+            a => a.DeviceId == deviceId && a.AttendanceTime.Date >= startDate && a.AttendanceTime.Date <= endDate && a.UserId == userId,
+            orderBy: query => query.OrderByDescending(a => a.AttendanceTime.Date)
+        );    }
+
+    public async Task<bool> LogExistsAsync(Guid deviceId, string pin, DateTime attendanceTime)
+    {
+        return await attendanceRepository.ExistsAsync(a => 
+            a.DeviceId == deviceId && 
+            a.PIN == pin && 
+            a.AttendanceTime == attendanceTime);
     }
 }

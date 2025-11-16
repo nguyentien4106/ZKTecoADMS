@@ -5,14 +5,14 @@ import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { EmptyState } from '@/components/EmptyState'
-import { useDevicesByUser } from '@/hooks/useDevices'
+import { useDevices } from '@/hooks/useDevices'
 import { Monitor, Plus } from 'lucide-react'
 import { CreateDeviceDialog } from '@/components/dialogs/CreateDeviceDialog'
 import { DevicesContent, DeviceInfoDialog } from '@/components/devices'
 import { DeviceProvider, useDeviceContext } from '@/contexts/DeviceContext'
 
 const DevicesContent_Internal = () => {
-  const { data: devices, isFetching, isError } = useDevicesByUser()
+  const { data: devices, isFetching, isError } = useDevices()
   
   // Get all state and actions from context
   const {
@@ -21,7 +21,7 @@ const DevicesContent_Internal = () => {
   } = useDeviceContext()
 
   const handleShowInfo = (id: string) => {
-    const device = devices?.find((d) => d.id === id)
+    const device = devices?.items.find((d) => d.id === id)
     openInfoDialog(id, device?.deviceName)
   }
 
@@ -53,7 +53,7 @@ const DevicesContent_Internal = () => {
       />
 
       <DevicesContent
-        devices={devices}
+        devices={devices?.items}
         onShowInfo={handleShowInfo}
       />
 

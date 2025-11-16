@@ -21,6 +21,7 @@ public static class DependencyInjectionExtensions
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             cfg.AddOpenBehavior(typeof(LoggingBehaviour<,>));
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            cfg.AddOpenBehavior(typeof(DeviceActiveCheckBehaviour<,>));
         });
 
         // Automatically register all IDeviceCommandStrategy implementations

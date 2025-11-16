@@ -1,17 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using ZKTecoADMS.Application.DTOs.Dashboard;
+using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
 using ZKTecoADMS.Domain.Repositories;
-using ZKTecoADMS.Infrastructure.Repositories;
 
 namespace ZKTecoADMS.Application.Queries.Dashboard.GetDashboardData;
 
 public class GetDashboardDataHandler(
-    IUserRepository userRepository,
-    IDeviceRepository deviceRepository,
-    IAttendanceRepository attendanceRepository
-) : IQueryHandler<GetDashboardDataQuery, AppResponse<DashboardDataDto>>
+    IUserService userService,
+    IDeviceService deviceService,
+    IAttendanceService attendanceService,
+    IRepository<User> userRepository,
+    IRepository<Attendance> attendanceRepository
+    ) : IQueryHandler<GetDashboardDataQuery, AppResponse<DashboardDataDto>>
 {
     private const int StandardWorkStartHour = 9; // 9 AM
     private const int LateThresholdMinutes = 15;
@@ -23,10 +25,7 @@ public class GetDashboardDataHandler(
         var todayEnd = today.Date.AddDays(1).AddTicks(-1);
 
         // Get devices first (filtered by user) - DbContext cannot handle parallel operations
-        var allDevices = (await deviceRepository.GetAllAsync(
-            filter: d => d.ApplicationUserId == request.UserId,
-            cancellationToken: cancellationToken
-        )).ToList();
+        var allDevices = (await deviceService.GetAllDevicesByUserAsync(request.UserId)).ToList();
         
         // If user has no devices, return empty dashboard
         if (!allDevices.Any())
@@ -154,7 +153,7 @@ public class GetDashboardDataHandler(
             return new EmployeePerformanceDto
             {
                 UserId = user.Id,
-                FullName = user.FullName,
+                FullName = user.Name,
                 Department = user.Department ?? "N/A",
                 TotalAttendanceDays = attendanceDays,
                 OnTimeDays = onTimeDays,
@@ -205,7 +204,7 @@ public class GetDashboardDataHandler(
             return new EmployeePerformanceDto
             {
                 UserId = user.Id,
-                FullName = user.FullName,
+                FullName = user.Name,
                 Department = user.Department ?? "N/A",
                 TotalAttendanceDays = attendanceDays,
                 OnTimeDays = onTimeDays,

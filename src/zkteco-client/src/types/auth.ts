@@ -1,5 +1,8 @@
 // ==========================================
 // src/types/auth.ts
+
+import { JWT_CLAIMS } from "@/constants/auth";
+
 // ==========================================
 export interface LoginRequest {
   userName: string;
@@ -14,10 +17,13 @@ export interface LoginResponse {
 }
 
 export interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-  roles: string[];
+  [JWT_CLAIMS.NAME_IDENTIFIER]: string;
+  [JWT_CLAIMS.EMAIL]: string;
+  [JWT_CLAIMS.NAME]: string;
+  [JWT_CLAIMS.ROLE]: string;
+  exp: number;
+  iss: string;
+  userName: string
 }
 
 export interface ForgotPasswordRequest {

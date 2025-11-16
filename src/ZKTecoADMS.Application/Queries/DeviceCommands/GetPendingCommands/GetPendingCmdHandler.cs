@@ -1,7 +1,7 @@
 using ZKTecoADMS.Application.DTOs.Devices;
 using ZKTecoADMS.Application.Interfaces;
 
-namespace ZKTecoADMS.Application.Queries.Devices.GetPendingCommands;
+namespace ZKTecoADMS.Application.Queries.DeviceCommands.GetPendingCommands;
 
 public class GetPendingCmdHandler(IDeviceService deviceService) : IQueryHandler<GetPendingCmdQuery, AppResponse<IEnumerable<DeviceCmdDto>>>
 {

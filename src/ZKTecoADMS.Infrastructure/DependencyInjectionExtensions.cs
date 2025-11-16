@@ -18,6 +18,8 @@ using ZKTecoADMS.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using ZKTecoADMS.Core.Services;
 using ZKTecoADMS.Infrastructure.Services;
+using ZKTecoADMS.Application.Constants;
+using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Infrastructure;
 
@@ -76,7 +78,18 @@ public static class DependencyInjectionExtensions
                     };
                 });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(PolicyNames.AdminOnly,
+                    policy => policy.RequireRole(nameof(Roles.Admin)));
+
+            options.AddPolicy(PolicyNames.AtLeastManager,
+                    policy => policy.RequireRole(nameof(Roles.Admin), nameof(Roles.Manager)));
+            
+            options.AddPolicy(PolicyNames.AtLeastEmployee,
+                policy => policy.RequireRole(nameof(Roles.Admin), nameof(Roles.Manager), nameof(Roles.Employee)));
+        });
+
         services.AddAuthorizationBuilder()
                 .SetDefaultPolicy(new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
@@ -126,9 +139,6 @@ public static class DependencyInjectionExtensions
         
         // Repository registration
         services.AddScoped(typeof(IRepositoryPagedQuery<>), typeof(PagedQueryRepository<>));
-        services.AddScoped(typeof(IDeviceRepository), typeof(DeviceRepository));
-        services.AddScoped(typeof(IAttendanceRepository), typeof(AttendanceRepository));
-        services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped(typeof(Repository<>), typeof(EfRepository<>));
 

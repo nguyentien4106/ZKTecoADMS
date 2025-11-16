@@ -3,7 +3,6 @@
 // ==========================================
 import { DeviceCommand } from '@/types'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
 import { getStatusBadge, formatDate } from './commandUtils.tsx'
 import { DeviceCommandTypes } from '@/types/device.ts'
 
@@ -19,12 +18,11 @@ export const CommandHistoryTable = ({ commands }: CommandHistoryTableProps) => {
         <TableHeader>
           <TableRow>
             <TableHead>Command</TableHead>
-            <TableHead>Priority</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Created</TableHead>
             <TableHead>Sent</TableHead>
             <TableHead>Completed</TableHead>
-            <TableHead>Error Message</TableHead>
+            <TableHead>Message</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -32,11 +30,6 @@ export const CommandHistoryTable = ({ commands }: CommandHistoryTableProps) => {
             <TableRow key={command.id}>
               <TableCell className="font-medium">
                 {DeviceCommandTypes[command.commandType]}
-              </TableCell>
-              <TableCell>
-                <Badge variant={command.priority >= 5 ? 'destructive' : 'secondary'}>
-                  {command.priority}
-                </Badge>
               </TableCell>
               <TableCell>
                 {getStatusBadge(command.status)}
@@ -50,7 +43,7 @@ export const CommandHistoryTable = ({ commands }: CommandHistoryTableProps) => {
               <TableCell className="text-muted-foreground text-sm">
                 {formatDate(command.completedAt)}
               </TableCell>
-              <TableCell className="text-destructive text-sm">
+              <TableCell className={`${command.status === 2 ? 'text-green-600' : 'text-red-600'} text-sm`}>
                 {command.errorMessage || '-'}
               </TableCell>
             </TableRow>

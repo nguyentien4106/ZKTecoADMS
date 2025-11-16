@@ -8,7 +8,7 @@ public class DeviceCommand : Entity<Guid>
 {
     public Guid DeviceId { get; set; }
 
-    public long CommandId { get; set; } = DateTime.UtcNow.Ticks;
+    public long CommandId { get; set; } = DateTime.Now.Ticks;
 
     [Required]
     [MaxLength(1000)]

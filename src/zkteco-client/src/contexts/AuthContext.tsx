@@ -53,9 +53,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await authService.logout();
       Cookies.remove(ACCESSTOKEN_KEY);
       Cookies.remove(REFRESHTOKEN_KEY);
+      await authService.logout();
       setUser(null);
     } catch (error) {
       toast.error('Logout failed');

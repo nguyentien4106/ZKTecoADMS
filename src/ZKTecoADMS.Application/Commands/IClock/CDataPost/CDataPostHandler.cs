@@ -13,18 +13,18 @@ public class CDataPostHandler(
 {
     public async Task<string> Handle(CDataPostCommand request, CancellationToken cancellationToken)
     {
-        var SN = request.SN;
+        var sn = request.SN;
         if (string.IsNullOrWhiteSpace(request.Body))
         {
-            logger.LogWarning("Empty body received from device {SerialNumber}", SN);
+            logger.LogWarning("Empty body received from device {SerialNumber}", sn);
             
             return ClockResponses.Fail;
         }
 
-        var device = await deviceService.GetDeviceBySerialNumberAsync(SN);
+        var device = await deviceService.GetDeviceBySerialNumberAsync(sn);
         if (device == null)
         {
-            logger.LogError("Device not found: {SerialNumber}", SN);
+            logger.LogError("Device not found: {SerialNumber}", sn);
 
             return ClockResponses.Fail;
         }

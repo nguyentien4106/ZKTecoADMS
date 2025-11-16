@@ -1,7 +1,7 @@
 import { createContext, useContext, ReactNode, useState } from 'react'
 import {
   useDeleteDevice,
-  useActiveDevice,
+  useToggleActive,
 } from '@/hooks/useDevices'
 
 interface DeviceContextType {
@@ -47,7 +47,7 @@ export const DeviceProvider = ({ children }: DeviceProviderProps) => {
 
   // Mutation hooks
   const deleteDevice = useDeleteDevice()
-  const activeDevice = useActiveDevice()
+  const activeDevice = useToggleActive()
   
   // Handler functions
   const handleDelete = async (id: string) => {

@@ -1,7 +1,7 @@
 using Mapster;
 using ZKTecoADMS.Application.DTOs.Devices;
 
-namespace ZKTecoADMS.Application.Queries.Devices.GetCommandsByDevice;
+namespace ZKTecoADMS.Application.Queries.DeviceCommands.GetCommandsByDevice;
 
 public class GetCommandsByDeviceHandler(IRepository<DeviceCommand> deviceCmdRepository) : IQueryHandler<GetCommandsByDeviceQuery, AppResponse<IEnumerable<DeviceCmdDto>>>
 {

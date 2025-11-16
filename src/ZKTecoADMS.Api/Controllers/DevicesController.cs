@@ -1,18 +1,16 @@
 using ZKTecoADMS.Application.DTOs.Devices;
 using ZKTecoADMS.Application.Models;
 using ZKTecoADMS.Application.Queries.Devices.GetDevicesByUser;
-using ZKTecoADMS.Application.Queries.Devices.GetCommandsByDevice;
 using ZKTecoADMS.Application.Queries.Devices.GetAllDevices;
 using ZKTecoADMS.Application.Queries.Devices.GetDeviceById;
-using ZKTecoADMS.Domain.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
-using ZKTecoADMS.Application.Commands.Devices.ActiveDeviceCommand;
+using ZKTecoADMS.Api.Controllers.Base;
+using ZKTecoADMS.Application.Commands.Devices.ToggleActive;
 using ZKTecoADMS.Application.Commands.Devices.AddDevice;
-using ZKTecoADMS.Application.Commands.Devices.CreateDeviceCmd;
 using ZKTecoADMS.Application.Commands.Devices.DeleteDevice;
-using ZKTecoADMS.Application.Queries.Devices.GetPendingCommands;
 using ZKTecoADMS.Application.Queries.Devices.GetDeviceInfo;
+using ZKTecoADMS.Application.Constants;
 
 namespace ZKTecoADMS.API.Controllers;
 
@@ -21,7 +19,7 @@ namespace ZKTecoADMS.API.Controllers;
 [Route("api/[controller]")]
 public class DevicesController(
     IMediator bus
-    ) : ControllerBase
+    ) : AuthenticatedControllerBase
 {
     [HttpGet("users/{userId}")]
     public async Task<ActionResult<AppResponse<DeviceDto>>> GetDevicesByUser(Guid userId)
@@ -29,18 +27,16 @@ public class DevicesController(
         var query = new GetDevicesByUserQuery(userId);
         return Ok(await bus.Send(query));
     }
-
-    [HttpGet("{deviceId}/commands")]
-    public async Task<ActionResult<AppResponse<IEnumerable<DeviceCmdDto>>>> GetCommandsByDevice(Guid deviceId)
-    {
-        var query = new GetCommandsByDeviceQuery(deviceId);
-        return Ok(await bus.Send(query));
-    }
     
     [HttpGet]
     public async Task<ActionResult<AppResponse<PagedResult<DeviceDto>>>> GetAllDevices([FromQuery] PaginationRequest request)
     {
-        var query = new GetAllDevicesQuery(request);
+        var query = new GetAllDevicesQuery(
+            Request: request,
+            UserId: CurrentUserId,
+            IsAdminRequest: IsAdmin
+        );
+        
         return Ok(await bus.Send(query));
     }
 
@@ -66,28 +62,12 @@ public class DevicesController(
         return Ok(await bus.Send(cmd));
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = PolicyNames.AdminOnly)]
     [HttpPut("{id}/toggle-active")]
     public async Task<ActionResult<AppResponse<DeviceDto>>> ActiveDevice(Guid id)
     {
         var cmd = new ToggleActiveCommand(id);
         return Ok(await bus.Send(cmd));
-    }
-
-    [HttpPost("{deviceId}/commands")]
-    public async Task<ActionResult<DeviceCmdDto>> CreateDeviceCommand(Guid deviceId, [FromBody] DeviceCmdRequest request)
-    {
-        var cmd = new CreateDeviceCmdCommand(deviceId, request.CommandType, request.Priority);
-        
-        return Ok(await bus.Send(cmd));
-    }
-
-    [HttpGet("{deviceId}/commands/pending")]
-    public async Task<ActionResult<AppResponse<IEnumerable<DeviceCommand>>>> GetPendingCommands(Guid deviceId)
-    {
-        var query = new GetPendingCmdQuery(deviceId);
-
-        return Ok(await bus.Send(query));
     }
     
     [HttpGet("{deviceId}/device-info")]

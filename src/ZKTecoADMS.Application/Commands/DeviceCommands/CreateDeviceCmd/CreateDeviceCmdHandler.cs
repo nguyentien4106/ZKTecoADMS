@@ -2,18 +2,24 @@ using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Devices;
 using ZKTecoADMS.Domain.Enums;
 
-namespace ZKTecoADMS.Application.Commands.Devices.CreateDeviceCmd;
+namespace ZKTecoADMS.Application.Commands.DeviceCommands.CreateDeviceCmd;
 
 public class CreateDeviceCmdHandler(IRepository<Device> deviceRepository, IRepository<DeviceCommand> deviceCmdRepository) : ICommandHandler<CreateDeviceCmdCommand, AppResponse<DeviceCmdDto>>
 {
     public async Task<AppResponse<DeviceCmdDto>> Handle(CreateDeviceCmdCommand request, CancellationToken cancellationToken)
     {
         var device = await deviceRepository.GetByIdAsync(request.DeviceId, cancellationToken: cancellationToken);
+        if (device == null)
+        {
+            return AppResponse<DeviceCmdDto>.Fail("Device not found");
+        }
         var commandType = (DeviceCommandTypes)request.CommandType;
+        var commandStr =  GetCommand(commandType, request.DeviceId);
+        
         var command = new DeviceCommand
         {
             DeviceId = device.Id,
-            Command = GetCommand(commandType),
+            Command = commandStr,
             Priority = request.Priority,
             CommandType = commandType
         };
@@ -23,7 +29,7 @@ public class CreateDeviceCmdHandler(IRepository<Device> deviceRepository, IRepos
         return AppResponse<DeviceCmdDto>.Success(created.Adapt<DeviceCmdDto>());
     }
 
-    private static string GetCommand(DeviceCommandTypes commandType)
+    private static string GetCommand(DeviceCommandTypes commandType, Guid id)
     {
         return commandType switch
         {
@@ -31,10 +37,9 @@ public class CreateDeviceCmdHandler(IRepository<Device> deviceRepository, IRepos
             DeviceCommandTypes.ClearUsers => "CLEAR ALL USERINFO",
             DeviceCommandTypes.ClearData => "CLEAR DATA",
             DeviceCommandTypes.RestartDevice => "REBOOT",
-            DeviceCommandTypes.SyncAttendances => ClockCommandBuilder.BuildGetAttendanceCommand(DateTime.UtcNow.AddYears(-5), DateTime.UtcNow),
+            DeviceCommandTypes.SyncAttendances => ClockCommandBuilder.BuildGetAttendanceCommand(DateTime.Now.AddYears(-5), DateTime.Now),
             DeviceCommandTypes.SyncUsers => ClockCommandBuilder.BuildGetAllUsersCommand(),
             _ => "NOT IMPLEMENTED"
         };
     }
 }
-

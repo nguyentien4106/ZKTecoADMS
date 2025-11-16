@@ -2,15 +2,17 @@ using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ZKTecoADMS.Application.Constants;
+using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Commands.IClock.CDataPost.Strategy;
 
 public class PostAttendancesStrategy(IServiceProvider serviceProvider) : IPostStrategy
 {
-    private readonly IAttendanceRepository _attendanceRepository = serviceProvider.GetRequiredService<IAttendanceRepository>();
+    private readonly IAttendanceService attendanceService = serviceProvider.GetRequiredService<IAttendanceService>();
     private readonly ILogger<PostAttendancesStrategy> _logger = serviceProvider.GetRequiredService<ILogger<PostAttendancesStrategy>>();
-    private readonly IUserRepository _userRepository = serviceProvider.GetRequiredService<IUserRepository>();
+    private readonly IUserService userService = serviceProvider.GetRequiredService<IUserService>();
+    private readonly IRepository<Attendance> attendanceRepository = serviceProvider.GetRequiredService<IRepository<Attendance>>();
 
     // Field indices based on TFT protocol
     // Format: [PIN]\t[Punch date/time]\t[Attendance State]\t[Verify Mode]\t[Workcode]\t[Reserved 1]\t[Reserved 2]
@@ -76,7 +78,7 @@ public class PostAttendancesStrategy(IServiceProvider serviceProvider) : IPostSt
 
     private async Task SaveAttendancesAsync(List<Attendance> attendances, string deviceName)
     {
-        await _attendanceRepository.AddRangeAsync(attendances);
+        await attendanceRepository.AddRangeAsync(attendances);
         _logger.LogInformation("Successfully saved {Count} attendance records from device {DeviceName}",
             attendances.Count, deviceName);
     }
@@ -134,7 +136,7 @@ public class PostAttendancesStrategy(IServiceProvider serviceProvider) : IPostSt
 
     private async Task<bool> IsDuplicateAttendanceAsync(Guid deviceId, AttendanceData attendanceData)
     {
-        return await _attendanceRepository.LogExistsAsync(
+        return await attendanceService.LogExistsAsync(
             deviceId,
             attendanceData.PIN,
             attendanceData.AttendanceTime);
@@ -142,7 +144,7 @@ public class PostAttendancesStrategy(IServiceProvider serviceProvider) : IPostSt
 
     private async Task<Attendance> CreateAttendanceRecordAsync(Guid deviceId, AttendanceData attendanceData)
     {
-        var user = await _userRepository.GetUserByPinAsync(attendanceData.PIN);
+        var user = await userService.GetUserByPinAsync(deviceId, attendanceData.PIN);
 
         return new Attendance
         {

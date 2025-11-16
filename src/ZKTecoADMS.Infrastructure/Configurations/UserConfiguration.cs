@@ -9,14 +9,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasKey(e => e.Id);
-        builder.HasIndex(e => e.PIN).IsUnique();
+        builder.HasIndex(e => e.Pin);
         builder.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
         builder.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
         
         builder.HasOne(i => i.Device)
             .WithMany(i => i.Users)
             .HasForeignKey(i => i.DeviceId)
-            .OnDelete(DeleteBehavior.Cascade); // Change to Restrict to prevent deletion of Device when Users exist
+            .OnDelete(DeleteBehavior.Cascade);
         
     }
 }

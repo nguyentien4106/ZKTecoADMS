@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { UsersTable } from "@/components/users/UsersTable";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 import {
   useUsers,
   useDeleteUser,
@@ -17,15 +16,15 @@ import {
 } from "lucide-react";
 import { CreateUserDialog } from "@/components/dialogs/CreateUserDialog";
 import { toast } from "sonner";
-import { User } from "@/types";
+import { User } from "@/types/user";
 import FilterBar from "@/components/users/FilterBar";
-import { useDevicesByUser } from "@/hooks/useDevices";
+import { useDevices } from "@/hooks/useDevices";
 import { CreateUserRequest, UpdateUserRequest } from "@/types/user";
 
 export const Users = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [userToEdit, setUserToEdit] = useState<User | null>(null);
-  const { data: devices, isFetching: devicesFetching } = useDevicesByUser();
+  const { data: devices, isFetching: devicesFetching } = useDevices();
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
   const deleteUser = useDeleteUser();
   const { data: users, isLoading } = useUsers(selectedDeviceIds);
@@ -40,7 +39,7 @@ export const Users = () => {
   };
 
   useEffect(() => {
-    setSelectedDeviceIds(devices ? devices.map((device) => device.id) : []);
+    setSelectedDeviceIds(devices ? devices.items.map((device) => device.id) : []);
   }, [devices]);
 
   const handleAddUser = async (data: CreateUserRequest) => {
@@ -94,7 +93,7 @@ export const Users = () => {
       />
 
       <FilterBar
-        devices={devices}
+        devices={devices?.items}
         handleSubmit={handleSubmit}
         selectedDeviceIds={selectedDeviceIds}
       />

@@ -2,6 +2,7 @@
 using ZKTecoADMS.Domain.Entities.Base;
 using ZKTecoADMS.Domain.Repositories;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace ZKTecoADMS.Application.Interfaces
 {
@@ -13,5 +14,19 @@ namespace ZKTecoADMS.Application.Interfaces
             string[]? includeProperties = null,
             CancellationToken cancellationToken = default
         );
+
+        Task<PagedResult<TEntity>> GetPagedResultWithIncludesAsync(
+            PaginationRequest request,
+            Expression<Func<TEntity, bool>>? filter = null,
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null,
+            CancellationToken cancellationToken = default
+        );
+
+        Task<PagedResult<TProjection>> GetPagedResultWithProjectionAsync<TProjection>(
+            PaginationRequest request,
+            Expression<Func<TEntity, bool>>? filter = null,
+            Expression<Func<TEntity, TProjection>>? projection = null,
+            CancellationToken cancellationToken = default
+        ) where TProjection : class;
     }
 }

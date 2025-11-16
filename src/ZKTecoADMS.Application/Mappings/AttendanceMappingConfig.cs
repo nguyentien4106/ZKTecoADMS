@@ -8,7 +8,7 @@ public class AttendanceMappingConfig : IRegister
     {
         config.NewConfig<Attendance, AttendanceDto>()
             .Map(dest => dest.DeviceName, src => src.Device.DeviceName)
-            .Map(dest => dest.UserName, src => src.User.FullName)
+            .Map(dest => dest.UserName, src => src.User.Name)
             .Map(dest => dest, src => src);
     }
 }

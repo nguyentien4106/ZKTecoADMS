@@ -12,7 +12,7 @@ namespace ZKTecoADMS.Application.Commands.IClock.CDataPost.Strategy;
 public class OperLogStrategy(IServiceProvider serviceProvider) : IPostStrategy
 {
     private readonly IUserOperationService _userOperationService = serviceProvider.GetRequiredService<IUserOperationService>();
-    private readonly IUserRepository _userRepository = serviceProvider.GetRequiredService<IUserRepository>();
+    private readonly IUserService _userService = serviceProvider.GetRequiredService<IUserService>();
     private readonly ILogger<OperLogStrategy> _logger = serviceProvider.GetRequiredService<ILogger<OperLogStrategy>>();
 
     public async Task<string> ProcessDataAsync(Device device, string body)
@@ -27,7 +27,7 @@ public class OperLogStrategy(IServiceProvider serviceProvider) : IPostStrategy
         }
 
         // Step 2: Persist users to database
-        await _userRepository.AddRangeAsync(users);
+        await _userService.CreateUsersAsync(device.Id, users);
 
         _logger.LogInformation("Successfully saved {Count} users from device {DeviceId}", users.Count, device.Id);
 

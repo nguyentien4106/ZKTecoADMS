@@ -5,28 +5,30 @@ import { useEffect, useState } from 'react'
 import { PageHeader } from '@/components/PageHeader'
 import { AttendanceFilterBar, AttendancesTable } from '@/components/attendances'
 import { useAttendancesByDevices } from '@/hooks/useAttendance'
-import { useDevicesByUser } from '@/hooks/useDevices'
+import { useDevices } from '@/hooks/useDevices'
 import { AttendancesFilterParams } from '@/types/attendance'
 import { defaultAttendanceFilter, defaultAttendancePaginationRequest } from '@/constants/defaultValue'
 
 export const Attendance = () => {
 
   const [filter, setFilter] = useState<AttendancesFilterParams>(defaultAttendanceFilter)
-  const { data: userDevices } = useDevicesByUser()
+  const { data: userDevices } = useDevices()
   const [appliedFilters, setAppliedFilters] = useState<AttendancesFilterParams>(filter)
 
-  const { data, isFetching: isFetchingData } = useAttendancesByDevices(
+  const { data, isFetching: isFetchingData, refetch } = useAttendancesByDevices(
     defaultAttendancePaginationRequest,
     appliedFilters
   )
 
-  const deviceOptions = userDevices?.map(device => ({
+  const deviceOptions = userDevices?.items?.map(device => ({
     value: device.id,
     label: device.deviceName
   })) || []
 
   const handleApplyFilters = () => {
-    setAppliedFilters(filter)
+    setAppliedFilters({...filter})
+    // Trigger server refetch with new filters
+    refetch()
   }
 
   const onDateChange = (date: Date | undefined, type: 'fromDate' | 'toDate') => {
@@ -37,7 +39,7 @@ export const Attendance = () => {
   }
   
   const handleClearFilters = () => {
-    setFilter({ ...defaultAttendanceFilter, deviceIds: userDevices?.map(device => device.id) })
+    setFilter({ ...defaultAttendanceFilter, deviceIds: userDevices?.items?.map(device => device.id) })
   }
 
   const onSelectChange = (values: string[]) => {
@@ -48,7 +50,7 @@ export const Attendance = () => {
   }
 
   useEffect(() => {
-    const newFilter = { ...defaultAttendanceFilter, deviceIds: userDevices?.map(device => device.id) }  
+    const newFilter = { ...defaultAttendanceFilter, deviceIds: userDevices?.items?.map(device => device.id) }  
     setFilter(newFilter)
     setAppliedFilters(newFilter)
   }, [userDevices])

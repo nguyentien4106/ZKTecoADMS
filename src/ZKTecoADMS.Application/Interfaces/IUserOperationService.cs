@@ -1,5 +1,3 @@
-using ZKTecoADMS.Domain.Entities;
-
 namespace ZKTecoADMS.Application.Interfaces;
 
 /// <summary>

@@ -16,7 +16,7 @@ import {
   Trash2,
   Edit
 } from "lucide-react";
-import { User } from "@/types";
+import { User } from "@/types/user";
 import { UserPrivileges } from "@/constants";
 
 type UsersTableProps = {
@@ -87,7 +87,7 @@ export const UsersTable = ({
                   <TableCell className="font-mono font-medium">
                     {user.pin}
                   </TableCell>
-                  <TableCell className="font-medium">{user.fullName}</TableCell>
+                  <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell className="font-medium">
                     {UserPrivileges[user.privilege]}
                   </TableCell>

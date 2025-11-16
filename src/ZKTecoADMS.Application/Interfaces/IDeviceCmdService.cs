@@ -6,9 +6,9 @@ public interface IDeviceCmdService
 {
     Task<IEnumerable<DeviceCommand>> GetCreatedCommandsAsync(Guid deviceId);
     
-    Task UpdateCommandStatusAsync(Guid commandId, CommandStatus status);
+    Task<bool> UpdateCommandStatusAsync(Guid commandId, CommandStatus status);
     
-    Task UpdateCommandAfterExecutedAsync(ClockCommandResponse commandResponse);
+    Task<bool> UpdateCommandAfterExecutedAsync(ClockCommandResponse commandResponse);
     
     Task<(DeviceCommandTypes, Guid)> GetCommandTypesAndIdAsync(long commandId);
 }

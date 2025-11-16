@@ -14,23 +14,6 @@ export interface Device {
   description?: string;
 }
 
-export interface User {
-  id: string;
-  pin: string;
-  fullName: string;
-  cardNumber?: string;
-  email?: string;
-  phoneNumber?: string;
-  department?: string;
-  isActive: boolean;
-  privilege: 0 | 1 | 2 | 14;
-  verifyMode: number;
-  createdAt: string;
-  updatedAt: string;
-  deviceId: string;
-  deviceName?: string;
-}
-
 export interface AttendanceLog {
   id: string;
   deviceId: number;

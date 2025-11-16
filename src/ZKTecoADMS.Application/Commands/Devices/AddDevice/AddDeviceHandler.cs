@@ -13,18 +13,18 @@ public class AddDeviceHandler(
 {
     public async Task<AppResponse<DeviceDto>> Handle(AddDeviceCommand request, CancellationToken cancellationToken)
     {
-        var existing = await deviceService.GetDeviceBySerialNumberAsync(request.SerialNumber);
-        if (existing != null)
+        var existing = await deviceService.IsExistDeviceAsync(request.SerialNumber);
+        if (existing)
         {
             return AppResponse<DeviceDto>.Error($"Device Serial Number: {request.SerialNumber} already exists");
         }
         
-        var device = request.Adapt<Device>();
-
-        var response = await repository.AddAsync(device, cancellationToken);
+        var deviceEntity = request.Adapt<Device>();
+        var device = await repository.AddAsync(deviceEntity, cancellationToken);
+        
         var syncUsersCommand = new DeviceCommand
         {
-            DeviceId = response.Id,
+            DeviceId = device.Id,
             CommandType = DeviceCommandTypes.SyncUsers,
             Priority = 10,
             Command = ClockCommandBuilder.BuildGetAllUsersCommand()
@@ -32,6 +32,6 @@ public class AddDeviceHandler(
 
         await deviceCommandRepository.AddAsync(syncUsersCommand, cancellationToken);
 
-        return AppResponse<DeviceDto>.Success(response.Adapt<DeviceDto>());
+        return AppResponse<DeviceDto>.Success(device.Adapt<DeviceDto>());
     }
 }

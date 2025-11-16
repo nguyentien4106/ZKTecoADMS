@@ -9,7 +9,6 @@ public class DeviceCommandConfiguration : IEntityTypeConfiguration<DeviceCommand
     public void Configure(EntityTypeBuilder<DeviceCommand> builder)
     {
         builder.HasKey(e => e.Id);
-        builder.HasIndex(e => e.Status);
         builder.HasIndex(e => e.CommandId);
         
         builder.HasOne(e => e.Device)
