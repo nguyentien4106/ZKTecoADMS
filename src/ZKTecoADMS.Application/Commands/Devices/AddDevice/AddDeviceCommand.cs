@@ -2,9 +2,11 @@
 
 namespace ZKTecoADMS.Application.Commands.Devices.AddDevice;
 
-public record AddDeviceCommand(
-    string SerialNumber,
-    string DeviceName,
-    string? Location,
-    string? Description,
-    Guid ApplicationUserId) : ICommand<AppResponse<DeviceDto>>;
+public record AddDeviceCommand : ICommand<AppResponse<DeviceDto>>
+{
+    public string SerialNumber { get; set; }
+    public string DeviceName { get; set; }
+    public string? Location { get; set; }
+    public string? Description { get; set; }
+    public Guid ApplicationUserId { get; set; }
+}

@@ -14,7 +14,8 @@ import {
   Users as UsersIcon,
   Plus,
   Trash2,
-  Edit
+  Edit,
+  UserPlus
 } from "lucide-react";
 import { User } from "@/types/user";
 import { UserPrivileges } from "@/constants";
@@ -26,6 +27,7 @@ type UsersTableProps = {
   isDeletePending: boolean;
   onAddUser: () => void;
   isLoading: boolean;
+  onCreateAccount?: (user: User) => void;
 };
 
 export const UsersTable = ({
@@ -35,6 +37,7 @@ export const UsersTable = ({
   isDeletePending,
   onAddUser,
   isLoading,
+  onCreateAccount,
 }: UsersTableProps) => {
   return (
     <Card>
@@ -112,14 +115,26 @@ export const UsersTable = ({
                         variant="ghost"
                         size="icon"
                         onClick={() => onEdit(user)}
+                        title="Edit User"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
+                      {onCreateAccount && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onCreateAccount(user)}
+                          title="Create Account"
+                        >
+                          <UserPlus className="w-4 h-4 text-blue-600" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => onDelete(user.id)}
                         disabled={isDeletePending}
+                        title="Delete User"
                       >
                         <Trash2 className="w-4 h-4 text-destructive" />
                       </Button>

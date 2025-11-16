@@ -16,6 +16,8 @@ import {
 import { cn } from '@/lib/utils'
 import { useSidebar } from '@/contexts/SidebarContext'
 import { Button } from '@/components/ui/button'
+import { useRoleAccess } from '@/hooks/useRoleAccess'
+import { useMemo } from 'react'
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -29,6 +31,12 @@ const navItems = [
 
 export const Sidebar = () => {
   const { isOpen, closeSidebar } = useSidebar()
+  const { canAccessRoute } = useRoleAccess()
+
+  // Filter navigation items based on user's role
+  const allowedNavItems = useMemo(() => {
+    return navItems.filter(item => canAccessRoute(item.to))
+  }, [canAccessRoute])
 
   return (
     <>
@@ -61,7 +69,7 @@ export const Sidebar = () => {
           </Button>
         </div>
         <nav className="p-4 space-y-1">
-          {navItems.map((item) => (
+          {allowedNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

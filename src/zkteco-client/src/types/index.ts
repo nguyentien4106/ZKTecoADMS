@@ -60,7 +60,6 @@ export interface CreateDeviceRequest {
   deviceName: string;
   location?: string;
   description?: string;
-  applicationUserId: string
 }
 
 export interface SendCommandRequest {

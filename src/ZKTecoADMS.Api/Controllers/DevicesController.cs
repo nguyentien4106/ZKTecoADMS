@@ -51,6 +51,7 @@ public class DevicesController(
     public async Task<ActionResult<DeviceDto>> AddDevice([FromBody] AddDeviceRequest request)
     {
         var cmd = request.Adapt<AddDeviceCommand>();
+        cmd.ApplicationUserId = CurrentUserId;
         
         return Ok(await bus.Send(cmd));
     }

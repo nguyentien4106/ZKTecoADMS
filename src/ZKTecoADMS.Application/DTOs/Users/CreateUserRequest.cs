@@ -9,4 +9,7 @@ public record CreateUserRequest(
     string? Email,
     string? PhoneNumber,
     string? Department,
-    List<Guid> DeviceIds);
+    List<Guid> DeviceIds,
+    string FirstName,
+    string LastName,
+    string AccountPassword);

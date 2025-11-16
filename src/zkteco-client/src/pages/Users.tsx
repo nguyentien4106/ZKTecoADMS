@@ -15,16 +15,21 @@ import {
   Plus,
 } from "lucide-react";
 import { CreateUserDialog } from "@/components/dialogs/CreateUserDialog";
+import { CreateUserAccountDialog } from "@/components/dialogs/CreateUserAccountDialog";
 import { toast } from "sonner";
 import { User } from "@/types/user";
 import FilterBar from "@/components/users/FilterBar";
 import { useDevices } from "@/hooks/useDevices";
 import { CreateUserRequest, UpdateUserRequest } from "@/types/user";
+import { accountService } from "@/services/accountService";
 
 export const Users = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [createAccountDialogOpen, setCreateAccountDialogOpen] = useState(false);
   const [userToEdit, setUserToEdit] = useState<User | null>(null);
-  const { data: devices, isFetching: devicesFetching } = useDevices();
+  const [userForAccount, setUserForAccount] = useState<User | null>(null);
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+  const { data: devices } = useDevices();
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
   const deleteUser = useDeleteUser();
   const { data: users, isLoading } = useUsers(selectedDeviceIds);
@@ -79,6 +84,37 @@ export const Users = () => {
     setSelectedDeviceIds(deviceIds);
   };
 
+  const handleCreateAccount = (user: User) => {
+    setUserForAccount(user);
+    setCreateAccountDialogOpen(true);
+  };
+
+  const handleCreateAccountSubmit = async (
+    userId: string, 
+    firstName: string, 
+    lastName: string, 
+    email: string, 
+    password: string,
+    phoneNumber?: string,
+    department?: string
+  ) => {
+    setIsCreatingAccount(true);
+    try {
+      await accountService.createUserAccount(userId, firstName, lastName, email, password, phoneNumber, department);
+      toast.success("Account created successfully", {
+        description: `Login account created for ${userForAccount?.name}`,
+      });
+      setCreateAccountDialogOpen(false);
+      setUserForAccount(null);
+    } catch (error: any) {
+      toast.error("Failed to create account", {
+        description: error.message || "An error occurred",
+      });
+    } finally {
+      setIsCreatingAccount(false);
+    }
+  };
+
   return (
     <div>
       <PageHeader
@@ -105,6 +141,7 @@ export const Users = () => {
         isDeletePending={deleteUser.isPending}
         onAddUser={() => setCreateDialogOpen(true)}
         isLoading={isLoading}
+        onCreateAccount={handleCreateAccount}
       />
 
       <CreateUserDialog
@@ -113,6 +150,14 @@ export const Users = () => {
         user={userToEdit}
         handleAddUser={handleAddUser}
         handleUpdateUser={handleUpdateUser}
+      />
+
+      <CreateUserAccountDialog
+        open={createAccountDialogOpen}
+        onOpenChange={setCreateAccountDialogOpen}
+        user={userForAccount}
+        onSubmit={handleCreateAccountSubmit}
+        isLoading={isCreatingAccount}
       />
     </div>
   );

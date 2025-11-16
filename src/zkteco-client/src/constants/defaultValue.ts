@@ -19,7 +19,6 @@ export const defaultNewDevice: CreateDeviceRequest = {
     deviceName: '',
     location: '',
     description: '',
-    applicationUserId: ''
 }
 
 const today = new Date()

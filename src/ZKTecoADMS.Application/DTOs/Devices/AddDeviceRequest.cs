@@ -4,5 +4,4 @@ public record AddDeviceRequest(
     string SerialNumber,
     string DeviceName,
     string? Location,
-    string? Description,
-    Guid ApplicationUserId);
+    string? Description);

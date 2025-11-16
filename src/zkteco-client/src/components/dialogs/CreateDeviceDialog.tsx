@@ -17,7 +17,6 @@ import { Label } from '@/components/ui/label'
 import { Hash, Monitor, MapPin } from 'lucide-react'
 import type { CreateDeviceRequest } from '@/types'
 import { defaultNewDevice } from '@/constants/defaultValue'
-import { useAuth } from '@/contexts/AuthContext'
 import { useDeviceContext } from '@/contexts/DeviceContext'
 
 export const CreateDeviceDialog = () => {
@@ -27,12 +26,11 @@ export const CreateDeviceDialog = () => {
   } = useDeviceContext()
 
   const createDevice = useCreateDevice()
-  const { user } = useAuth()
   const [formData, setFormData] = useState<CreateDeviceRequest>(defaultNewDevice)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await createDevice.mutateAsync({ ...formData, applicationUserId: user?.id || '' })
+    await createDevice.mutateAsync({ ...formData })
     setCreateDialogOpen(false)
     setFormData(defaultNewDevice)
   }

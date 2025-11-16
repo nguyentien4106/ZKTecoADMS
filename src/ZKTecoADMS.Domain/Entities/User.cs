@@ -40,6 +40,9 @@ public class User : AuditableEntity<Guid>
     
     public Guid DeviceId { get; set; }
     public virtual Device Device { get; set; } = null!;
+    
+    public Guid? ApplicationUserId { get; set; }
+    public virtual ApplicationUser? ApplicationUser { get; set; }
 
     // Navigation Properties
     public virtual ICollection<FingerprintTemplate> FingerprintTemplates { get; set; } = new List<FingerprintTemplate>();

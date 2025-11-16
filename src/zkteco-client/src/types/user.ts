@@ -22,7 +22,7 @@ export interface UpdateUserRequest {
     email?: string;
     phoneNumber?: string;
     department?: string;
-    deviceId: string; 
+    deviceId: string;
 }
 
 export interface User {

@@ -12,4 +12,5 @@ public class ApplicationUser : IdentityUser<Guid>
 
     // Navigation Properties
     public virtual ICollection<Device> Devices { get; set; } = [];
+    public virtual User? User { get; set; }
 }
