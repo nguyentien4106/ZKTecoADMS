@@ -5,7 +5,7 @@ namespace ZKTecoADMS.Application.Queries.Dashboard.GetDashboardData;
 public record GetDashboardDataQuery(
     DateTime StartDate,
     DateTime EndDate,
-    Guid UserId,
+    Guid EmployeeId,
     string? Department = null,
     int TopPerformersCount = 10,
     int LateEmployeesCount = 10,

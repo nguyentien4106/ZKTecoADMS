@@ -10,7 +10,7 @@ public class AttendanceConfiguration : IEntityTypeConfiguration<Attendance>
     {
         builder.HasKey(e => e.Id);
         builder.HasIndex(e => e.DeviceId);
-        builder.HasIndex(e => e.UserId);
+        builder.HasIndex(e => e.EmployeeId);
         builder.HasIndex(e => e.PIN);
 
         builder.HasOne(e => e.Device)
@@ -18,9 +18,9 @@ public class AttendanceConfiguration : IEntityTypeConfiguration<Attendance>
             .HasForeignKey(e => e.DeviceId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(e => e.User)
+        builder.HasOne(e => e.Employee)
             .WithMany(u => u.AttendanceLogs)
-            .HasForeignKey(e => e.UserId)
+            .HasForeignKey(e => e.EmployeeId)
             .OnDelete(DeleteBehavior.SetNull);
 
     }

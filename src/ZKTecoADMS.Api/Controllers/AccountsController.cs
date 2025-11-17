@@ -21,12 +21,12 @@ public class AccountsController(IMediator mediator) : ControllerBase
         return result;
     }
 
-    [HttpPut("{userDeviceId}")]
+    [HttpPut("{employeeDeviceId}")]
     [Authorize(Policy = PolicyNames.AtLeastManager)]
-    public async Task<AppResponse<bool>> UpdateEmployeeAccount(Guid userDeviceId, [FromBody] UpdateEmployeeAccountRequest request, CancellationToken cancellationToken)
+    public async Task<AppResponse<bool>> UpdateEmployeeAccount(Guid employeeDeviceId, [FromBody] UpdateEmployeeAccountRequest request, CancellationToken cancellationToken)
     {
         var command = request.Adapt<UpdateEmployeeAccountCommand>();
-        command.UserDeviceId = userDeviceId;
+        command.EmployeeDeviceId = employeeDeviceId;
         var result = await mediator.Send(command, cancellationToken);
 
         return result;
@@ -37,7 +37,7 @@ public class CreateEmployeeAccountRequest
 {
     public required string Email { get; set; }
     public required string Password { get; set; }
-    public Guid UserDeviceId { get; set; }
+    public Guid EmployeeDeviceId { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public string? PhoneNumber { get; set; }

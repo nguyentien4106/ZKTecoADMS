@@ -8,10 +8,10 @@ using ZKTecoADMS.Domain.Repositories;
 namespace ZKTecoADMS.Application.Queries.Dashboard.GetDashboardData;
 
 public class GetDashboardDataHandler(
-    IUserService userService,
+    IEmployeeService employeeService,
     IDeviceService deviceService,
     IAttendanceService attendanceService,
-    IRepository<User> userRepository,
+    IRepository<Employee> employeeRepository,
     IRepository<Attendance> attendanceRepository
     ) : IQueryHandler<GetDashboardDataQuery, AppResponse<DashboardDataDto>>
 {
@@ -24,10 +24,10 @@ public class GetDashboardDataHandler(
         var todayStart = today.Date;
         var todayEnd = today.Date.AddDays(1).AddTicks(-1);
 
-        // Get devices first (filtered by user) - DbContext cannot handle parallel operations
-        var allDevices = (await deviceService.GetAllDevicesByUserAsync(request.UserId)).ToList();
+        // Get devices first (filtered by employee) - DbContext cannot handle parallel operations
+        var allDevices = (await deviceService.GetAllDevicesByEmployeeAsync(request.EmployeeId)).ToList();
         
-        // If user has no devices, return empty dashboard
+        // If employee has no devices, return empty dashboard
         if (!allDevices.Any())
         {
             return AppResponse<DashboardDataDto>.Success(new DashboardDataDto
@@ -41,17 +41,17 @@ public class GetDashboardDataHandler(
             });
         }
 
-        var userDeviceIds = allDevices.Select(d => d.Id).ToHashSet();
+        var employeeDeviceIds = allDevices.Select(d => d.Id).ToHashSet();
         
-        // Get users filtered by devices belonging to current user
-        var allUsers = (await userRepository.GetAllAsync(
-            filter: u => userDeviceIds.Contains(u.DeviceId),
+        // Get employees filtered by devices belonging to current employee
+        var allEmployees = (await employeeRepository.GetAllAsync(
+            filter: u => employeeDeviceIds.Contains(u.DeviceId),
             cancellationToken: cancellationToken
         )).ToList();
         
-        // Get attendances filtered by devices belonging to current user
+        // Get attendances filtered by devices belonging to current employee
         var allAttendances = (await attendanceRepository.GetAllAsync(
-            filter: a => userDeviceIds.Contains(a.DeviceId),
+            filter: a => employeeDeviceIds.Contains(a.DeviceId),
             cancellationToken: cancellationToken
         )).ToList();
 
@@ -64,37 +64,37 @@ public class GetDashboardDataHandler(
             .Where(a => a.AttendanceTime >= todayStart && a.AttendanceTime <= todayEnd)
             .ToList();
 
-        // Filter users by department if specified
-        var users = string.IsNullOrEmpty(request.Department)
-            ? allUsers
-            : allUsers.Where(u => u.Department == request.Department).ToList();
+        // Filter employees by department if specified
+        var employees = string.IsNullOrEmpty(request.Department)
+            ? allEmployees
+            : allEmployees.Where(u => u.Department == request.Department).ToList();
 
         // Build dashboard data
         var dashboardData = new DashboardDataDto
         {
-            Summary = BuildSummary(users, allDevices, todayAttendances, allUsers),
-            TopPerformers = BuildTopPerformers(users, filteredAttendances, request.TopPerformersCount, request.StartDate, request.EndDate),
-            LateEmployees = BuildLateEmployees(users, filteredAttendances, request.LateEmployeesCount, request.StartDate, request.EndDate),
-            DepartmentStats = BuildDepartmentStatistics(allUsers, todayAttendances, filteredAttendances, request.StartDate, request.EndDate),
-            AttendanceTrends = BuildAttendanceTrends(allUsers, allAttendances, request.StartDate, request.EndDate, request.TrendDays),
-            DeviceStatuses = BuildDeviceStatuses(allDevices, todayAttendances, allUsers)
+            Summary = BuildSummary(employees, allDevices, todayAttendances, allEmployees),
+            TopPerformers = BuildTopPerformers(employees, filteredAttendances, request.TopPerformersCount, request.StartDate, request.EndDate),
+            LateEmployees = BuildLateEmployees(employees, filteredAttendances, request.LateEmployeesCount, request.StartDate, request.EndDate),
+            DepartmentStats = BuildDepartmentStatistics(allEmployees, todayAttendances, filteredAttendances, request.StartDate, request.EndDate),
+            AttendanceTrends = BuildAttendanceTrends(allEmployees, allAttendances, request.StartDate, request.EndDate, request.TrendDays),
+            DeviceStatuses = BuildDeviceStatuses(allDevices, todayAttendances, allEmployees)
         };
 
         return AppResponse<DashboardDataDto>.Success(dashboardData);
     }
 
     private DashboardSummaryDto BuildSummary(
-        List<User> users,
+        List<Employee> users,
         List<Device> devices,
         List<Attendance> todayAttendances,
-        List<User> allUsers)
+        List<Employee> allUsers)
     {
         var todayCheckIns = todayAttendances.Count(a => a.AttendanceState == AttendanceStates.CheckIn);
         var todayCheckOuts = todayAttendances.Count(a => a.AttendanceState == AttendanceStates.CheckOut);
         
         var usersCheckedInToday = todayAttendances
             .Where(a => a.AttendanceState == AttendanceStates.CheckIn)
-            .Select(a => a.UserId)
+            .Select(a => a.EmployeeId)
             .Distinct()
             .Count();
 
@@ -125,7 +125,7 @@ public class GetDashboardDataHandler(
     }
 
     private List<EmployeePerformanceDto> BuildTopPerformers(
-        List<User> users,
+        List<Employee> users,
         List<Attendance> attendances,
         int count,
         DateTime startDate,
@@ -135,7 +135,7 @@ public class GetDashboardDataHandler(
         
         var performances = users.Where(u => u.IsActive).Select(user =>
         {
-            var userAttendances = attendances.Where(a => a.UserId == user.Id).ToList();
+            var userAttendances = attendances.Where(a => a.EmployeeId == user.Id).ToList();
             var checkIns = userAttendances.Where(a => a.AttendanceState == AttendanceStates.CheckIn).ToList();
             var checkOuts = userAttendances.Where(a => a.AttendanceState == AttendanceStates.CheckOut).ToList();
 
@@ -176,7 +176,7 @@ public class GetDashboardDataHandler(
     }
 
     private List<EmployeePerformanceDto> BuildLateEmployees(
-        List<User> users,
+        List<Employee> users,
         List<Attendance> attendances,
         int count,
         DateTime startDate,
@@ -186,7 +186,7 @@ public class GetDashboardDataHandler(
         
         var performances = users.Where(u => u.IsActive).Select(user =>
         {
-            var userAttendances = attendances.Where(a => a.UserId == user.Id).ToList();
+            var userAttendances = attendances.Where(a => a.EmployeeId == user.Id).ToList();
             var checkIns = userAttendances.Where(a => a.AttendanceState == AttendanceStates.CheckIn).ToList();
             var checkOuts = userAttendances.Where(a => a.AttendanceState == AttendanceStates.CheckOut).ToList();
 
@@ -227,7 +227,7 @@ public class GetDashboardDataHandler(
     }
 
     private List<DepartmentStatisticsDto> BuildDepartmentStatistics(
-        List<User> allUsers,
+        List<Employee> allUsers,
         List<Attendance> todayAttendances,
         List<Attendance> periodAttendances,
         DateTime startDate,
@@ -244,12 +244,12 @@ public class GetDashboardDataHandler(
             var deptUsers = allUsers.Where(u => u.Department == dept && u.IsActive).ToList();
             var deptUserIds = deptUsers.Select(u => u.Id).ToHashSet();
 
-            var todayDeptAttendances = todayAttendances.Where(a => a.UserId.HasValue && deptUserIds.Contains(a.UserId.Value)).ToList();
-            var periodDeptAttendances = periodAttendances.Where(a => a.UserId.HasValue && deptUserIds.Contains(a.UserId.Value)).ToList();
+            var todayDeptAttendances = todayAttendances.Where(a => a.EmployeeId.HasValue && deptUserIds.Contains(a.EmployeeId.Value)).ToList();
+            var periodDeptAttendances = periodAttendances.Where(a => a.EmployeeId.HasValue && deptUserIds.Contains(a.EmployeeId.Value)).ToList();
 
             var activeToday = todayDeptAttendances
                 .Where(a => a.AttendanceState == AttendanceStates.CheckIn)
-                .Select(a => a.UserId)
+                .Select(a => a.EmployeeId)
                 .Distinct()
                 .Count();
 
@@ -265,7 +265,7 @@ public class GetDashboardDataHandler(
             var checkIns = periodDeptAttendances.Where(a => a.AttendanceState == AttendanceStates.CheckIn).ToList();
             var checkOuts = periodDeptAttendances.Where(a => a.AttendanceState == AttendanceStates.CheckOut).ToList();
             
-            var actualAttendances = checkIns.Select(a => new { a.UserId, Date = a.AttendanceTime.Date }).Distinct().Count();
+            var actualAttendances = checkIns.Select(a => new { a.EmployeeId, Date = a.AttendanceTime.Date }).Distinct().Count();
             var attendanceRate = totalPossibleAttendances > 0 ? (double)actualAttendances / totalPossibleAttendances * 100 : 0;
             
             var onTimeCount = checkIns.Count(a => !IsLateArrival(a.AttendanceTime));
@@ -288,7 +288,7 @@ public class GetDashboardDataHandler(
     }
 
     private List<AttendanceTrendDto> BuildAttendanceTrends(
-        List<User> users,
+        List<Employee> users,
         List<Attendance> allAttendances,
         DateTime startDate,
         DateTime endDate,
@@ -315,7 +315,7 @@ public class GetDashboardDataHandler(
             
             var uniqueCheckIns = dayAttendances
                 .Where(a => a.AttendanceState == AttendanceStates.CheckIn)
-                .Select(a => a.UserId)
+                .Select(a => a.EmployeeId)
                 .Distinct()
                 .Count();
 
@@ -343,7 +343,7 @@ public class GetDashboardDataHandler(
     private List<DeviceStatusDto> BuildDeviceStatuses(
         List<Device> devices,
         List<Attendance> todayAttendances,
-        List<User> allUsers)
+        List<Employee> allUsers)
     {
         return devices.Select(device =>
         {
@@ -387,7 +387,7 @@ public class GetDashboardDataHandler(
             {
                 var dayCheckIn = g.OrderBy(a => a.AttendanceTime).First();
                 var dayCheckOut = checkOuts
-                    .Where(co => co.UserId == dayCheckIn.UserId && co.AttendanceTime.Date == dayCheckIn.AttendanceTime.Date)
+                    .Where(co => co.EmployeeId == dayCheckIn.EmployeeId && co.AttendanceTime.Date == dayCheckIn.AttendanceTime.Date)
                     .OrderByDescending(a => a.AttendanceTime)
                     .FirstOrDefault();
 

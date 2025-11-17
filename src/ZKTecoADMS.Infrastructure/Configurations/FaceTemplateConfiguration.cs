@@ -9,11 +9,11 @@ public class FaceTemplateConfiguration : IEntityTypeConfiguration<FaceTemplate>
     public void Configure(EntityTypeBuilder<FaceTemplate> builder)
     {
         builder.HasKey(e => e.Id);
-        builder.HasIndex(e => new { e.UserId, e.FaceIndex }).IsUnique();
+        builder.HasIndex(e => new { e.EmployeeId, e.FaceIndex }).IsUnique();
 
-        builder.HasOne(e => e.User)
+        builder.HasOne(e => e.Employee)
             .WithMany(u => u.FaceTemplates)
-            .HasForeignKey(e => e.UserId)
+            .HasForeignKey(e => e.EmployeeId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

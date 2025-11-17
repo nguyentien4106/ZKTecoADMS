@@ -2,7 +2,7 @@ namespace ZKTecoADMS.Application.Commands.Accounts.UpdateEmployeeAccount;
 
 public class UpdateEmployeeAccountCommand : ICommand<AppResponse<bool>>
 {
-    public Guid UserDeviceId { get; set; }
+    public Guid EmployeeDeviceId { get; set; }
 
     public required string Email { get; set; }
 

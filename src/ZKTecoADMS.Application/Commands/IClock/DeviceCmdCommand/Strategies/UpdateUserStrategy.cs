@@ -7,8 +7,8 @@ namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand.Strategies;
 /// <summary>
 /// Strategy for handling UpdateUser command responses
 /// </summary>
-[DeviceCommandStrategy(DeviceCommandTypes.UpdateUser)]
-public class UpdateUserStrategy(IRepository<User> userRepository) : IDeviceCommandStrategy
+[DeviceCommandStrategy(DeviceCommandTypes.UpdateEmployee)]
+public class UpdateUserStrategy(IRepository<Employee> userRepository) : IDeviceCommandStrategy
 {
     public async Task ExecuteAsync(Device device, Guid objectRefId, ClockCommandResponse response, CancellationToken cancellationToken)
     {

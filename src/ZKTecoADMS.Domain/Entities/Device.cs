@@ -36,7 +36,7 @@ public class Device : AuditableEntity<Guid>
 
     public virtual ApplicationUser ApplicationUser { get; set; } = null!;
     public virtual DeviceInfo DeviceInfo { get; set; } = null!;
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
     public virtual ICollection<Attendance> AttendanceLogs { get; set; } = new List<Attendance>();
     public virtual ICollection<DeviceCommand> DeviceCommands { get; set; } = new List<DeviceCommand>();
     public virtual ICollection<SyncLog> SyncLogs { get; set; } = new List<SyncLog>();

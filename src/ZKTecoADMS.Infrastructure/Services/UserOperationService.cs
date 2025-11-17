@@ -6,9 +6,9 @@ using ZKTecoADMS.Domain.Repositories;
 namespace ZKTecoADMS.Core.Services;
 
 /// <summary>
-/// Service for parsing and processing user data from device OPERLOG data.
+/// Service for parsing and processing employee data from device OPERLOG data.
 /// </summary>
-public class UserOperationService(ILogger<UserOperationService> logger) : IUserOperationService
+public class EmployeeOperationService(ILogger<EmployeeOperationService> logger) : IEmployeeOperationService
 {
     // Field identifiers based on protocol
     private const string USER_PREFIX = "USER";
@@ -24,69 +24,69 @@ public class UserOperationService(ILogger<UserOperationService> logger) : IUserO
     private const int MIN_FIELDS = 6; // At least PIN, Name, Passwd, Card, Grp, and Pri
 
     /// <summary>
-    /// Parses and processes user data from device OPERLOG format.
+    /// Parses and processes employee data from device OPERLOG format.
     /// </summary>
-    public async Task<List<User>> ProcessUsersFromDeviceAsync(Device device, string body)
+    public async Task<List<Employee>> ProcessEmployeesFromDeviceAsync(Device device, string body)
     {
-        var userLines = ExtractUserLines(body);
-        logger.LogInformation("Processing {Count} user records from device {DeviceId}",
-            userLines.Count, device.Id);
+        var employeeLines = ExtractEmployeeLines(body);
+        logger.LogInformation("Processing {Count} employee records from device {DeviceId}",
+            employeeLines.Count, device.Id);
 
-        var users = await ProcessUserLinesAsync(device, userLines);
-        logger.LogInformation("Successfully processed {Count} user records from device {DeviceId}",
-            users.Count, device.Id);
+        var employees = await ProcessEmployeeLinesAsync(device, employeeLines);
+        logger.LogInformation("Successfully processed {Count} employee records from device {DeviceId}",
+            employees.Count, device.Id);
 
-        return users;
+        return employees;
     }
 
-    private static List<string> ExtractUserLines(string body)
+    private static List<string> ExtractEmployeeLines(string body)
     {
         return body.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries)
                    .Where(line => !string.IsNullOrWhiteSpace(line) && line.TrimStart().StartsWith(USER_PREFIX))
                    .ToList();
     }
 
-    private async Task<List<User>> ProcessUserLinesAsync(Device device, List<string> userLines)
+    private async Task<List<Employee>> ProcessEmployeeLinesAsync(Device device, List<string> employeeLines)
     {
-        var users = new List<User>();
+        var employees = new List<Employee>();
 
-        foreach (var line in userLines)
+        foreach (var line in employeeLines)
         {
             try
             {
-                var user = await TryProcessUserLineAsync(device, line);
-                if (user != null)
+                var employee = await TryProcessEmployeeLineAsync(device, line);
+                if (employee != null)
                 {
-                    users.Add(user);
+                    employees.Add(employee);
                 }
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Unexpected error processing user line from device {DeviceId}: {Line}",
+                logger.LogError(ex, "Unexpected error processing employee line from device {DeviceId}: {Line}",
                     device.Id, line);
             }
         }
 
-        return users;
+        return employees;
     }
 
-    private Task<User?> TryProcessUserLineAsync(Device device, string line)
+    private Task<Employee?> TryProcessEmployeeLineAsync(Device device, string line)
     {
-        var userFields = ParseUserLine(line);
+        var employeeFields = ParseEmployeeLine(line);
 
-        if (userFields == null || !ValidateUserFields(userFields))
+        if (employeeFields == null || !ValidateEmployeeFields(employeeFields))
         {
-            return Task.FromResult<User?>(null);
+            return Task.FromResult<Employee?>(null);
         }
 
-        return Task.FromResult(ExtractUserData(userFields, device.Id));
+        return Task.FromResult(ExtractEmployeeData(employeeFields, device.Id));
     }
 
     /// <summary>
-    /// Parses a user line into key-value pairs.
+    /// Parses an employee line into key-value pairs.
     /// Format: USER PIN=982\tName=Richard\tPasswd=9822\tCard=13375590\tGrp=1\tTZ=
     /// </summary>
-    private Dictionary<string, string>? ParseUserLine(string line)
+    private Dictionary<string, string>? ParseEmployeeLine(string line)
     {
         try
         {
@@ -114,17 +114,17 @@ public class UserOperationService(ILogger<UserOperationService> logger) : IUserO
         }
     }
 
-    private bool ValidateUserFields(Dictionary<string, string> fields)
+    private bool ValidateEmployeeFields(Dictionary<string, string> fields)
     {
         if (!fields.TryGetValue(PIN_KEY, out var pinValue) || string.IsNullOrWhiteSpace(pinValue))
         {
-            logger.LogWarning("User record missing required PIN field");
+            logger.LogWarning("Employee record missing required PIN field");
             return false;
         }
 
         if (!fields.TryGetValue(NAME_KEY, out var nameValue) || string.IsNullOrWhiteSpace(nameValue))
         {
-            logger.LogWarning("User record missing required Name field for PIN: {PIN}",
+            logger.LogWarning("Employee record missing required Name field for PIN: {PIN}",
                 fields.GetValueOrDefault(PIN_KEY));
             return false;
         }
@@ -132,17 +132,17 @@ public class UserOperationService(ILogger<UserOperationService> logger) : IUserO
         if (fields.Count >= MIN_FIELDS) 
             return true;
         
-        logger.LogWarning("User record has fewer than minimum required fields ({Min}). PIN: {PIN}",
+        logger.LogWarning("Employee record has fewer than minimum required fields ({Min}). PIN: {PIN}",
             MIN_FIELDS, fields.GetValueOrDefault(PIN_KEY));
         return false;
 
     }
 
-    private User? ExtractUserData(Dictionary<string, string> fields, Guid deviceId)
+    private Employee? ExtractEmployeeData(Dictionary<string, string> fields, Guid deviceId)
     {
         try
         {
-            var user = new User
+            var employee = new Employee
             {
                 Pin = ExtractField(fields, PIN_KEY, string.Empty),
                 Name = ExtractField(fields, NAME_KEY, string.Empty)!,
@@ -153,11 +153,11 @@ public class UserOperationService(ILogger<UserOperationService> logger) : IUserO
                 DeviceId = deviceId,
                 IsActive = true
             };
-            return user;
+            return employee;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error extracting user data from fields");
+            logger.LogError(ex, "Error extracting employee data from fields");
             return null;
         }
     }

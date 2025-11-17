@@ -9,8 +9,8 @@ namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand.Strategies;
 /// Format: USER PIN=%s\tName=%s\tPasswd=%d\tCard=%d\tGrp=%d\tTZ=%s
 /// </summary>
 public class SyncUsersStrategy(
-    IRepository<User> userRepository,
-    IUserOperationService userOperationService,
+    IRepository<Employee> userRepository,
+    IEmployeeOperationService employeeOperationService,
     ILogger<SyncUsersStrategy> logger) : IDeviceCommandStrategy
 {
     public async Task ExecuteAsync(Device device, Guid objectRefId, ClockCommandResponse response, CancellationToken cancellationToken)
@@ -21,7 +21,7 @@ public class SyncUsersStrategy(
             return;
         }
 
-        var users = await userOperationService.ProcessUsersFromDeviceAsync(device, response.CMD);
+        var users = await employeeOperationService.ProcessEmployeesFromDeviceAsync(device, response.CMD);
 
         if (users.Count == 0)
         {

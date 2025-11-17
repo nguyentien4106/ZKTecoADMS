@@ -7,8 +7,8 @@ namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand.Strategies;
 /// <summary>
 /// Strategy for handling DeleteUser command responses
 /// </summary>
-[DeviceCommandStrategy(DeviceCommandTypes.DeleteUser)]
-public class DeleteUserStrategy(IRepository<User> userRepository) : IDeviceCommandStrategy
+[DeviceCommandStrategy(DeviceCommandTypes.DeleteEmployee)]
+public class DeleteUserStrategy(IRepository<Employee> userRepository) : IDeviceCommandStrategy
 {
     public async Task ExecuteAsync(Device device, Guid objectRefId, ClockCommandResponse response, CancellationToken cancellationToken)
     {

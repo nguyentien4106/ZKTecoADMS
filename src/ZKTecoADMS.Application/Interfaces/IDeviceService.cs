@@ -1,3 +1,4 @@
+using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Interfaces;
@@ -9,7 +10,7 @@ public interface IDeviceService
     Task UpdateDeviceHeartbeatAsync(string serialNumber);
     Task<IEnumerable<DeviceCommand>> GetPendingCommandsAsync(Guid deviceId);
     Task<DeviceCommand> CreateCommandAsync(DeviceCommand command);
-    Task<AppResponse<bool>> IsValidUserAsync(User user);
+    Task<AppResponse<bool>> IsValidEmployeeAsync(Employee employee);
     
-    Task<IEnumerable<Device>> GetAllDevicesByUserAsync(Guid userId);
+    Task<IEnumerable<Device>> GetAllDevicesByEmployeeAsync(Guid employeeId);
 }

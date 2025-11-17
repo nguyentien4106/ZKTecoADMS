@@ -6,13 +6,13 @@ namespace ZKTecoADMS.Application.Commands.Accounts.CreateEmployeeAccount;
 
 public class CreateEmployeeAccountHandler(
     UserManager<ApplicationUser> userManager,
-    IRepository<User> userRepository
+    IRepository<Employee> employeeRepository
     ) : ICommandHandler<CreateEmployeeAccountCommand, AppResponse<bool>>
 {
     public async Task<AppResponse<bool>> Handle(CreateEmployeeAccountCommand request, CancellationToken cancellationToken)
     {
-        if(request.UserDeviceId == Guid.Empty){
-            return AppResponse<bool>.Error("UserDeviceId must be provided to link the employee account.");
+        if(request.EmployeeDeviceId == Guid.Empty){
+            return AppResponse<bool>.Error("EmployeeDeviceId must be provided to link the employee account.");
         }
 
         var user = new ApplicationUser
@@ -34,16 +34,16 @@ public class CreateEmployeeAccountHandler(
             var roleResult = await userManager.AddToRoleAsync(user, nameof(Roles.Employee));
             if (roleResult.Succeeded)
             {
-                var userDevice = await userRepository.GetByIdAsync(request.UserDeviceId);
-                if (userDevice != null)
+                var employeeDevice = await employeeRepository.GetByIdAsync(request.EmployeeDeviceId);
+                if (employeeDevice != null)
                 {
-                    userDevice.ApplicationUserId = user.Id;
-                    await userRepository.UpdateAsync(userDevice);
+                    employeeDevice.ApplicationUserId = user.Id;
+                    await employeeRepository.UpdateAsync(employeeDevice);
                     return AppResponse<bool>.Success(true);
                 }
                 else
                 {
-                    return AppResponse<bool>.Error("User device not found.");
+                    return AppResponse<bool>.Error("Employee device not found.");
                 }
 
             }

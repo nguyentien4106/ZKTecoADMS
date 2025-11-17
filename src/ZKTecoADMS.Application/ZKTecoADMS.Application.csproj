@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Commands\Attendances\" />
-    <Folder Include="Commands\IClock\DeviceCmdCommand\Strategy\" />
     <Folder Include="Queries\Attendances\" />
     <Folder Include="Settings\" />
   </ItemGroup>

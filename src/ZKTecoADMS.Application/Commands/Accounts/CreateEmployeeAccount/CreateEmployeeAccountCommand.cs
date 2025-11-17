@@ -6,7 +6,7 @@ public class CreateEmployeeAccountCommand : ICommand<AppResponse<bool>>
 
     public required string Password { get; set; }
 
-    public Guid UserDeviceId { get; set; }
+    public Guid EmployeeDeviceId { get; set; }
 
     public required string FirstName { get; set; }
 

@@ -1,13 +1,15 @@
+using ZKTecoADMS.Domain.Entities;
+
 namespace ZKTecoADMS.Application.Constants;
 
 public static class ClockCommandBuilder
 {
-    public static string BuildAddOrUpdateUserCommand(User user)
+    public static string BuildAddOrUpdateEmployeeCommand(Employee user)
     {
         return $"DATA UPDATE USERINFO PIN={user.Pin}\tName={user.Name}\tPri={user.Privilege}\tPasswd={user.Password}\tCard={user.CardNumber}\tGrp={user.GroupId}\tTZ=0000\tVerifyMode={user.VerifyMode}";
     }
 
-    public static string BuildDeleteUserCommand(string pin)
+    public static string BuildDeleteEmployeeCommand(string pin)
     {
         return $"DATA DELETE USERINFO PIN={pin}";
     }

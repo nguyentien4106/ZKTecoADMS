@@ -20,11 +20,11 @@ public class AttendanceService(
         );
     }
 
-    public async Task<IEnumerable<Attendance>> GetAttendanceByUserAsync(
-        Guid deviceId, Guid userId, DateTime? startDate, DateTime? endDate)
+    public async Task<IEnumerable<Attendance>> GetAttendanceByEmployeeAsync(
+        Guid deviceId, Guid employeeId, DateTime? startDate, DateTime? endDate)
     {
         return await attendanceRepository.GetAllAsync(
-            a => a.DeviceId == deviceId && a.AttendanceTime.Date >= startDate && a.AttendanceTime.Date <= endDate && a.UserId == userId,
+            a => a.DeviceId == deviceId && a.AttendanceTime.Date >= startDate && a.AttendanceTime.Date <= endDate && a.EmployeeId == employeeId,
             orderBy: query => query.OrderByDescending(a => a.AttendanceTime.Date)
         );    }
 

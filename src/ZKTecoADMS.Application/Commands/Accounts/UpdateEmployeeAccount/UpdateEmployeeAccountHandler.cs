@@ -5,31 +5,31 @@ namespace ZKTecoADMS.Application.Commands.Accounts.UpdateEmployeeAccount;
 
 public class UpdateEmployeeAccountHandler(
     UserManager<ApplicationUser> userManager,
-    IRepository<User> userRepository
+    IRepository<Employee> employeeRepository
     ) : ICommandHandler<UpdateEmployeeAccountCommand, AppResponse<bool>>
 {
     public async Task<AppResponse<bool>> Handle(UpdateEmployeeAccountCommand request, CancellationToken cancellationToken)
     {
-        if (request.UserDeviceId == Guid.Empty)
+        if (request.EmployeeDeviceId == Guid.Empty)
         {
-            return AppResponse<bool>.Error("UserDeviceId must be provided.");
+            return AppResponse<bool>.Error("EmployeeDeviceId must be provided.");
         }
 
-        // Get the user device
-        var userDevice = await userRepository.GetByIdAsync(request.UserDeviceId);
-        if (userDevice == null)
+        // Get the employee device
+        var employeeDevice = await employeeRepository.GetByIdAsync(request.EmployeeDeviceId);
+        if (employeeDevice == null)
         {
-            return AppResponse<bool>.Error("User device not found.");
+            return AppResponse<bool>.Error("Employee device not found.");
         }
 
-        // Check if the user has an associated application user
-        if (userDevice.ApplicationUserId == null)
+        // Check if the employee has an associated application user
+        if (employeeDevice.ApplicationUserId == null)
         {
-            return AppResponse<bool>.Error("User does not have an associated account.");
+            return AppResponse<bool>.Error("Employee does not have an associated account.");
         }
 
         // Get the application user
-        var applicationUser = await userManager.FindByIdAsync(userDevice.ApplicationUserId.ToString()!);
+        var applicationUser = await userManager.FindByIdAsync(employeeDevice.ApplicationUserId.ToString()!);
         if (applicationUser == null)
         {
             return AppResponse<bool>.Error("Associated account not found.");

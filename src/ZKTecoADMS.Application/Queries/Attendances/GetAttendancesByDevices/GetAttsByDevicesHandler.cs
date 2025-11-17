@@ -18,7 +18,7 @@ public class GetAttsByDevicesHandler(IRepositoryPagedQuery<Attendance> attReposi
                 a.Id,
                 a.AttendanceTime,
                 a.Device.DeviceName,      // Only loads DeviceName field
-                a.User.Name ?? string.Empty,  // Only loads Name field
+                a.Employee.Name ?? string.Empty,  // Only loads Name field
                 a.VerifyMode,
                 a.AttendanceState,
                 a.WorkCode

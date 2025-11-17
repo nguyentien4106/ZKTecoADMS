@@ -6,7 +6,7 @@ namespace ZKTecoADMS.Domain.Entities;
 // ZKTecoADMS.Domain/Entities/FingerprintTemplate.cs
 public class FingerprintTemplate : Entity<Guid>
 {
-    public Guid UserId { get; set; }
+    public Guid EmployeeId { get; set; }
     public int FingerIndex { get; set; }
 
     [Required]
@@ -17,5 +17,5 @@ public class FingerprintTemplate : Entity<Guid>
     public int Version { get; set; } = 10;
 
     // Navigation Properties
-    public virtual User User { get; set; } = null!;
+    public virtual Employee Employee { get; set; } = null!;
 }

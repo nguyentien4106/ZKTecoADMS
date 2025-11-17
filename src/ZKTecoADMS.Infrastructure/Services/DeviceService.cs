@@ -96,16 +96,16 @@ public class DeviceService(
         await deviceRepository.DeleteAsync(device);
     }
 
-    public async Task<AppResponse<bool>> IsValidUserAsync(User user)
+    public async Task<AppResponse<bool>> IsValidEmployeeAsync(Employee employee)
     {
-        var existing = await context.UserDevices.Include(i => i.Device).FirstOrDefaultAsync(i => i.DeviceId == user.DeviceId && i.Pin == user.Pin);
+        var existing = await context.Employees.Include(i => i.Device).FirstOrDefaultAsync(i => i.DeviceId == employee.DeviceId && i.Pin == employee.Pin);
         
-        return existing == null ? AppResponse<bool>.Success() : AppResponse<bool>.Error($"User PIN ({user.Pin}) is existed in device {existing.Device.DeviceName}).");
+        return existing == null ? AppResponse<bool>.Success() : AppResponse<bool>.Error($"Employee PIN ({employee.Pin}) is existed in device {existing.Device.DeviceName}).");
     }
 
-    public async Task<IEnumerable<Device>> GetAllDevicesByUserAsync(Guid userId)
+    public async Task<IEnumerable<Device>> GetAllDevicesByEmployeeAsync(Guid employeeId)
     {
-        return await context.Devices.Where(d => d.ApplicationUserId == userId).ToListAsync();
+        return await context.Devices.Where(d => d.ApplicationUserId == employeeId).ToListAsync();
     }
 
     public async Task<bool> IsExistDeviceAsync(string serialNumber)

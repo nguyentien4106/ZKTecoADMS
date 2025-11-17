@@ -10,121 +10,121 @@ using ZKTecoADMS.Infrastructure.Repositories;
 namespace ZKTecoADMS.Core.Services;
 
 
-public class UserService(
+public class EmployeeService(
     ZKTecoDbContext context,
     IDeviceService deviceService,
     IRepository<Device> deviceRepository,
-    IRepository<User> userRepository,
-    ILogger<UserService> logger) : IUserService
+    IRepository<Employee> employeeRepository,
+    ILogger<EmployeeService> logger) : IEmployeeService
 {
-    public async Task<User?> GetUserByIdAsync(Guid id)
+    public async Task<Employee?> GetEmployeeByIdAsync(Guid id)
     {
-        return await context.UserDevices.FindAsync(id);
+        return await context.Employees.FindAsync(id);
     }
 
-    public async Task<User?> GetUserByPinAsync(Guid deviceId, string pin)
+    public async Task<Employee?> GetEmployeeByPinAsync(Guid deviceId, string pin)
     {
-        return await context.UserDevices.FirstOrDefaultAsync(u => u.Pin == pin && u.DeviceId == deviceId);
+        return await context.Employees.FirstOrDefaultAsync(u => u.Pin == pin && u.DeviceId == deviceId);
     }
 
-    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    public async Task<IEnumerable<Employee>> GetAllEmployeesAsync()
     {
-        return await context.UserDevices.ToListAsync();
+        return await context.Employees.ToListAsync();
     }
 
-    public async Task<User> CreateUserAsync(User user)
+    public async Task<Employee> CreateEmployeeAsync(Employee employee)
     {
-        var existing = await GetUserByPinAsync(Guid.Empty, user.Pin);
+        var existing = await GetEmployeeByPinAsync(Guid.Empty, employee.Pin);
         if (existing != null)
         {
-            logger.LogWarning("{service} User with PIN {pin} already exists", "UserService", user.Pin);
+            logger.LogWarning("{service} Employee with PIN {pin} already exists", "EmployeeService", employee.Pin);
         }
 
-        await context.UserDevices.AddAsync(user);
+        await context.Employees.AddAsync(employee);
         await context.SaveChangesAsync();
 
-        logger.LogInformation("Created user: {UserName} (PIN: {PIN})", user.Name, user.Pin);
-        return user;
+        logger.LogInformation("Created employee: {EmployeeName} (PIN: {PIN})", employee.Name, employee.Pin);
+        return employee;
     }
 
-    public async Task<IEnumerable<User>> CreateUsersAsync(Guid deviceId, IEnumerable<User> newUsers)
+    public async Task<IEnumerable<Employee>> CreateEmployeesAsync(Guid deviceId, IEnumerable<Employee> newEmployees)
     {
-        // Filter out users with duplicate PINs
-        var userPins = await context.UserDevices
+        // Filter out employees with duplicate PINs
+        var employeePins = await context.Employees
             .Where(u => u.DeviceId == deviceId)
             .Select(u => u.Pin)
             .ToListAsync();
         
-        var validUsers = newUsers.Where(u => !userPins.Contains(u.Pin)).ToList();
-        if (validUsers.Count != 0)
+        var validEmployees = newEmployees.Where(u => !employeePins.Contains(u.Pin)).ToList();
+        if (validEmployees.Count != 0)
         {
-            await context.UserDevices.AddRangeAsync(validUsers);
+            await context.Employees.AddRangeAsync(validEmployees);
             await context.SaveChangesAsync();
         }
 
-        logger.LogInformation("Created {Count} users", validUsers.Count);
-        return validUsers;
+        logger.LogInformation("Created {Count} employees", validEmployees.Count);
+        return validEmployees;
     }
 
-    public async Task UpdateUserAsync(User user)
+    public async Task UpdateEmployeeAsync(Employee employee)
     {
-        context.UserDevices.Update(user);
-        user.UpdatedAt = DateTime.Now;
+        context.Employees.Update(employee);
+        employee.UpdatedAt = DateTime.Now;
         await context.SaveChangesAsync();
         
-        logger.LogInformation("Updated user: {UserName} (PIN: {PIN})", user.Name, user.Pin);
+        logger.LogInformation("Updated employee: {EmployeeName} (PIN: {PIN})", employee.Name, employee.Pin);
     }
 
-    public async Task DeleteUserAsync(Guid userId)
+    public async Task DeleteEmployeeAsync(Guid employeeId)
     {
-        var user = await GetUserByIdAsync(userId);
-        if (user != null)
+        var employee = await GetEmployeeByIdAsync(employeeId);
+        if (employee != null)
         {
-            logger.LogInformation("Deleted user: {UserName} (PIN: {PIN})", user.Name, user.Pin);
+            logger.LogInformation("Deleted employee: {EmployeeName} (PIN: {PIN})", employee.Name, employee.Pin);
         }
     }
 
-    public async Task SyncUserToDeviceAsync(Guid userId, Guid deviceId)
+    public async Task SyncEmployeeToDeviceAsync(Guid employeeId, Guid deviceId)
     {
-        var user = await context.UserDevices
+        var employee = await context.Employees
             .Include(u => u.FingerprintTemplates)
             .Include(u => u.FaceTemplates)
-            .FirstOrDefaultAsync(u => u.Id == userId);
+            .FirstOrDefaultAsync(u => u.Id == employeeId);
 
-        if (user == null)
+        if (employee == null)
         {
-            throw new ArgumentException("User not found", nameof(userId));
+            throw new ArgumentException("Employee not found", nameof(employeeId));
         }
 
        
-        // Create command to sync user info
-        var userCommand = new DeviceCommand
+        // Create command to sync employee info
+        var employeeCommand = new DeviceCommand
         {
             DeviceId = deviceId,
-            Command = $"DATA UPDATE USERINFO PIN={user.Pin}\tName={user.Name}\tPri={user.Privilege}\tPasswd={user.Password}\tCard={user.CardNumber}\tGrp={user.GroupId}",
+            Command = $"DATA UPDATE USERINFO PIN={employee.Pin}\tName={employee.Name}\tPri={employee.Privilege}\tPasswd={employee.Password}\tCard={employee.CardNumber}\tGrp={employee.GroupId}",
             Priority = 3
         };
-        await deviceService.CreateCommandAsync(userCommand);
+        await deviceService.CreateCommandAsync(employeeCommand);
 
         // Sync fingerprints
-        foreach (var fp in user.FingerprintTemplates)
+        foreach (var fp in employee.FingerprintTemplates)
         {
             var fpCommand = new DeviceCommand
             {
                 DeviceId = deviceId,
-                Command = $"DATA UPDATE FP PIN={user.Pin}\tFID={fp.FingerIndex}\tSize={fp.TemplateSize}\tValid=1\tTMP={fp.Template}",
+                Command = $"DATA UPDATE FP PIN={employee.Pin}\tFID={fp.FingerIndex}\tSize={fp.TemplateSize}\tValid=1\tTMP={fp.Template}",
                 Priority = 2
             };
             await deviceService.CreateCommandAsync(fpCommand);
         }
 
         // Sync faces
-        foreach (var face in user.FaceTemplates)
+        foreach (var face in employee.FaceTemplates)
         {
             var faceCommand = new DeviceCommand
             {
                 DeviceId = deviceId,
-                Command = $"DATA UPDATE FACE PIN={user.Pin}\tFID={face.FaceIndex}\tSize={face.TemplateSize}\tValid=1\tTMP={face.Template}",
+                Command = $"DATA UPDATE FACE PIN={employee.Pin}\tFID={face.FaceIndex}\tSize={face.TemplateSize}\tValid=1\tTMP={face.Template}",
                 Priority = 2
             };
             await deviceService.CreateCommandAsync(faceCommand);
@@ -132,7 +132,7 @@ public class UserService(
 
         await context.SaveChangesAsync();
 
-        logger.LogInformation("Initiated sync for user {UserName} to device {DeviceId}", user.Name, deviceId);
+        logger.LogInformation("Initiated sync for employee {EmployeeName} to device {DeviceId}", employee.Name, deviceId);
     }
 
     public async Task<bool> IsPinValidAsync(string pin, Guid deviceId)

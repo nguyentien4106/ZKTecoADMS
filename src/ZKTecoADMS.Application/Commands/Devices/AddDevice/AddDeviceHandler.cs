@@ -25,7 +25,7 @@ public class AddDeviceHandler(
         var syncUsersCommand = new DeviceCommand
         {
             DeviceId = device.Id,
-            CommandType = DeviceCommandTypes.SyncUsers,
+            CommandType = DeviceCommandTypes.SyncEmployees,
             Priority = 10,
             Command = ClockCommandBuilder.BuildGetAllUsersCommand()
         };

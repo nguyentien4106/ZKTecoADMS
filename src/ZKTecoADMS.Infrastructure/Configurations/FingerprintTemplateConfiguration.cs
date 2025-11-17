@@ -9,11 +9,11 @@ public class FingerprintTemplateConfiguration : IEntityTypeConfiguration<Fingerp
     public void Configure(EntityTypeBuilder<FingerprintTemplate> builder)
     {
         builder.HasKey(e => e.Id);
-        builder.HasIndex(e => new { e.UserId, e.FingerIndex }).IsUnique();
+        builder.HasIndex(e => new { e.EmployeeId, e.FingerIndex }).IsUnique();
 
-        builder.HasOne(e => e.User)
+        builder.HasOne(e => e.Employee)
             .WithMany(u => u.FingerprintTemplates)
-            .HasForeignKey(e => e.UserId)
+            .HasForeignKey(e => e.EmployeeId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

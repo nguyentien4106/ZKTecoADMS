@@ -32,7 +32,7 @@ public class AttendancesController(
         [FromQuery] DateTime? startDate, 
         [FromQuery] DateTime? endDate)
     {
-        var logs = await attendanceService.GetAttendanceByUserAsync(deviceId, userId, startDate, endDate);
+        var logs = await attendanceService.GetAttendanceByEmployeeAsync(deviceId, userId, startDate, endDate);
         return Ok(logs);
     }
 

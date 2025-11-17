@@ -10,7 +10,7 @@ namespace ZKTecoADMS.Domain.Entities;
 // ZKTecoADMS.Domain/Entities/FaceTemplate.cs
 public class FaceTemplate : Entity<Guid>
 {
-    public Guid UserId { get; set; }
+    public Guid EmployeeId { get; set; }
     public int FaceIndex { get; set; } = 0;
 
     [Required]
@@ -21,5 +21,5 @@ public class FaceTemplate : Entity<Guid>
     public int Version { get; set; } = 50;
 
     // Navigation Properties
-    public virtual User User { get; set; } = null!;
+    public virtual Employee Employee { get; set; } = null!;
 }

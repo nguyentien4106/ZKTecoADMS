@@ -34,11 +34,11 @@ public class CreateDeviceCmdHandler(IRepository<Device> deviceRepository, IRepos
         return commandType switch
         {
             DeviceCommandTypes.ClearAttendances => "CLEAR LOG",
-            DeviceCommandTypes.ClearUsers => "CLEAR ALL USERINFO",
+            DeviceCommandTypes.ClearEmployees => "CLEAR ALL USERINFO",
             DeviceCommandTypes.ClearData => "CLEAR DATA",
             DeviceCommandTypes.RestartDevice => "REBOOT",
             DeviceCommandTypes.SyncAttendances => ClockCommandBuilder.BuildGetAttendanceCommand(DateTime.Now.AddYears(-5), DateTime.Now),
-            DeviceCommandTypes.SyncUsers => ClockCommandBuilder.BuildGetAllUsersCommand(),
+            DeviceCommandTypes.SyncEmployees => ClockCommandBuilder.BuildGetAllUsersCommand(),
             _ => "NOT IMPLEMENTED"
         };
     }

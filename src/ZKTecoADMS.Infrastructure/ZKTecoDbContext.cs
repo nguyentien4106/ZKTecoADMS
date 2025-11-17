@@ -10,7 +10,7 @@ namespace ZKTecoADMS.Infrastructure;
 public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options), IHealthyDbContext
 {
     public DbSet<UserRefreshToken> UserRefreshTokens => Set<UserRefreshToken>();
-    public DbSet<User> UserDevices => Set<User>();
+    public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<Device> Devices => Set<Device>();
     public DbSet<FingerprintTemplate> FingerprintTemplates => Set<FingerprintTemplate>();
     public DbSet<FaceTemplate> FaceTemplates => Set<FaceTemplate>();

@@ -132,10 +132,10 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IRefreshTokenValidatorService, RefreshTokenService>();
 
         services.AddScoped<IDeviceService, DeviceService>();
-        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IAttendanceService, AttendanceService>();
         services.AddScoped<IDeviceCmdService, DeviceCmdService>();
-        services.AddScoped<IUserOperationService, UserOperationService>();
+        services.AddScoped<IEmployeeOperationService, EmployeeOperationService>();
         
         // Repository registration
         services.AddScoped(typeof(IRepositoryPagedQuery<>), typeof(PagedQueryRepository<>));

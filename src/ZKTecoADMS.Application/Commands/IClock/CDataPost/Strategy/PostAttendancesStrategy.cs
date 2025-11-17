@@ -11,7 +11,7 @@ public class PostAttendancesStrategy(IServiceProvider serviceProvider) : IPostSt
 {
     private readonly IAttendanceService attendanceService = serviceProvider.GetRequiredService<IAttendanceService>();
     private readonly ILogger<PostAttendancesStrategy> _logger = serviceProvider.GetRequiredService<ILogger<PostAttendancesStrategy>>();
-    private readonly IUserService userService = serviceProvider.GetRequiredService<IUserService>();
+    private readonly IEmployeeService employeeService = serviceProvider.GetRequiredService<IEmployeeService>();
     private readonly IRepository<Attendance> attendanceRepository = serviceProvider.GetRequiredService<IRepository<Attendance>>();
 
     // Field indices based on TFT protocol
@@ -144,7 +144,7 @@ public class PostAttendancesStrategy(IServiceProvider serviceProvider) : IPostSt
 
     private async Task<Attendance> CreateAttendanceRecordAsync(Guid deviceId, AttendanceData attendanceData)
     {
-        var user = await userService.GetUserByPinAsync(deviceId, attendanceData.PIN);
+        var employee = await employeeService.GetEmployeeByPinAsync(deviceId, attendanceData.PIN);
 
         return new Attendance
         {
@@ -155,7 +155,7 @@ public class PostAttendancesStrategy(IServiceProvider serviceProvider) : IPostSt
             AttendanceState = attendanceData.AttendanceState,
             VerifyMode = attendanceData.VerifyMode,
             WorkCode = attendanceData.WorkCode,
-            UserId = user?.Id
+            EmployeeId = employee?.Id
         };
     }
 

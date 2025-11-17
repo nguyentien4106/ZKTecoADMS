@@ -8,7 +8,7 @@ public class Attendance : Entity<Guid>
 {
     public Guid DeviceId { get; set; }
 
-    public Guid? UserId { get; set; }
+    public Guid? EmployeeId { get; set; }
     
     [Required]
     [MaxLength(20)]
@@ -26,6 +26,6 @@ public class Attendance : Entity<Guid>
     // Navigation Properties
     public virtual Device Device { get; set; } = null!;
     
-    public virtual User? User { get; set; }
+    public virtual Employee? Employee { get; set; }
 }
 
