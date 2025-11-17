@@ -14,8 +14,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, CheckCircle2, Circle, UserCog, UserPlus } from 'lucide-react'
-import { Employee } from '@/types/employee'
-import { EmployeeAccount } from '@/types/account'
 import { useEmployeeContext } from '@/contexts/EmployeeContext'
 
 interface FormData {

@@ -1,6 +1,7 @@
 import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
 import { CreateEmployeeRequest } from "@/types/employee";
+import { CreateShiftRequest } from "@/types/shift";
 import { subMonths } from "date-fns";
 
 export const defaultNewEmployee: CreateEmployeeRequest = {
@@ -33,4 +34,10 @@ export const defaultAttendancePaginationRequest: PaginationRequest = {
     pageSize: 50,
     sortBy: 'AttendanceTime',
     sortOrder: 'desc'
+}
+
+export const defaultNewShift: CreateShiftRequest = {
+    startTime: '',
+    endTime: '',
+    description: ''
 }

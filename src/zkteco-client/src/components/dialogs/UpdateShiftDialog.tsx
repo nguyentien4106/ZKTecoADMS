@@ -4,15 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Shift } from '@/types/shift';
 import { useShiftContext } from '@/contexts/ShiftContext';
-
-interface UpdateShiftDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    shift: Shift;
-    onSubmit: (data: { startTime: string; endTime: string; description?: string }) => void;
-}
 
 export const UpdateShiftDialog = () => {
     const {

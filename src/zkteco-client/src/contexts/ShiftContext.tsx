@@ -3,7 +3,6 @@
 // ==========================================
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { Shift, CreateShiftRequest, UpdateShiftRequest } from '@/types/shift';
-import { useAuth } from '@/contexts/AuthContext';
 import { 
   useMyShifts, 
   useCreateShift, 

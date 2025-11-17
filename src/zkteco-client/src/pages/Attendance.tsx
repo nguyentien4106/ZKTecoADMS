@@ -20,7 +20,7 @@ export const Attendance = () => {
     appliedFilters
   )
 
-  const deviceOptions = userDevices?.items?.map(device => ({
+  const deviceOptions = userDevices?.map(device => ({
     value: device.id,
     label: device.deviceName
   })) || []
@@ -39,7 +39,7 @@ export const Attendance = () => {
   }
   
   const handleClearFilters = () => {
-    setFilter({ ...defaultAttendanceFilter, deviceIds: userDevices?.items?.map(device => device.id) })
+    setFilter({ ...defaultAttendanceFilter, deviceIds: userDevices?.map(device => device.id) })
   }
 
   const onSelectChange = (values: string[]) => {
@@ -50,7 +50,7 @@ export const Attendance = () => {
   }
 
   useEffect(() => {
-    const newFilter = { ...defaultAttendanceFilter, deviceIds: userDevices?.items?.map(device => device.id) }  
+    const newFilter = { ...defaultAttendanceFilter, deviceIds: userDevices?.map(device => device.id) }  
     setFilter(newFilter)
     setAppliedFilters(newFilter)
   }, [userDevices])

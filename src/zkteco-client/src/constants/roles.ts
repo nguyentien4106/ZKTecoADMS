@@ -25,7 +25,6 @@ export const ROLE_PERMISSIONS = {
     '/reports',
     '/settings',
     '/shift-management',
-    '/my-shifts'
   ],
   [UserRole.MANAGER]: [
     '/shift-management',
@@ -36,7 +35,6 @@ export const ROLE_PERMISSIONS = {
     '/attendance',
     '/reports',
     '/settings',
-    '/my-shifts'
   ],
   [UserRole.EMPLOYEE]: [
     '/dashboard',

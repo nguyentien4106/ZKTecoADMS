@@ -36,7 +36,7 @@ export const RejectShiftDialog = ({ open, onOpenChange, shift, onSubmit }: Rejec
                     <div className="space-y-4 py-4">
                         <div className="space-y-3">
                             <div>
-                                <span className="font-medium">Employee:</span> {shift.employeeName} ({shift.employeePin})
+                                <span className="font-medium">Employee:</span> {shift.employeeName}
                             </div>
                             <div>
                                 <span className="font-medium">Start Time:</span> {formatDateTime(shift.startTime)}

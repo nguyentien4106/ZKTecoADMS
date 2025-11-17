@@ -12,25 +12,9 @@ import { EmployeeProvider, useEmployeeContext } from "@/contexts/EmployeeContext
 
 const EmployeesContent = () => {
   const {
-    employees,
-    isLoading,
     devices,
     selectedDeviceIds,
-    createDialogOpen,
-    createAccountDialogOpen,
-    employeeToEdit,
-    employeeForAccount,
-    isCreatingAccount,
-    isDeletePending,
-    setCreateDialogOpen,
-    setCreateAccountDialogOpen,
-    handleDelete,
-    handleAddEmployee: handleAddUser,
-    handleUpdateEmployee: handleUpdateUser,
-    handleEdit,
     handleOpenCreateDialog,
-    handleCreateAccount,
-    handleCreateAccountSubmit,
     handleFilterSubmit,
   } = useEmployeeContext();
 

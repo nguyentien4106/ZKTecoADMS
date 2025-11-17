@@ -1,5 +1,4 @@
 using ZKTecoADMS.Domain.Entities;
-using ZKTecoADMS.Domain.Entities.Base;
 using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Domain.Repositories;
