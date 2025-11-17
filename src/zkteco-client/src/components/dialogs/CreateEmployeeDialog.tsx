@@ -61,7 +61,7 @@ const updateFormSchema = z.object({
 interface CreateUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user: Employee | null;
+  employee: Employee | null;
   handleAddUser?: (user: CreateEmployeeRequest) => Promise<void>;
   handleUpdateUser?: (user: UpdateEmployeeRequest) => Promise<void>;
 }
@@ -69,13 +69,13 @@ interface CreateUserDialogProps {
 export const CreateUserDialog = ({
   open,
   onOpenChange,
-  user,
+  employee,
   handleAddUser,
   handleUpdateUser,
 }: CreateUserDialogProps) => {
   const { data: devices } = useDevices();
 
-  const FormSchema = user ? updateFormSchema : createFormSchema;
+  const FormSchema = employee ? updateFormSchema : createFormSchema;
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -86,14 +86,14 @@ export const CreateUserDialog = ({
   });
 
   useEffect(() => {
-    if (user) {
+    if (employee) {
       form.reset({
-        pin: user.pin ?? '',
-        name: user.name ?? '',
-        cardNumber: user.cardNumber ?? '',
-        password: '',
-        department: user.department ?? '',
-        privilege: user.privilege ?? 0,
+        pin: employee.pin ?? '',
+        name: employee.name ?? '',
+        cardNumber: employee.cardNumber ?? '',
+        password: employee.password ?? '',
+        department: employee.department ?? '',
+        privilege: employee.privilege ?? 0,
         deviceIds: [],
       });
     } else {
@@ -102,13 +102,13 @@ export const CreateUserDialog = ({
         deviceIds: [],
       });
     }
-  }, [user, open]);
+  }, [employee, open]);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    if (user) {
+    if (employee) {
       const updateParams = data as unknown as UpdateEmployeeRequest;
-      updateParams.deviceId = user.deviceId;
-      updateParams.userId = user.id ?? "";
+      updateParams.deviceId = employee.deviceId;
+      updateParams.userId = employee.id ?? "";
 
       handleUpdateUser && (await handleUpdateUser(updateParams));
     } else {
@@ -139,11 +139,11 @@ export const CreateUserDialog = ({
                   <FormItem>
                     <FormLabel>Devices *</FormLabel>
                     <FormControl>
-                      {user ? (
-                        <Select disabled value={user.deviceId}>
+                      {employee ? (
+                        <Select disabled value={employee.deviceId}>
                           <SelectTrigger>
                             <SelectValue>
-                              {user.deviceName || "Select a device"}
+                              {employee.deviceName || "Select a device"}
                             </SelectValue>
                           </SelectTrigger>
                         </Select>
@@ -178,7 +178,7 @@ export const CreateUserDialog = ({
                         {...field}
                         placeholder="1001"
                         required
-                        disabled={!!user}
+                        disabled={!!employee}
                       />
                     </FormControl>
                     <FormMessage />
@@ -282,7 +282,7 @@ export const CreateUserDialog = ({
 
             <div className="grid gap-4">
               <Button type="submit" className="ml-auto">
-                { user ? "Update User" : "Create User" }
+                { employee ? "Update User" : "Create User" }
               </Button>
             </div>
           </form>

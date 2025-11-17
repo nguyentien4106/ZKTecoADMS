@@ -25,6 +25,7 @@ export interface Employee {
   id: string;
   pin: string;
   name: string;
+  password: string;
   cardNumber: string;
   department: string;
   isActive: boolean;

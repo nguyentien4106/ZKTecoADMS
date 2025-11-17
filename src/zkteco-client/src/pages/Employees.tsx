@@ -18,7 +18,7 @@ const EmployeesContent = () => {
     selectedDeviceIds,
     createDialogOpen,
     createAccountDialogOpen,
-    userToEdit,
+    employeeToEdit,
     employeeForAccount,
     isCreatingAccount,
     isDeletePending,
@@ -66,7 +66,7 @@ const EmployeesContent = () => {
       <CreateUserDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
-        user={userToEdit}
+        employee={employeeToEdit}
         handleAddUser={handleAddUser}
         handleUpdateUser={handleUpdateUser}
       />

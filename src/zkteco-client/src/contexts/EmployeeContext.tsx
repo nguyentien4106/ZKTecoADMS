@@ -23,7 +23,7 @@ interface EmployeeContextValue {
   // Dialog states
   createDialogOpen: boolean
   createAccountDialogOpen: boolean
-  userToEdit: Employee | null
+  employeeToEdit: Employee | null
   employeeForAccount: Employee | null
   isCreatingAccount: boolean
   
@@ -69,7 +69,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   // Dialog states
   const [createDialogOpen, setCreateDialogOpenState] = useState(false)
   const [createAccountDialogOpen, setCreateAccountDialogOpen] = useState(false)
-  const [userToEdit, setUserToEdit] = useState<Employee | null>(null)
+  const [employeeToEdit, setEmployeeToEdit] = useState<Employee | null>(null)
   const [employeeForAccount, setEmployeeForAccount] = useState<Employee | null>(null)
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([])
@@ -91,7 +91,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   // Wrapper for setCreateDialogOpen to clear user state when closing
   const setCreateDialogOpen = (open: boolean) => {
     if (!open) {
-      setUserToEdit(null) // Clear user data when dialog closes
+      setEmployeeToEdit(null) // Clear user data when dialog closes
     }
     setCreateDialogOpenState(open)
   }
@@ -124,7 +124,6 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   const handleUpdateUser = async (data: UpdateEmployeeRequest) => {
     try {
       await updateUser.mutateAsync(data)
-      toast.success('Employee updated successfully')
     } catch (error: any) {
       toast.error('Failed to update employee', {
         description: error.message || 'An error occurred',
@@ -133,12 +132,12 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   }
 
   const handleEdit = (user: Employee) => {
-    setUserToEdit(user)
+    setEmployeeToEdit(user)
     setCreateDialogOpen(true)
   }
 
   const handleOpenCreateDialog = () => {
-    setUserToEdit(null) // Clear any previous user data
+    setEmployeeToEdit(null) // Clear any previous user data
     setCreateDialogOpen(true)
   }
 
@@ -216,7 +215,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     // Dialog states
     createDialogOpen,
     createAccountDialogOpen,
-    userToEdit,
+    employeeToEdit,
     employeeForAccount,
     isCreatingAccount,
     
