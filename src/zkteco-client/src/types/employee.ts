@@ -1,43 +1,45 @@
 
 
-export interface CreateUserRequest {
+export interface CreateEmployeeRequest {
     pin: string;
     name: string;
     cardNumber?: string;
     password?: string;
     privilege?: number;
-    email?: string;
-    phoneNumber?: string;
     department?: string;
     deviceIds?: string[];
 }
 
-export interface UpdateUserRequest {
+export interface UpdateEmployeeRequest {
     userId: string
     pin: string;
     name: string;
     cardNumber?: string;
     password?: string;
     privilege?: number;
-    email?: string;
-    phoneNumber?: string;
     department?: string;
     deviceId: string;
 }
 
-export interface User {
+export interface Employee {
   id: string;
   pin: string;
   name: string;
-  cardNumber?: string;
-  email?: string;
-  phoneNumber?: string;
-  department?: string;
+  cardNumber: string;
+  department: string;
   isActive: boolean;
   privilege: 0 | 1 | 2 | 14;
-  verifyMode: number;
   createdAt: string;
   updatedAt: string;
   deviceId: string;
   deviceName?: string;
+  applicationUser?: UserAccount | null;
+}
+
+interface UserAccount {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  department?: string;
 }

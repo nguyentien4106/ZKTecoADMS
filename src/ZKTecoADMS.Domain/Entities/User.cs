@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using ZKTecoADMS.Domain.Entities.Base;
 
 namespace ZKTecoADMS.Domain.Entities;
@@ -28,12 +23,6 @@ public class User : AuditableEntity<Guid>
     public int GroupId { get; set; } = 1;
     public int Privilege { get; set; }
     public int VerifyMode { get; set; }
-    
-    [MaxLength(100)]
-    public string? Email { get; set; }
-
-    [MaxLength(20)]
-    public string? PhoneNumber { get; set; }
 
     [MaxLength(100)]
     public string? Department { get; set; }

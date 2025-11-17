@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 // import { Label } from '@/components/ui/label'
-import type { User } from "@/types/user";
+import type { Employee } from "@/types/employee";
 import {
   Select,
   SelectContent,
@@ -37,15 +37,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { PasswordInput } from "../password-input";
-import { CreateUserRequest, UpdateUserRequest } from "@/types/user";
+import { CreateEmployeeRequest, UpdateEmployeeRequest } from "@/types/employee";
 
 const createFormSchema = z.object({
   pin: z.string().min(1, "PIN is required"),
-  fullName: z.string().min(1, "Full name is required"),
+  name: z.string().min(1, "Full name is required"),
   cardNumber: z.string().optional(),
   password: z.string().optional(),
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
-  phoneNumber: z.string().optional(),
   department: z.string().optional(),
   privilege: z.number(),
   deviceIds: z.array(z.string()).min(1, "Please select at least one device"),
@@ -53,11 +51,9 @@ const createFormSchema = z.object({
 
 const updateFormSchema = z.object({
   pin: z.string().min(1, "PIN is required"),
-  fullName: z.string().min(1, "Full name is required"),
+  name: z.string().min(1, "Full name is required"),
   cardNumber: z.string().optional(),
   password: z.string().optional(),
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
-  phoneNumber: z.string().optional(),
   department: z.string().optional(),
   privilege: z.number(),
   deviceIds: z.array(z.string()).optional(), // Not required for update
@@ -66,9 +62,9 @@ const updateFormSchema = z.object({
 interface CreateUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user: User | null;
-  handleAddUser?: (user: CreateUserRequest) => Promise<void>;
-  handleUpdateUser?: (user: UpdateUserRequest) => Promise<void>;
+  user: Employee | null;
+  handleAddUser?: (user: CreateEmployeeRequest) => Promise<void>;
+  handleUpdateUser?: (user: UpdateEmployeeRequest) => Promise<void>;
 }
 
 export const CreateUserDialog = ({
@@ -76,7 +72,7 @@ export const CreateUserDialog = ({
   onOpenChange,
   user,
   handleAddUser,
-  handleUpdateUser
+  handleUpdateUser,
 }: CreateUserDialogProps) => {
   const { data: devices } = useDevices();
 
@@ -91,14 +87,12 @@ export const CreateUserDialog = ({
     },
   });
 
-
   useEffect(() => {
     if (user) {
       form.reset({
         ...defaultNewUser,
         ...user,
         deviceIds: [],
-        pin: user.pin,
       });
     } else {
       form.reset({
@@ -109,17 +103,17 @@ export const CreateUserDialog = ({
   }, [user, open]);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    if(user){
-      const updateParams = data as unknown as UpdateUserRequest;
-      updateParams.deviceId = user.deviceId
+    if (user) {
+      const updateParams = data as unknown as UpdateEmployeeRequest;
+      updateParams.deviceId = user.deviceId;
       updateParams.userId = user.id ?? "";
 
-      handleUpdateUser && await handleUpdateUser(updateParams);
+      handleUpdateUser && (await handleUpdateUser(updateParams));
+    } else {
+      handleAddUser &&
+        (await handleAddUser(data as unknown as CreateEmployeeRequest));
     }
-    else {
-      handleAddUser && await handleAddUser(data as unknown as CreateUserRequest);
-    }
-    
+
     onOpenChange(false);
     form.reset({ ...defaultNewUser, deviceIds: [] });
   };
@@ -135,7 +129,42 @@ export const CreateUserDialog = ({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="deviceIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Devices *</FormLabel>
+                    <FormControl>
+                      {user ? (
+                        <Select disabled value={user.deviceId}>
+                          <SelectTrigger>
+                            <SelectValue>
+                              {user.deviceName || "Select a device"}
+                            </SelectValue>
+                          </SelectTrigger>
+                        </Select>
+                      ) : (
+                        <MultiSelect
+                          options={
+                            devices
+                              ? devices.items.map((device) => ({
+                                  value: device.id,
+                                  label: device.deviceName,
+                                }))
+                              : []
+                          }
+                          value={Array.isArray(field.value) ? field.value : []}
+                          onValueChange={field.onChange}
+                          placeholder="Choose devices..."
+                        />
+                      )}
+                    </FormControl>
+                    <FormMessage className="absolute left-0 mt-1 text-destructive" />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="pin"
@@ -154,32 +183,18 @@ export const CreateUserDialog = ({
                   </FormItem>
                 )}
               />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="fullName"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name *</FormLabel>
+                    <FormLabel>Name *</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="Nguyen Van A" required />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="cardNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Card Number</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="1234567890" />
-                    </FormControl>
-                    <FormMessage className="absolute left-0 mt-1 text-destructive" />
                   </FormItem>
                 )}
               />
@@ -198,50 +213,17 @@ export const CreateUserDialog = ({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="email"
+                name="cardNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Card Number</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        type="email"
-                        placeholder="john.doe@company.com"
-                      />
+                      <Input {...field} placeholder="1234567890" />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="+1234567890" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="department"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Department</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="IT" />
-                    </FormControl>
-                    <FormMessage />
+                    <FormMessage className="absolute left-0 mt-1 text-destructive" />
                   </FormItem>
                 )}
               />
@@ -280,39 +262,17 @@ export const CreateUserDialog = ({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4">
               <FormField
                 control={form.control}
-                name="deviceIds"
+                name="department"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Devices *</FormLabel>
+                    <FormLabel>Department</FormLabel>
                     <FormControl>
-                      {user ? (
-                        <Select disabled value={user.deviceId}>
-                          <SelectTrigger>
-                            <SelectValue>
-                              {user.deviceName || "Select a device"}
-                            </SelectValue>
-                          </SelectTrigger>
-                        </Select>
-                      ) : (
-                        <MultiSelect
-                          options={
-                            devices
-                              ? devices.items.map((device) => ({
-                                  value: device.id,
-                                  label: device.deviceName,
-                                }))
-                              : []
-                          }
-                          value={Array.isArray(field.value) ? field.value : []}
-                          onValueChange={field.onChange}
-                          placeholder="Choose devices..."
-                        />
-                      )}
+                      <Input {...field} placeholder="IT" />
                     </FormControl>
-                    <FormMessage className="absolute left-0 mt-1 text-destructive" />
+                    <FormMessage />
                   </FormItem>
                 )}
               />

@@ -12,13 +12,15 @@ public class UpdateUserHandler(
     public async Task<AppResponse<UserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken: cancellationToken);
+        if (user == null)
+        {
+            return  AppResponse<UserDto>.Fail("User not found");
+        }
         user.Pin = request.PIN;
         user.Name = request.FullName;
-        user.Email = request.Email;
         user.CardNumber = request.CardNumber;
         user.Password = request.Password;
         user.Privilege = request.Privilege;
-        user.PhoneNumber = request.PhoneNumber;
         user.Department = request.Department;
         user.IsActive = false;
         

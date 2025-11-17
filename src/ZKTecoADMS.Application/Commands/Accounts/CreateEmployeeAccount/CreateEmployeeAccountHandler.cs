@@ -23,6 +23,8 @@ public class CreateEmployeeAccountHandler(
             LastName = request.LastName,
             PhoneNumber = request.PhoneNumber,
             Created = DateTime.Now,
+            EmailConfirmed = true,
+            PhoneNumberConfirmed = true
         };
 
         var result = await userManager.CreateAsync(user, request.Password);
@@ -36,15 +38,6 @@ public class CreateEmployeeAccountHandler(
                 if (userDevice != null)
                 {
                     userDevice.ApplicationUserId = user.Id;
-                    userDevice.Email = user.Email;
-                    if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
-                    {
-                        userDevice.PhoneNumber = request.PhoneNumber;
-                    }
-                    if (!string.IsNullOrWhiteSpace(request.Department))
-                    {
-                        userDevice.Department = request.Department;
-                    }
                     await userRepository.UpdateAsync(userDevice);
                     return AppResponse<bool>.Success(true);
                 }

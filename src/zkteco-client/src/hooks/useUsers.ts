@@ -5,7 +5,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userService } from '@/services/userService';
 import { toast } from 'sonner';
-import { CreateUserRequest, UpdateUserRequest } from '@/types/user';
+import { CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee';
 
 export const useUsers = (deviceIds: string[]) => {
   return useQuery({
@@ -24,7 +24,7 @@ export const useUser = (id: string) => {
 
 export const useCreateUser = () => {
   return useMutation({
-    mutationFn: (data: CreateUserRequest) => userService.create(data),
+    mutationFn: (data: CreateEmployeeRequest) => userService.create(data),
   });
 };
 
@@ -32,7 +32,7 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: UpdateUserRequest) => userService.update(data),
+    mutationFn: (data: UpdateEmployeeRequest) => userService.update(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('User updated successfully');

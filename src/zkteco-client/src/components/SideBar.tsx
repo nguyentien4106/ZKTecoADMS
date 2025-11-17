@@ -23,7 +23,7 @@ const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/devices', icon: Monitor, label: 'Devices' },
   { to: '/device-commands', icon: Terminal, label: 'Device Commands' },
-  { to: '/users', icon: Users, label: 'Users' },
+  { to: '/employees', icon: Users, label: 'Employees' },
   { to: '/attendance', icon: Clock, label: 'Attendance' },
   { to: '/reports', icon: FileText, label: 'Reports' },
   { to: '/settings', icon: Settings, label: 'Settings' },

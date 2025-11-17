@@ -2,7 +2,7 @@
 // ==========================================
 // src/services/usersService.ts
 // ==========================================
-import { CreateUserRequest, UpdateUserRequest } from '@/types/user';
+import { CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee';
 import { apiService } from './api';
 import type { User, AppResponse } from '@/types';
 
@@ -15,11 +15,11 @@ export const userService = {
   
   getByPin: (pin: string) => apiService.get<User>(`/api/users/pin/${pin}`),
   
-  create: async (data: CreateUserRequest) => {
+  create: async (data: CreateEmployeeRequest) => {
     return await apiService.post<AppResponse<User>[]>('/api/users', data)
   },
   
-  update: (data: UpdateUserRequest) => 
+  update: (data: UpdateEmployeeRequest) => 
     apiService.put<User>(`/api/users/${data.userId}`, data),
 
   delete: (id: string) => apiService.delete<string>(`/api/users/${id}`),

@@ -10,7 +10,14 @@ export interface CreateUserAccountRequest {
   firstName: string
   lastName: string
   phoneNumber?: string
-  department?: string
+}
+
+export interface UpdateUserAccountRequest {
+  email: string
+  firstName: string
+  lastName: string
+  phoneNumber?: string
+  password?: string
 }
 
 export const accountService = {
@@ -20,8 +27,7 @@ export const accountService = {
     lastName: string,
     email: string,
     password: string,
-    phoneNumber?: string,
-    department?: string
+    phoneNumber?: string
   ) => {
     return await apiService.post<boolean>(
       '/api/Accounts',
@@ -32,9 +38,27 @@ export const accountService = {
         firstName,
         lastName,
         phoneNumber,
-        department,
       }
     )
+  },
 
+  updateUserAccount: async (
+    userDeviceId: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    phoneNumber?: string,
+    password?: string
+  ) => {
+    return await apiService.put<boolean>(
+      `/api/Accounts/${userDeviceId}`,
+      {
+        email,
+        firstName,
+        lastName,
+        phoneNumber,
+        password,
+      }
+    )
   },
 }

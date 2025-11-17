@@ -8,10 +8,5 @@ public record CreateUserCommand(
     string? CardNumber, 
     string? Password, 
     int Privilege, 
-    string? Email, 
-    string? PhoneNumber, 
     string? Department,
-    List<Guid> DeviceIds,
-    string FirstName,
-    string LastName,
-    string AccountPassword) : ICommand<AppResponse<List<AppResponse<UserDto>>>>;
+    List<Guid> DeviceIds) : ICommand<AppResponse<List<AppResponse<UserDto>>>>;

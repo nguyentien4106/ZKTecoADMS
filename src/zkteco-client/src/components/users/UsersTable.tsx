@@ -15,19 +15,20 @@ import {
   Plus,
   Trash2,
   Edit,
-  UserPlus
+  UserPlus,
+  User2Icon
 } from "lucide-react";
-import { User } from "@/types/user";
+import { Employee } from "@/types/employee";
 import { UserPrivileges } from "@/constants";
 
 type UsersTableProps = {
-  users?: User[];
-  onEdit: (user: User) => void;
+  users?: Employee[];
+  onEdit: (user: Employee) => void;
   onDelete: (id: string) => void;
   isDeletePending: boolean;
   onAddUser: () => void;
   isLoading: boolean;
-  onCreateAccount?: (user: User) => void;
+  onCreateAccount?: (user: Employee) => void;
 };
 
 export const UsersTable = ({
@@ -45,14 +46,12 @@ export const UsersTable = ({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Device</TableHead>
               <TableHead>PIN</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Privilege</TableHead>
               <TableHead>Department</TableHead>
-              <TableHead>Email</TableHead>
               <TableHead>Card Number</TableHead>
-              <TableHead>Device</TableHead>
-              <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -85,8 +84,11 @@ export const UsersTable = ({
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user: User) => (
+              users.map((user: Employee) => (
                 <TableRow key={user.id}>
+                  <TableCell className="text-muted-foreground">
+                      {user.deviceName || "-"}
+                  </TableCell>
                   <TableCell className="font-mono font-medium">
                     {user.pin}
                   </TableCell>
@@ -96,18 +98,7 @@ export const UsersTable = ({
                   </TableCell>
                   <TableCell>{user.department || "-"}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {user.email || "-"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
                     {user.cardNumber || "-"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {user.deviceName || "-"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={user.isActive ? "default" : "secondary"}>
-                      {user.isActive ? "Active" : "Inactive"}
-                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
@@ -120,14 +111,25 @@ export const UsersTable = ({
                         <Edit className="w-4 h-4" />
                       </Button>
                       {onCreateAccount && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onCreateAccount(user)}
-                          title="Create Account"
-                        >
-                          <UserPlus className="w-4 h-4 text-blue-600" />
-                        </Button>
+                        user.applicationUser ? (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onCreateAccount(user)}
+                            title="Update Account"
+                          >
+                            <User2Icon className="w-4 h-4 text-green-600" />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onCreateAccount(user)}
+                            title="Create Account"
+                          >
+                            <UserPlus className="w-4 h-4 text-blue-600" />
+                          </Button>
+                        )
                       )}
                       <Button
                         variant="ghost"

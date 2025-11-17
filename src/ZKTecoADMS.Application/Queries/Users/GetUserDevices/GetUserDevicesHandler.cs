@@ -8,7 +8,8 @@ public class GetUserDevicesHandler(IRepository<User> userRepository) : IQueryHan
     {
         var users = await userRepository.GetAllAsync(
             i => request.DeviceIds.Contains(i.DeviceId),
-            includeProperties: ["Device"],
+            includeProperties: ["Device", "ApplicationUser"],
+            orderBy: query => query.OrderByDescending(i => i.DeviceId).ThenBy(i => i.Pin),
             cancellationToken: cancellationToken);
 
         return AppResponse<IEnumerable<UserDto>>.Success(users.Adapt<IEnumerable<UserDto>>());

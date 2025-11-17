@@ -20,7 +20,7 @@ export const ROLE_PERMISSIONS = {
     '/dashboard',
     '/devices',
     '/device-commands',
-    '/users',
+    '/employees',
     '/attendance',
     '/reports',
     '/settings'
@@ -29,7 +29,7 @@ export const ROLE_PERMISSIONS = {
     '/dashboard',
     '/devices',
     '/device-commands',
-    '/users',
+    '/employees',
     '/attendance',
     '/reports',
     '/settings'
@@ -38,6 +38,6 @@ export const ROLE_PERMISSIONS = {
     '/dashboard',
     '/attendance',
     '/settings',
-    '/users'
+    '/employees'
   ]
 }

@@ -6,10 +6,5 @@ public record CreateUserRequest(
     string? CardNumber,
     string? Password,
     int Privilege,
-    string? Email,
-    string? PhoneNumber,
     string? Department,
-    List<Guid> DeviceIds,
-    string FirstName,
-    string LastName,
-    string AccountPassword);
+    List<Guid> DeviceIds);

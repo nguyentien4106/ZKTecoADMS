@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZKTecoADMS.Infrastructure;
@@ -11,9 +12,11 @@ using ZKTecoADMS.Infrastructure;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     [DbContext(typeof(ZKTecoDbContext))]
-    partial class ZKTecoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251116180311_edituserdevice")]
+    partial class edituserdevice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -773,6 +776,10 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<string>("Password")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("Pin")
                         .IsRequired()

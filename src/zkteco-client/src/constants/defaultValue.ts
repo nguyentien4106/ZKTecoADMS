@@ -1,15 +1,13 @@
 import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
-import { CreateUserRequest } from "@/types/user";
+import { CreateEmployeeRequest } from "@/types/employee";
 import { subMonths } from "date-fns";
 
-export const defaultNewUser: CreateUserRequest = {
+export const defaultNewUser: CreateEmployeeRequest = {
     pin: '',
     name: '',
     cardNumber: '',
     password: '',
-    email: '',
-    phoneNumber: '',
     department: '',
     privilege: 0,
 }

@@ -17,10 +17,9 @@ import {
 import { CreateUserDialog } from "@/components/dialogs/CreateUserDialog";
 import { CreateUserAccountDialog } from "@/components/dialogs/CreateUserAccountDialog";
 import { toast } from "sonner";
-import { Employee } from "@/types/employee";
 import FilterBar from "@/components/users/FilterBar";
 import { useDevices } from "@/hooks/useDevices";
-import { CreateEmployeeRequest, UpdateEmployeeRequest } from "@/types/employee";
+import { CreateEmployeeRequest, UpdateEmployeeRequest, Employee } from "@/types/employee";
 import { accountService } from "@/services/accountService";
 
 export const Employees = () => {

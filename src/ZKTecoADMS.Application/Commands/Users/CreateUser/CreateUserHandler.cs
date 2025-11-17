@@ -19,8 +19,6 @@ public class CreateUserHandler(
                 CardNumber = request.CardNumber,
                 Password = request.Password,
                 Privilege = request.Privilege,
-                Email = request.Email,
-                PhoneNumber = request.PhoneNumber,
                 Department = request.Department,
                 DeviceId = deviceId
             })

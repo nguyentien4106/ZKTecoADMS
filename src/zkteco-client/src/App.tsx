@@ -9,7 +9,7 @@ import { MainLayout } from './layouts/MainLayout'
 import { Login } from './pages/auth/Login'
 import { Dashboard } from './pages/Dashboard'
 import { Devices } from './pages/Devices'
-import { Users } from './pages/Users'
+import { Employees } from './pages/Employees'
 import { Attendance } from './pages/Attendance'
 import { Reports } from './pages/Reports'
 import { Settings } from './pages/Settings'
@@ -60,10 +60,10 @@ function App() {
           }
         />
         <Route
-          path="users"
+          path="employees"
           element={
             <RoleProtectedRoute requiredRole={UserRole.EMPLOYEE}>
-              <Users />
+              <Employees />
             </RoleProtectedRoute>
           }
         />
