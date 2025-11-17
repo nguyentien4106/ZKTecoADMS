@@ -13,7 +13,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import type { Employee } from "@/types/employee";
 import {
   Select,
   SelectContent,
@@ -37,6 +36,7 @@ import {
 } from "@/components/ui/form";
 import { PasswordInput } from "../password-input";
 import { CreateEmployeeRequest, UpdateEmployeeRequest } from "@/types/employee";
+import { useEmployeeContext } from "@/contexts/EmployeeContext";
 
 const createFormSchema = z.object({
   pin: z.string().min(1, "PIN is required"),
@@ -58,24 +58,17 @@ const updateFormSchema = z.object({
   deviceIds: z.array(z.string()).optional(), // Not required for update
 });
 
-interface CreateUserDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  employee: Employee | null;
-  handleAddUser?: (user: CreateEmployeeRequest) => Promise<void>;
-  handleUpdateUser?: (user: UpdateEmployeeRequest) => Promise<void>;
-}
-
-export const CreateUserDialog = ({
-  open,
-  onOpenChange,
-  employee,
-  handleAddUser,
-  handleUpdateUser,
-}: CreateUserDialogProps) => {
+export const CreateUserDialog = () => {
+  const {
+    createDialogOpen,
+    employeeToEdit,
+    setCreateDialogOpen,
+    handleAddEmployee,
+    handleUpdateEmployee: handleUpdateUser
+  } = useEmployeeContext()
   const { data: devices } = useDevices();
 
-  const FormSchema = employee ? updateFormSchema : createFormSchema;
+  const FormSchema = employeeToEdit ? updateFormSchema : createFormSchema;
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -86,14 +79,14 @@ export const CreateUserDialog = ({
   });
 
   useEffect(() => {
-    if (employee) {
+    if (employeeToEdit) {
       form.reset({
-        pin: employee.pin ?? '',
-        name: employee.name ?? '',
-        cardNumber: employee.cardNumber ?? '',
-        password: employee.password ?? '',
-        department: employee.department ?? '',
-        privilege: employee.privilege ?? 0,
+        pin: employeeToEdit.pin ?? '',
+        name: employeeToEdit.name ?? '',
+        cardNumber: employeeToEdit.cardNumber ?? '',
+        password: employeeToEdit.password ?? '',
+        department: employeeToEdit.department ?? '',
+        privilege: employeeToEdit.privilege ?? 0,
         deviceIds: [],
       });
     } else {
@@ -102,26 +95,26 @@ export const CreateUserDialog = ({
         deviceIds: [],
       });
     }
-  }, [employee, open]);
+  }, [employeeToEdit, createDialogOpen]);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    if (employee) {
+    if (employeeToEdit) {
       const updateParams = data as unknown as UpdateEmployeeRequest;
-      updateParams.deviceId = employee.deviceId;
-      updateParams.userId = employee.id ?? "";
+      updateParams.deviceId = employeeToEdit.deviceId;
+      updateParams.userId = employeeToEdit.id ?? "";
 
       handleUpdateUser && (await handleUpdateUser(updateParams));
     } else {
-      handleAddUser &&
-        (await handleAddUser(data as unknown as CreateEmployeeRequest));
+      handleAddEmployee &&
+        (await handleAddEmployee(data as unknown as CreateEmployeeRequest));
     }
 
-    onOpenChange(false);
+    setCreateDialogOpen(false);
     form.reset({ ...defaultNewEmployee, deviceIds: [] });
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New User</DialogTitle>
@@ -139,11 +132,11 @@ export const CreateUserDialog = ({
                   <FormItem>
                     <FormLabel>Devices *</FormLabel>
                     <FormControl>
-                      {employee ? (
-                        <Select disabled value={employee.deviceId}>
+                      {employeeToEdit ? (
+                        <Select disabled value={employeeToEdit.deviceId}>
                           <SelectTrigger>
                             <SelectValue>
-                              {employee.deviceName || "Select a device"}
+                              {employeeToEdit.deviceName || "Select a device"}
                             </SelectValue>
                           </SelectTrigger>
                         </Select>
@@ -178,7 +171,7 @@ export const CreateUserDialog = ({
                         {...field}
                         placeholder="1001"
                         required
-                        disabled={!!employee}
+                        disabled={!!employeeToEdit}
                       />
                     </FormControl>
                     <FormMessage />
@@ -282,7 +275,7 @@ export const CreateUserDialog = ({
 
             <div className="grid gap-4">
               <Button type="submit" className="ml-auto">
-                { employee ? "Update User" : "Create User" }
+                { employeeToEdit ? "Update User" : "Create User" }
               </Button>
             </div>
           </form>

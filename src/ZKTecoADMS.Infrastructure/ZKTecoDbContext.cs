@@ -19,8 +19,8 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
     public DbSet<SyncLog> SyncLogs => Set<SyncLog>();
     public DbSet<DeviceSetting> DeviceSettings => Set<DeviceSetting>();
     public DbSet<SystemConfiguration> SystemConfigurations => Set<SystemConfiguration>();
-
     public DbSet<DeviceInfo> DeviceInfos => Set<DeviceInfo>();
+    public DbSet<Shift> Shifts => Set<Shift>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

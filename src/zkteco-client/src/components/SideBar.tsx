@@ -11,7 +11,9 @@ import {
   FileText, 
   Settings,
   X,
-  Terminal
+  Terminal,
+  Calendar,
+  CalendarCheck
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from '@/contexts/SidebarContext'
@@ -25,6 +27,8 @@ const navItems = [
   { to: '/device-commands', icon: Terminal, label: 'Device Commands' },
   { to: '/employees', icon: Users, label: 'Employees' },
   { to: '/attendance', icon: Clock, label: 'Attendance' },
+  { to: '/my-shifts', icon: Calendar, label: 'My Shifts' },
+  { to: '/shift-management', icon: CalendarCheck, label: 'Shift Management' },
   { to: '/reports', icon: FileText, label: 'Reports' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]

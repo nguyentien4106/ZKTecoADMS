@@ -18,20 +18,20 @@ export const DeviceCommands = () => {
 
   // Auto-select first device
   useEffect(() => {
-    if (devices && devices.items.length > 0 && !selectedDeviceId) {
-      setSelectedDeviceId(devices.items[0].id)
+    if (devices && devices.length > 0 && !selectedDeviceId) {
+      setSelectedDeviceId(devices[0].id)
     }
   }, [devices, selectedDeviceId])
 
   // Get selected device to check if it's active
-  const selectedDevice = devices?.items.find(d => d.id === selectedDeviceId)
+  const selectedDevice = devices?.find(d => d.id === selectedDeviceId)
   const isDeviceInactive = selectedDevice && !selectedDevice.isActive
 
   if (devicesLoading) {
     return <LoadingSpinner />
   }
 
-  if (!devices || devices.items.length === 0) {
+  if (!devices || devices.length === 0) {
     return (
       <EmptyState
         icon={Terminal}
@@ -59,7 +59,7 @@ export const DeviceCommands = () => {
       )}
 
       <CommandCenter
-        devices={devices.items}
+        devices={devices}
         selectedDeviceId={selectedDeviceId}
         onDeviceChange={setSelectedDeviceId}
         onRefresh={refetch}

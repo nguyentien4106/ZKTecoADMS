@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import {
@@ -20,26 +19,18 @@ import {
 } from "lucide-react";
 import { Employee } from "@/types/employee";
 import { UserPrivileges } from "@/constants";
+import { useEmployeeContext } from "@/contexts/EmployeeContext";
 
-type UsersTableProps = {
-  users?: Employee[];
-  onEdit: (user: Employee) => void;
-  onDelete: (id: string) => void;
-  isDeletePending: boolean;
-  onAddUser: () => void;
-  isLoading: boolean;
-  onCreateAccount?: (user: Employee) => void;
-};
-
-export const UsersTable = ({
-  users,
-  onEdit,
-  onDelete,
-  isDeletePending,
-  onAddUser,
-  isLoading,
-  onCreateAccount,
-}: UsersTableProps) => {
+export const UsersTable = () => {
+  const {
+    employees,
+    isLoading,
+    isDeletePending,
+    handleEdit,
+    handleDelete,
+    handleOpenCreateDialog,
+    handleCreateAccount
+  } = useEmployeeContext()
   return (
     <Card>
       <CardContent className="p-0">
@@ -67,7 +58,7 @@ export const UsersTable = ({
                   </div>
                 </TableCell>
               </TableRow>
-            ) : !users || users.length === 0 ? (
+            ) : !employees || employees.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={9} className="h-48">
                   <EmptyState
@@ -75,7 +66,7 @@ export const UsersTable = ({
                     title="No users found"
                     description="Get started by adding your first user"
                     action={
-                      <Button onClick={onAddUser}>
+                      <Button onClick={handleOpenCreateDialog}>
                         <Plus className="w-4 h-4 mr-2" />
                         Add User
                       </Button>
@@ -84,7 +75,7 @@ export const UsersTable = ({
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user: Employee) => (
+              employees.map((user: Employee) => (
                 <TableRow key={user.id}>
                   <TableCell className="text-muted-foreground">
                       {user.deviceName || "-"}
@@ -105,17 +96,17 @@ export const UsersTable = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => onEdit(user)}
+                        onClick={() => handleEdit(user)}
                         title="Edit User"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      {onCreateAccount && (
+                      {handleCreateAccount && (
                         user.applicationUser ? (
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => onCreateAccount(user)}
+                            onClick={() => handleCreateAccount(user)}
                             title="Update Account"
                           >
                             <User2Icon className="w-4 h-4 text-green-600" />
@@ -124,7 +115,7 @@ export const UsersTable = ({
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => onCreateAccount(user)}
+                            onClick={() => handleCreateAccount(user)}
                             title="Create Account"
                           >
                             <UserPlus className="w-4 h-4 text-blue-600" />
@@ -134,7 +125,7 @@ export const UsersTable = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => onDelete(user.id)}
+                        onClick={() => handleDelete(user.id)}
                         disabled={isDeletePending}
                         title="Delete User"
                       >

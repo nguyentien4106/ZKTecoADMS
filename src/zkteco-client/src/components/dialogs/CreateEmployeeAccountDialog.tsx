@@ -15,21 +15,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, CheckCircle2, Circle, UserCog, UserPlus } from 'lucide-react'
 import { Employee } from '@/types/employee'
-
-interface CreateEmployeeAccountDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  employee: Employee | null
-  onSubmit: (
-    employeeId: string, 
-    firstName: string, 
-    lastName: string, 
-    email: string, 
-    password: string,
-    phoneNumber?: string
-  ) => Promise<void>
-  isLoading?: boolean
-}
+import { EmployeeAccount } from '@/types/account'
+import { useEmployeeContext } from '@/contexts/EmployeeContext'
 
 interface FormData {
   firstName: string
@@ -83,18 +70,19 @@ const initialFormData: FormData = {
   phoneNumber: '',
 }
 
-export const CreateEmployeeAccountDialog = ({
-  open,
-  onOpenChange,
-  employee,
-  onSubmit,
-  isLoading = false,
-}: CreateEmployeeAccountDialogProps) => {
+export const CreateEmployeeAccountDialog = () => {
+  const {
+    createAccountDialogOpen,
+    employeeForAccount,
+    isCreatingAccount,
+    setCreateAccountDialogOpen,
+    handleCreateAccountSubmit
+  } = useEmployeeContext()
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [errors, setErrors] = useState<FormErrors>({})
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false)
   
-  const isUpdateMode = !!employee?.applicationUser
+  const isUpdateMode = !! employeeForAccount?.applicationUser
 
   // Password requirements state
   const passwordRequirements = {
@@ -107,19 +95,19 @@ export const CreateEmployeeAccountDialog = ({
 
   // Pre-fill form with existing account data when in update mode
   useEffect(() => {
-    if (open && employee?.applicationUser) {
+    if (createAccountDialogOpen && employeeForAccount?.applicationUser) {
       setFormData({
-        firstName: employee.applicationUser.firstName || '',
-        lastName: employee.applicationUser.lastName || '',
-        email: employee.applicationUser.email || '',
+        firstName: employeeForAccount.applicationUser.firstName || '',
+        lastName: employeeForAccount.applicationUser.lastName || '',
+        email: employeeForAccount.applicationUser.email || '',
         password: '',
         confirmPassword: '',
-        phoneNumber: employee.applicationUser.phoneNumber || '',
+        phoneNumber: employeeForAccount.applicationUser.phoneNumber || '',
       })
-    } else if (open) {
+    } else if (createAccountDialogOpen) {
       setFormData(initialFormData)
     }
-  }, [open, employee])
+  }, [createAccountDialogOpen, employeeForAccount])
 
   const updateField = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -178,11 +166,11 @@ export const CreateEmployeeAccountDialog = ({
       return
     }
     
-    if (!employee?.id) return
+    if (!employeeForAccount?.id) return
     
     try {
-      await onSubmit(
-        employee.id, 
+      await handleCreateAccountSubmit(
+        employeeForAccount.id, 
         formData.firstName, 
         formData.lastName, 
         formData.email, 
@@ -192,7 +180,7 @@ export const CreateEmployeeAccountDialog = ({
       // Reset form on success
       setFormData(initialFormData)
       setErrors({})
-      onOpenChange(false)
+      setCreateAccountDialogOpen(false)
     } catch (error) {
       // Error handling is done in parent component
     }
@@ -201,11 +189,11 @@ export const CreateEmployeeAccountDialog = ({
   const handleClose = () => {
     setFormData(initialFormData)
     setErrors({})
-    onOpenChange(false)
+    setCreateAccountDialogOpen(false)
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={createAccountDialogOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
@@ -223,7 +211,7 @@ export const CreateEmployeeAccountDialog = ({
               )}
             </DialogTitle>
             <DialogDescription>
-              {isUpdateMode ? 'Update' : 'Create'} a login account for <strong>{employee?.name}</strong> (PIN: {employee?.pin})
+              {isUpdateMode ? 'Update' : 'Create'} a login account for <strong>{employeeForAccount?.name}</strong> (PIN: {employeeForAccount?.pin})
             </DialogDescription>
           </DialogHeader>
 
@@ -239,7 +227,7 @@ export const CreateEmployeeAccountDialog = ({
                   placeholder="John"
                   value={formData.firstName}
                   onChange={(e) => updateField('firstName', e.target.value)}
-                  disabled={isLoading}
+                  disabled={isCreatingAccount}
                   className={errors.firstName ? 'border-destructive' : ''}
                 />
                 {errors.firstName && (
@@ -257,7 +245,7 @@ export const CreateEmployeeAccountDialog = ({
                   placeholder="Doe"
                   value={formData.lastName}
                   onChange={(e) => updateField('lastName', e.target.value)}
-                  disabled={isLoading}
+                  disabled={isCreatingAccount}
                   className={errors.lastName ? 'border-destructive' : ''}
                 />
                 {errors.lastName && (
@@ -277,7 +265,7 @@ export const CreateEmployeeAccountDialog = ({
                 placeholder="john.doe@example.com"
                 value={formData.email}
                 onChange={(e) => updateField('email', e.target.value)}
-                disabled={isLoading || isUpdateMode}
+                disabled={isCreatingAccount || isUpdateMode}
                 className={errors.email ? 'border-destructive' : ''}
               />
               {errors.email && (
@@ -295,7 +283,7 @@ export const CreateEmployeeAccountDialog = ({
                 placeholder="+1234567890"
                 value={formData.phoneNumber}
                 onChange={(e) => updateField('phoneNumber', e.target.value)}
-                disabled={isLoading}
+                disabled={isCreatingAccount}
               />
             </div>
 
@@ -312,7 +300,7 @@ export const CreateEmployeeAccountDialog = ({
                   value={formData.password}
                   onChange={(e) => updateField('password', e.target.value)}
                   onFocus={() => setShowPasswordRequirements(true)}
-                  disabled={isLoading}
+                  disabled={isCreatingAccount}
                   className={errors.password ? 'border-destructive' : ''}
                 />
                 {errors.password && (
@@ -330,7 +318,7 @@ export const CreateEmployeeAccountDialog = ({
                   placeholder="••••••••"
                   value={formData.confirmPassword}
                   onChange={(e) => updateField('confirmPassword', e.target.value)}
-                  disabled={isLoading}
+                  disabled={isCreatingAccount}
                   className={errors.confirmPassword ? 'border-destructive' : ''}
                 />
                 {errors.confirmPassword && (
@@ -404,12 +392,12 @@ export const CreateEmployeeAccountDialog = ({
               type="button"
               variant="outline"
               onClick={handleClose}
-              disabled={isLoading}
+              disabled={isCreatingAccount}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" disabled={isCreatingAccount}>
+              {isCreatingAccount && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isUpdateMode ? 'Update Account' : 'Create Account'}
             </Button>
           </DialogFooter>

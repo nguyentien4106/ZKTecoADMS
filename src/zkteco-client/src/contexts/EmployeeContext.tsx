@@ -4,18 +4,21 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { toast } from 'sonner'
 import {
-  useUsers,
-  useDeleteUser,
-  useCreateUser,
-  useUpdateUser,
+  useEmployees,
+  useDeleteEmployee,
+  useCreateEmployee,
+  useUpdateEmployee,
+  useCreateEmployeeAccount,
+  useUpdateEmployeeAccount,
 } from '@/hooks/useEmployees'
 import { useDevices } from '@/hooks/useDevices'
 import { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee'
 import { accountService } from '@/services/accountService'
+import { EmployeeAccount } from '@/types/account'
 
 interface EmployeeContextValue {
   // State
-  users: Employee[] | undefined
+  employees: Employee[] | undefined
   isLoading: boolean
   devices: any[] | undefined
   selectedDeviceIds: string[]
@@ -32,8 +35,8 @@ interface EmployeeContextValue {
   setCreateAccountDialogOpen: (open: boolean) => void
   setSelectedDeviceIds: (deviceIds: string[]) => void
   handleDelete: (userId: string) => Promise<void>
-  handleAddUser: (data: CreateEmployeeRequest) => Promise<void>
-  handleUpdateUser: (data: UpdateEmployeeRequest) => Promise<void>
+  handleAddEmployee: (data: CreateEmployeeRequest) => Promise<void>
+  handleUpdateEmployee: (data: UpdateEmployeeRequest) => Promise<void>
   handleEdit: (user: Employee) => void
   handleCreateAccount: (user: Employee) => void
   handleCreateAccountSubmit: (
@@ -43,7 +46,7 @@ interface EmployeeContextValue {
     email: string,
     password: string,
     phoneNumber?: string
-  ) => Promise<void>
+  ) => Promise<EmployeeAccount | undefined>
   handleFilterSubmit: (deviceIds: string[]) => void
   handleOpenCreateDialog: () => void
   
@@ -76,10 +79,12 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   
   // Hooks
   const { data: devices } = useDevices()
-  const { data: users, isLoading } = useUsers(selectedDeviceIds)
-  const deleteUser = useDeleteUser()
-  const createUser = useCreateUser()
-  const updateUser = useUpdateUser()
+  const { data: employees, isLoading } = useEmployees(selectedDeviceIds)
+  const deleteEmployee = useDeleteEmployee()
+  const createEmployee = useCreateEmployee()
+  const updateEmployee = useUpdateEmployee()
+  const createEmployeeAccount = useCreateEmployeeAccount()
+  const updateEmployeeAccount = useUpdateEmployeeAccount()
 
   // Initialize selected devices
   useEffect(() => {
@@ -100,12 +105,12 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   const handleDelete = async (userId: string) => {
     if (!userId) return
     if (confirm('Are you sure you want to delete this employee?')) {
-      await deleteUser.mutateAsync(userId)
+      await deleteEmployee.mutateAsync(userId)
     }
   }
 
-  const handleAddUser = async (data: CreateEmployeeRequest) => {
-    const results = await createUser.mutateAsync(data)
+  const handleAddEmployee = async (data: CreateEmployeeRequest) => {
+    const results = await createEmployee.mutateAsync(data)
     const successes = results.filter((res) => res.isSuccess)
     const errors = results.filter((res) => !res.isSuccess)
 
@@ -121,9 +126,9 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     }
   }
 
-  const handleUpdateUser = async (data: UpdateEmployeeRequest) => {
+  const handleUpdateEmployee = async (data: UpdateEmployeeRequest) => {
     try {
-      await updateUser.mutateAsync(data)
+      await updateEmployee.mutateAsync(data)
     } catch (error: any) {
       toast.error('Failed to update employee', {
         description: error.message || 'An error occurred',
@@ -151,7 +156,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   }
 
   const handleCreateAccountSubmit = async (
-    userId: string,
+    employeeDeviceId: string,
     firstName: string,
     lastName: string,
     email: string,
@@ -162,39 +167,37 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     try {
       // Check if the user already has an account
       const isUpdateMode = !!employeeForAccount?.applicationUser
-
+      let updatedEmployeeAccount: EmployeeAccount | undefined = undefined;
       if (isUpdateMode) {
         // Update existing account
         
-        await accountService.updateUserAccount(
-          userId,
-            {
-                firstName,
-                lastName,
-                email,
-                phoneNumber,
-                password
-            })
-        toast.success('Account updated successfully', {
-          description: `Login account updated for ${employeeForAccount?.name}`,
-        })
-      } else {
-        // Create new account
-        await accountService.createUserAccount({
-            employeeDeviceId:   userId,
+        updatedEmployeeAccount = await updateEmployeeAccount.mutateAsync({
+          employeeDeviceId,
+          data: {
             firstName,
             lastName,
             email,
-            password,
-            phoneNumber
+            phoneNumber,
+            password
+          }
         })
-        toast.success('Account created successfully', {
-          description: `Login account created for ${employeeForAccount?.name}`,
+      } else {
+        // Create new account
+        updatedEmployeeAccount = await createEmployeeAccount.mutateAsync({
+          employeeDeviceId,
+          firstName,
+          lastName,
+          email,
+          password,
+          phoneNumber
         })
       }
 
       setCreateAccountDialogOpen(false)
       setEmployeeForAccount(null)
+
+      return updatedEmployeeAccount;
+
     } catch (error: any) {
       const action = employeeForAccount?.applicationUser ? 'update' : 'create'
       toast.error(`Failed to ${action} account`, {
@@ -207,7 +210,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
 
   const value: EmployeeContextValue = {
     // State
-    users,
+    employees,
     isLoading,
     devices,
     selectedDeviceIds,
@@ -224,8 +227,8 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     setCreateAccountDialogOpen,
     setSelectedDeviceIds,
     handleDelete,
-    handleAddUser,
-    handleUpdateUser,
+    handleAddEmployee,
+    handleUpdateEmployee,
     handleEdit,
     handleOpenCreateDialog,
     handleCreateAccount,
@@ -233,7 +236,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     handleFilterSubmit,
     
     // Mutation states
-    isDeletePending: deleteUser.isPending,
+    isDeletePending: deleteEmployee.isPending,
   }
 
   return (

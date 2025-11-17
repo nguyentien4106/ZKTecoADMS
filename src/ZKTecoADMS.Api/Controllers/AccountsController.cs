@@ -1,24 +1,27 @@
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
+using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Commands.Accounts.CreateEmployeeAccount;
 using ZKTecoADMS.Application.Commands.Accounts.UpdateEmployeeAccount;
 using ZKTecoADMS.Application.Constants;
+using ZKTecoADMS.Application.DTOs.Employees;
 using ZKTecoADMS.Application.Models;
 
 namespace ZKTecoADMS.Api.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
-public class AccountsController(IMediator mediator) : ControllerBase
+public class AccountsController(IMediator mediator) : AuthenticatedControllerBase
 {
 
     [HttpPost]
     [Authorize(Policy = PolicyNames.AtLeastManager)]
-    public async Task<AppResponse<bool>> CreateEmployeeAccount([FromBody] CreateEmployeeAccountRequest request, CancellationToken cancellationToken)
+    public async Task<AppResponse<EmployeeAccountDto>> CreateEmployeeAccount([FromBody] CreateEmployeeAccountRequest request, CancellationToken cancellationToken)
     {
         var command = request.Adapt<CreateEmployeeAccountCommand>();
-        var result = await mediator.Send(command, cancellationToken);
-
-        return result;
+        command.ManagerId = CurrentUserId;
+        
+        return await mediator.Send(command, cancellationToken);
     }
 
     [HttpPut("{employeeDeviceId}")]

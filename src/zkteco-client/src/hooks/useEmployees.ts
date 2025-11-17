@@ -1,53 +1,79 @@
 
 // ==========================================
-// src/hooks/useUsers.ts
+// src/hooks/useEmployees.ts
 // ==========================================
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { userService } from '@/services/employeeService';
+import { employeeService } from '@/services/employeeService';
 import { toast } from 'sonner';
 import { CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee';
+import { accountService } from '@/services/accountService';
+import { CreateEmployeeAccountRequest, UpdateEmployeeAccountRequest } from '@/types/account';
 
-export const useUsers = (deviceIds: string[]) => {
+export const useEmployees = (deviceIds: string[]) => {
   return useQuery({
-    queryKey: ['users', deviceIds],
-    queryFn: () => userService.getUsersByDevices(deviceIds),
+    queryKey: ['employees', deviceIds],
+    queryFn: () => employeeService.getEmployeesByDevices(deviceIds),
   });
 };
 
-export const useUser = (id: string) => {
+export const useEmployee = (id: string) => {
   return useQuery({
-    queryKey: ['user', id],
-    queryFn: () => userService.getById(id),
+    queryKey: ['employee', id],
+    queryFn: () => employeeService.getById(id),
     enabled: !!id,
   });
 };
 
-export const useCreateUser = () => {
+export const useCreateEmployee = () => {
   return useMutation({
-    mutationFn: (data: CreateEmployeeRequest) => userService.create(data),
+    mutationFn: (data: CreateEmployeeRequest) => employeeService.create(data),
   });
 };
 
-export const useUpdateUser = () => {
+export const useUpdateEmployee = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: UpdateEmployeeRequest) => userService.update(data),
+    mutationFn: (data: UpdateEmployeeRequest) => employeeService.update(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      toast.success('User updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      toast.success('Employee updated successfully');
     },
   });
 };
 
-export const useDeleteUser = () => {
+export const useDeleteEmployee = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => userService.delete(id),
+    mutationFn: (id: string) => employeeService.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      toast.success('User deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      toast.success('Employee deleted successfully');
+    },
+  });
+};
+
+export const useCreateEmployeeAccount = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateEmployeeAccountRequest) => accountService.createUserAccount(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      toast.success('Employee account created successfully');
+    },
+  });
+};
+
+export const useUpdateEmployeeAccount = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({employeeDeviceId, data}: {employeeDeviceId: string, data: UpdateEmployeeAccountRequest}) => accountService.updateUserAccount(employeeDeviceId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      toast.success('Employee account updated successfully');
     },
   });
 };

@@ -7,8 +7,8 @@ import { apiService } from './api';
 import type { Employee } from '@/types/employee';
 import { AppResponse } from '@/types';
 
-export const userService = {
-  getUsersByDevices: async (deviceIds?: string[]) => {
+export const employeeService = {
+  getEmployeesByDevices: async (deviceIds?: string[]) => {
     return await apiService.post<Employee[]>('/api/employees/devices', { deviceIds })
   },
   

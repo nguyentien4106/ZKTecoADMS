@@ -12,7 +12,7 @@ import { EmployeeProvider, useEmployeeContext } from "@/contexts/EmployeeContext
 
 const EmployeesContent = () => {
   const {
-    users,
+    employees,
     isLoading,
     devices,
     selectedDeviceIds,
@@ -25,8 +25,8 @@ const EmployeesContent = () => {
     setCreateDialogOpen,
     setCreateAccountDialogOpen,
     handleDelete,
-    handleAddUser,
-    handleUpdateUser,
+    handleAddEmployee: handleAddUser,
+    handleUpdateEmployee: handleUpdateUser,
     handleEdit,
     handleOpenCreateDialog,
     handleCreateAccount,
@@ -53,30 +53,11 @@ const EmployeesContent = () => {
         selectedDeviceIds={selectedDeviceIds}
       />
 
-      <UsersTable
-        users={users}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        isDeletePending={isDeletePending}
-        onAddUser={handleOpenCreateDialog}
-        isLoading={isLoading}
-        onCreateAccount={handleCreateAccount}
-      />
+      <UsersTable />
 
-      <CreateUserDialog
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
-        employee={employeeToEdit}
-        handleAddUser={handleAddUser}
-        handleUpdateUser={handleUpdateUser}
-      />
+      <CreateUserDialog />
 
       <CreateEmployeeAccountDialog
-        open={createAccountDialogOpen}
-        onOpenChange={setCreateAccountDialogOpen}
-        employee={employeeForAccount}
-        onSubmit={handleCreateAccountSubmit}
-        isLoading={isCreatingAccount}
       />
     </div>
   );

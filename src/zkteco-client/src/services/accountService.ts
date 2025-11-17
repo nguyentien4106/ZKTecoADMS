@@ -1,28 +1,12 @@
 // ==========================================
 // src/services/accountService.ts
 // ==========================================
+import { CreateEmployeeAccountRequest, EmployeeAccount, UpdateEmployeeAccountRequest } from '@/types/account'
 import { apiService } from './api'
-
-export interface CreateEmployeeAccountRequest {
-  email: string
-  password: string
-  employeeDeviceId: string
-  firstName: string
-  lastName: string
-  phoneNumber?: string
-}
-
-export interface UpdateEmployeeAccountRequest {
-  email: string
-  firstName: string
-  lastName: string
-  phoneNumber?: string
-  password?: string
-}
 
 export const accountService = {
   createUserAccount: async (employeeAccount: CreateEmployeeAccountRequest) => {
-    return await apiService.post<boolean>(
+    return await apiService.post<EmployeeAccount>(
       '/api/Accounts',
       employeeAccount
     )
@@ -32,7 +16,7 @@ export const accountService = {
     employeeDeviceId: string,
     employeeAccount: UpdateEmployeeAccountRequest
   ) => {
-    return await apiService.put<boolean>(
+    return await apiService.put<EmployeeAccount>(
       `/api/Accounts/${employeeDeviceId}`,
       employeeAccount
     )

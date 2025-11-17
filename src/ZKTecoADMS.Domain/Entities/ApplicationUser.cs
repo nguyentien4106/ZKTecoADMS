@@ -9,8 +9,18 @@ public class ApplicationUser : IdentityUser<Guid>
     public UserRefreshToken? RefreshToken { get; set; } = null!;
     public DateTime Created { get; set; }
     public string? CreatedBy { get; set; }
-
+    // Manager-Employee Relationship (1-Many)
+    public Guid? ManagerId { get; set; }
+    
     // Navigation Properties
+    public virtual ApplicationUser? Manager { get; set; }
+
     public virtual ICollection<Device> Devices { get; set; } = [];
     public virtual Employee? Employee { get; set; }
+    
+    // Shift relationships
+    public virtual ICollection<Shift> RequestedShifts { get; set; } = [];
+    public virtual ICollection<Shift> ApprovedShifts { get; set; } = [];
+    
+    public virtual ICollection<ApplicationUser> ManagedEmployees { get; set; } = [];
 }

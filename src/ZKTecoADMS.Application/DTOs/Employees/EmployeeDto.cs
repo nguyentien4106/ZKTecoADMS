@@ -24,6 +24,4 @@ public class EmployeeAccountDto
 
     public string? PhoneNumber { get; set; }
 
-    public string? Department { get; set; }
-
 }

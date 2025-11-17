@@ -27,5 +27,6 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .HasForeignKey<Employee>(u => u.ApplicationUserId)
             .OnDelete(DeleteBehavior.SetNull)
             .IsRequired(false);
+
     }
 }

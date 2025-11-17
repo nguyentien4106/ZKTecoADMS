@@ -16,6 +16,8 @@ import { Settings } from './pages/Settings'
 import { DeviceCommands } from './pages/DeviceCommands'
 import { ForgotPassword } from './pages/auth/ForgotPassword'
 import { ResetPassword } from './pages/auth/ResetPassword'
+import { MyShifts } from './pages/MyShifts'
+import { ShiftManagement } from './pages/ShiftManagement'
 import { UserRole } from './constants/roles'
 
 function App() {
@@ -42,7 +44,25 @@ function App() {
         {/* Employee can only access attendance (their own) */}
         <Route path="attendance" element={<Attendance />} />
         
+        {/* Employee can access their shifts */}
+        <Route
+          path="my-shifts"
+          element={
+            <RoleProtectedRoute requiredRole={UserRole.EMPLOYEE}>
+              <MyShifts />
+            </RoleProtectedRoute>
+          }
+        />
+        
         {/* Manager and Admin only routes */}
+        <Route
+          path="shift-management"
+          element={
+            <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
+              <ShiftManagement />
+            </RoleProtectedRoute>
+          }
+        />
         <Route
           path="devices"
           element={

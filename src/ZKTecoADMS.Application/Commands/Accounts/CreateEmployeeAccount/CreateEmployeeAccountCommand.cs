@@ -1,6 +1,8 @@
+using ZKTecoADMS.Application.DTOs.Employees;
+
 namespace ZKTecoADMS.Application.Commands.Accounts.CreateEmployeeAccount;
 
-public class CreateEmployeeAccountCommand : ICommand<AppResponse<bool>>
+public class CreateEmployeeAccountCommand : ICommand<AppResponse<EmployeeAccountDto>>
 {
     public required string Email { get; set; }
 
@@ -13,4 +15,6 @@ public class CreateEmployeeAccountCommand : ICommand<AppResponse<bool>>
     public required string LastName { get; set; }
 
     public string? PhoneNumber { get; set; }
+
+    public Guid ManagerId { get; set; }
 }
