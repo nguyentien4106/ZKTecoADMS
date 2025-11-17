@@ -10,7 +10,6 @@ using ZKTecoADMS.Application.Commands.Shifts.RejectShift;
 using ZKTecoADMS.Application.Queries.Shifts.GetShiftsByEmployee;
 using ZKTecoADMS.Application.Queries.Shifts.GetPendingShifts;
 using ZKTecoADMS.Application.Queries.Shifts.GetShiftsByManager;
-using ZKTecoADMS.Api.Models.Requests.Shifts;
 using ZKTecoADMS.Api.Models.Responses;
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Shifts;

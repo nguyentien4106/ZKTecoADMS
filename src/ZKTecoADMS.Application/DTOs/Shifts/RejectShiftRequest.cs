@@ -1,4 +1,4 @@
-namespace ZKTecoADMS.Api.Models.Requests.Shifts;
+namespace ZKTecoADMS.Application.DTOs.Shifts;
 
 public class RejectShiftRequest
 {
