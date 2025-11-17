@@ -29,10 +29,9 @@ public class DevicesController(
     }
     
     [HttpGet]
-    public async Task<ActionResult<AppResponse<PagedResult<DeviceDto>>>> GetAllDevices([FromQuery] PaginationRequest request)
+    public async Task<ActionResult<AppResponse<IEnumerable<DeviceDto>>>> GetAllDevices()
     {
         var query = new GetAllDevicesQuery(
-            Request: request,
             UserId: CurrentUserId,
             IsAdminRequest: IsAdmin
         );

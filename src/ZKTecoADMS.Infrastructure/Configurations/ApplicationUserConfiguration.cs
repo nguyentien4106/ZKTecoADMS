@@ -15,6 +15,5 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.Property(u => u.LastName)
             .IsRequired()
             .HasMaxLength(50);
-        
     }
 }

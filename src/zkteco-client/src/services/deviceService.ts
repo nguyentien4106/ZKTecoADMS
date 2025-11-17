@@ -3,11 +3,11 @@
 // src/services/deviceService.ts
 // ==========================================
 import { apiService } from './api';
-import type { Device, CreateDeviceRequest, PaginatedResponse, DeviceInfo, PaginationRequest } from '@/types';
+import type { Device, CreateDeviceRequest, DeviceInfo } from '@/types';
 
 export const deviceService = {
-  getAll: async (request?: PaginationRequest) => {
-    return  await apiService.get<PaginatedResponse<Device>>('/api/devices', request)
+  getAll: async () => {
+    return  await apiService.get<Device[]>('/api/devices')
   },
 
   getByUserId: async (userId: string) => {

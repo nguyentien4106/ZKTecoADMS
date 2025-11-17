@@ -5,7 +5,6 @@ using ZKTecoADMS.Application.Models;
 namespace ZKTecoADMS.Application.Queries.Devices.GetAllDevices;
 
 public record GetAllDevicesQuery(
-    PaginationRequest Request, 
     Guid? UserId = null, 
     bool IsAdminRequest = false
-) : IQuery<AppResponse<PagedResult<DeviceDto>>>;
+) : IQuery<AppResponse<IEnumerable<DeviceDto>>>;

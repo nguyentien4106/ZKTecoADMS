@@ -13,4 +13,6 @@ public interface IDeviceService
     Task<AppResponse<bool>> IsValidEmployeeAsync(Employee employee);
     
     Task<IEnumerable<Device>> GetAllDevicesByEmployeeAsync(Guid employeeId);
+    
+    Task<IEnumerable<Device>> GetAllDevicesAsync();
 }

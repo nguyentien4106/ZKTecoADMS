@@ -13,7 +13,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-// import { Label } from '@/components/ui/label'
 import type { Employee } from "@/types/employee";
 import {
   Select,
@@ -149,7 +148,7 @@ export const CreateUserDialog = ({
                         <MultiSelect
                           options={
                             devices
-                              ? devices.items.map((device) => ({
+                              ? devices.map((device) => ({
                                   value: device.id,
                                   label: device.deviceName,
                                 }))

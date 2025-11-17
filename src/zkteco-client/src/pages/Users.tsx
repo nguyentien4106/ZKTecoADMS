@@ -10,7 +10,7 @@ import {
   useDeleteUser,
   useCreateUser,
   useUpdateUser,
-} from "@/hooks/useUsers";
+} from "@/hooks/useEmployees";
 import {
   Plus,
 } from "lucide-react";
@@ -44,7 +44,7 @@ export const Employees = () => {
   };
 
   useEffect(() => {
-    setSelectedDeviceIds(devices ? devices.items.map((device) => device.id) : []);
+    setSelectedDeviceIds(devices ? devices.map((device) => device.id) : []);
   }, [devices]);
 
   const handleAddUser = async (data: CreateEmployeeRequest) => {
@@ -156,7 +156,7 @@ export const Employees = () => {
       />
 
       <FilterBar
-        devices={devices?.items}
+        devices={devices}
         handleSubmit={handleSubmit}
         selectedDeviceIds={selectedDeviceIds}
       />

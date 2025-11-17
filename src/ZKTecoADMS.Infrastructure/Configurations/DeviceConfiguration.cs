@@ -16,7 +16,5 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
         builder.HasOne(d => d.DeviceInfo)
             .WithOne(di => di.Device)
             .HasForeignKey<Device>(d => d.DeviceInfoId);
-
-
     }
 }

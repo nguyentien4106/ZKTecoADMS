@@ -3,7 +3,7 @@
 // src/hooks/useUsers.ts
 // ==========================================
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { userService } from '@/services/userService';
+import { userService } from '@/services/employeeService';
 import { toast } from 'sonner';
 import { CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee';
 
@@ -48,19 +48,6 @@ export const useDeleteUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('User deleted successfully');
-    },
-  });
-};
-
-export const useSyncUserToDevice = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ userId, deviceId }: { userId: string; deviceId: string }) =>
-      userService.syncToDevice(userId, deviceId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-mappings'] });
-      toast.success('User sync initiated');
     },
   });
 };

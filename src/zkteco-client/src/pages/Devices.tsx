@@ -21,7 +21,7 @@ const DevicesContent_Internal = () => {
   } = useDeviceContext()
 
   const handleShowInfo = (id: string) => {
-    const device = devices?.items.find((d) => d.id === id)
+    const device = devices?.find((d) => d.id === id)
     openInfoDialog(id, device?.deviceName)
   }
 
@@ -53,7 +53,7 @@ const DevicesContent_Internal = () => {
       />
 
       <DevicesContent
-        devices={devices?.items}
+        devices={devices}
         onShowInfo={handleShowInfo}
       />
 

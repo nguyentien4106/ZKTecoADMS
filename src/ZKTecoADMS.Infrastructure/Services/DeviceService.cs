@@ -108,6 +108,11 @@ public class DeviceService(
         return await context.Devices.Where(d => d.ApplicationUserId == employeeId).ToListAsync();
     }
 
+    public Task<IEnumerable<Device>> GetAllDevicesAsync()
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<bool> IsExistDeviceAsync(string serialNumber)
     {
         return await GetDeviceBySerialNumberAsync(serialNumber) != null;

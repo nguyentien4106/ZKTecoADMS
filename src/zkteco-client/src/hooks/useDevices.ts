@@ -9,10 +9,7 @@ import type { CreateDeviceRequest, Device, PaginatedResponse } from '@/types';
 export const useDevices = () => {
   return useQuery({
     queryKey: ['devices'],
-    queryFn: () => deviceService.getAll({
-      pageNumber: 1,
-      pageSize: 1000,
-    }),
+    queryFn: () => deviceService.getAll(),
   });
 };
 
@@ -22,17 +19,13 @@ export const useToggleActive = () => {
   return useMutation({
     mutationFn: (deviceId: string) => deviceService.toggleActive(deviceId),
     onSuccess: (updatedDevice: Device) => {
-      // Update the specific device in cache
-      console.log('Updated Device:', updatedDevice);
       queryClient.setQueryData(
         ['devices'],
-        (oldData: PaginatedResponse<Device>) => {
-          if (!oldData.items) return [updatedDevice];
-          oldData.items = oldData.items.map(device => 
+        (oldData: Device[] ) => {
+          if (!oldData) return [updatedDevice];
+          return oldData.map(device => 
             device.id === updatedDevice.id ? updatedDevice : device
           );
-
-          return oldData;
         }
       );
       
