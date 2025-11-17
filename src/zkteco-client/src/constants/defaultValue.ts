@@ -3,7 +3,7 @@ import { AttendancesFilterParams } from "@/types/attendance";
 import { CreateEmployeeRequest } from "@/types/employee";
 import { subMonths } from "date-fns";
 
-export const defaultNewUser: CreateEmployeeRequest = {
+export const defaultNewEmployee: CreateEmployeeRequest = {
     pin: '',
     name: '',
     cardNumber: '',

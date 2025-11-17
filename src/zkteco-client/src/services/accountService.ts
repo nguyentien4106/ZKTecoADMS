@@ -3,16 +3,16 @@
 // ==========================================
 import { apiService } from './api'
 
-export interface CreateUserAccountRequest {
+export interface CreateEmployeeAccountRequest {
   email: string
   password: string
-  userDeviceId: string
+  employeeDeviceId: string
   firstName: string
   lastName: string
   phoneNumber?: string
 }
 
-export interface UpdateUserAccountRequest {
+export interface UpdateEmployeeAccountRequest {
   email: string
   firstName: string
   lastName: string
@@ -21,44 +21,20 @@ export interface UpdateUserAccountRequest {
 }
 
 export const accountService = {
-  createUserAccount: async (
-    userDeviceId: string,
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string,
-    phoneNumber?: string
-  ) => {
+  createUserAccount: async (employeeAccount: CreateEmployeeAccountRequest) => {
     return await apiService.post<boolean>(
       '/api/Accounts',
-      {
-        email,
-        password,
-        userDeviceId,
-        firstName,
-        lastName,
-        phoneNumber,
-      }
+      employeeAccount
     )
   },
 
   updateUserAccount: async (
-    userDeviceId: string,
-    firstName: string,
-    lastName: string,
-    email: string,
-    phoneNumber?: string,
-    password?: string
+    employeeDeviceId: string,
+    employeeAccount: UpdateEmployeeAccountRequest
   ) => {
     return await apiService.put<boolean>(
-      `/api/Accounts/${userDeviceId}`,
-      {
-        email,
-        firstName,
-        lastName,
-        phoneNumber,
-        password,
-      }
+      `/api/Accounts/${employeeDeviceId}`,
+      employeeAccount
     )
   },
 }

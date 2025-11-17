@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserPrivileges } from "@/constants";
-import { defaultNewUser } from "@/constants/defaultValue";
+import { defaultNewEmployee } from "@/constants/defaultValue";
 import { Button } from "../ui/button";
 import { useDevices } from "@/hooks/useDevices";
 import { MultiSelect } from "../multi-select";
@@ -80,22 +80,25 @@ export const CreateUserDialog = ({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      ...defaultNewUser,
-      ...user,
-      deviceIds: user ? [] : [],
+      ...defaultNewEmployee,
+      deviceIds: [],
     },
   });
 
   useEffect(() => {
     if (user) {
       form.reset({
-        ...defaultNewUser,
-        ...user,
+        pin: user.pin ?? '',
+        name: user.name ?? '',
+        cardNumber: user.cardNumber ?? '',
+        password: '',
+        department: user.department ?? '',
+        privilege: user.privilege ?? 0,
         deviceIds: [],
       });
     } else {
       form.reset({
-        ...defaultNewUser,
+        ...defaultNewEmployee,
         deviceIds: [],
       });
     }
@@ -114,7 +117,7 @@ export const CreateUserDialog = ({
     }
 
     onOpenChange(false);
-    form.reset({ ...defaultNewUser, deviceIds: [] });
+    form.reset({ ...defaultNewEmployee, deviceIds: [] });
   };
 
   return (
@@ -279,7 +282,7 @@ export const CreateUserDialog = ({
 
             <div className="grid gap-4">
               <Button type="submit" className="ml-auto">
-                Create User
+                { user ? "Update User" : "Create User" }
               </Button>
             </div>
           </form>

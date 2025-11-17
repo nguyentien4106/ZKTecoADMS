@@ -1,5 +1,5 @@
 // ==========================================
-// src/components/dialogs/CreateUserAccountDialog.tsx
+// src/components/dialogs/CreateemployeeAccountDialog.tsx
 // ==========================================
 import { useState, useEffect } from 'react'
 import {
@@ -13,15 +13,15 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, UserPlus, UserCog } from 'lucide-react'
+import { Loader2, CheckCircle2, Circle, UserCog, UserPlus } from 'lucide-react'
 import { Employee } from '@/types/employee'
 
-interface CreateUserAccountDialogProps {
+interface CreateEmployeeAccountDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  user: Employee | null
+  employee: Employee | null
   onSubmit: (
-    userId: string, 
+    employeeId: string, 
     firstName: string, 
     lastName: string, 
     email: string, 
@@ -48,6 +48,32 @@ interface FormErrors {
   confirmPassword?: string
 }
 
+const validatePassword = (password: string): string | null => {
+  if (!password) return null
+  
+  if (password.length < 8) {
+    return 'Password must be at least 8 characters'
+  }
+  
+  if (!/[0-9]/.test(password)) {
+    return 'Password must contain at least one digit'
+  }
+  
+  if (!/[a-z]/.test(password)) {
+    return 'Password must contain at least one lowercase letter'
+  }
+  
+  if (!/[A-Z]/.test(password)) {
+    return 'Password must contain at least one uppercase letter'
+  }
+  
+  if (!/[^a-zA-Z0-9]/.test(password)) {
+    return 'Password must contain at least one special character'
+  }
+  
+  return null
+}
+
 const initialFormData: FormData = {
   firstName: '',
   lastName: '',
@@ -57,33 +83,43 @@ const initialFormData: FormData = {
   phoneNumber: '',
 }
 
-export const CreateUserAccountDialog = ({
+export const CreateEmployeeAccountDialog = ({
   open,
   onOpenChange,
-  user,
+  employee,
   onSubmit,
   isLoading = false,
-}: CreateUserAccountDialogProps) => {
+}: CreateEmployeeAccountDialogProps) => {
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [errors, setErrors] = useState<FormErrors>({})
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false)
   
-  const isUpdateMode = !!user?.applicationUser
+  const isUpdateMode = !!employee?.applicationUser
+
+  // Password requirements state
+  const passwordRequirements = {
+    minLength: formData.password.length >= 8,
+    hasUppercase: /[A-Z]/.test(formData.password),
+    hasLowercase: /[a-z]/.test(formData.password),
+    hasDigit: /[0-9]/.test(formData.password),
+    hasSpecial: /[^a-zA-Z0-9]/.test(formData.password),
+  }
 
   // Pre-fill form with existing account data when in update mode
   useEffect(() => {
-    if (open && user?.applicationUser) {
+    if (open && employee?.applicationUser) {
       setFormData({
-        firstName: user.applicationUser.firstName || '',
-        lastName: user.applicationUser.lastName || '',
-        email: user.applicationUser.email || '',
+        firstName: employee.applicationUser.firstName || '',
+        lastName: employee.applicationUser.lastName || '',
+        email: employee.applicationUser.email || '',
         password: '',
         confirmPassword: '',
-        phoneNumber: user.applicationUser.phoneNumber || '',
+        phoneNumber: employee.applicationUser.phoneNumber || '',
       })
     } else if (open) {
       setFormData(initialFormData)
     }
-  }, [open, user])
+  }, [open, employee])
 
   const updateField = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -116,8 +152,11 @@ export const CreateUserAccountDialog = ({
     if (!isUpdateMode) {
       if (!formData.password) {
         newErrors.password = 'Password is required'
-      } else if (formData.password.length < 6) {
-        newErrors.password = 'Password must be at least 6 characters'
+      } else {
+        const passwordError = validatePassword(formData.password)
+        if (passwordError) {
+          newErrors.password = passwordError
+        }
       }
       
       if (formData.password !== formData.confirmPassword) {
@@ -125,8 +164,9 @@ export const CreateUserAccountDialog = ({
       }
     } else if (formData.password) {
       // If password is provided in update mode, validate it
-      if (formData.password.length < 6) {
-        newErrors.password = 'Password must be at least 6 characters'
+      const passwordError = validatePassword(formData.password)
+      if (passwordError) {
+        newErrors.password = passwordError
       }
       if (formData.password !== formData.confirmPassword) {
         newErrors.confirmPassword = 'Passwords do not match'
@@ -138,11 +178,11 @@ export const CreateUserAccountDialog = ({
       return
     }
     
-    if (!user?.id) return
+    if (!employee?.id) return
     
     try {
       await onSubmit(
-        user.id, 
+        employee.id, 
         formData.firstName, 
         formData.lastName, 
         formData.email, 
@@ -173,17 +213,17 @@ export const CreateUserAccountDialog = ({
               {isUpdateMode ? (
                 <>
                   <UserCog className="w-5 h-5" />
-                  Update Account for User
+                  Update Account for Employee
                 </>
               ) : (
                 <>
                   <UserPlus className="w-5 h-5" />
-                  Create Account for User
+                  Create Account for Employee
                 </>
               )}
             </DialogTitle>
             <DialogDescription>
-              {isUpdateMode ? 'Update' : 'Create'} a login account for <strong>{user?.name}</strong> (PIN: {user?.pin})
+              {isUpdateMode ? 'Update' : 'Create'} a login account for <strong>{employee?.name}</strong> (PIN: {employee?.pin})
             </DialogDescription>
           </DialogHeader>
 
@@ -271,6 +311,7 @@ export const CreateUserAccountDialog = ({
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) => updateField('password', e.target.value)}
+                  onFocus={() => setShowPasswordRequirements(true)}
                   disabled={isLoading}
                   className={errors.password ? 'border-destructive' : ''}
                 />
@@ -298,14 +339,64 @@ export const CreateUserAccountDialog = ({
               </div>
             </div>
 
-            <div className="rounded-md bg-muted p-3 text-sm">
-              <p className="font-medium mb-1">Account Details:</p>
-              <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                <li>Role: Employee</li>
-                <li>Access: Dashboard, Attendance, Settings</li>
-                <li>Can view own attendance records</li>
-              </ul>
-            </div>
+            {!isUpdateMode && (showPasswordRequirements || formData.password) && (
+              <div className="space-y-2 text-xs bg-muted/30 p-3 rounded-lg border border-border/50">
+                <p className="font-semibold text-foreground mb-2">Password must contain:</p>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    {passwordRequirements.minLength ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-500 flex-shrink-0" />
+                    ) : (
+                      <Circle className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                    )}
+                    <span className={passwordRequirements.minLength ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground'}>
+                      At least 8 characters
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {passwordRequirements.hasUppercase ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-500 flex-shrink-0" />
+                    ) : (
+                      <Circle className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                    )}
+                    <span className={passwordRequirements.hasUppercase ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground'}>
+                      One uppercase letter (A-Z)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {passwordRequirements.hasLowercase ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-500 flex-shrink-0" />
+                    ) : (
+                      <Circle className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                    )}
+                    <span className={passwordRequirements.hasLowercase ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground'}>
+                      One lowercase letter (a-z)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {passwordRequirements.hasDigit ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-500 flex-shrink-0" />
+                    ) : (
+                      <Circle className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                    )}
+                    <span className={passwordRequirements.hasDigit ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground'}>
+                      One digit (0-9)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {passwordRequirements.hasSpecial ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-500 flex-shrink-0" />
+                    ) : (
+                      <Circle className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                    )}
+                    <span className={passwordRequirements.hasSpecial ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground'}>
+                      One special character (!@#$%^&*)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
 
           <DialogFooter>
