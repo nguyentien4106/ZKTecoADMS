@@ -58,7 +58,7 @@ export const CreateShiftDialog = () => {
 
     return (
         <Dialog open={createDialogOpen} onOpenChange={handleOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle>Request New Shift</DialogTitle>
@@ -95,15 +95,21 @@ export const CreateShiftDialog = () => {
                                 onChange={(e) => setNewShift({ ...newShift, description: e.target.value })}
                                 placeholder="Add any notes about this shift..."
                                 rows={3}
+                                className="resize-none"
                             />
                         </div>
                     </div>
 
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+                    <DialogFooter className="flex-col sm:flex-row gap-2">
+                        <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={() => handleOpenChange(false)}
+                            className="w-full sm:w-auto"
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit">Submit Request</Button>
+                        <Button type="submit" className="w-full sm:w-auto">Submit Request</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

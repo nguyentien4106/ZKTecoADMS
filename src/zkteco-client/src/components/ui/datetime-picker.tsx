@@ -66,8 +66,8 @@ export function DateTimePicker({
   };
 
   return (
-    <div className="flex items-start gap-3">
-      <div className="flex-1">
+    <div className="flex flex-col sm:flex-row items-start gap-2 sm:gap-3">
+      <div className="flex-1 w-full">
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -103,14 +103,19 @@ export function DateTimePicker({
         </Popover>
       </div>
 
-      <div className="flex-1">
-        <div className="relative">
+      <div className="flex-1 w-full">
+        <div className="relative cursor-pointer" onClick={(e) => {
+          const input = e.currentTarget.querySelector('input');
+          if (input && !disabled) {
+            input.showPicker?.();
+          }
+        }}>
           <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             type="time"
             value={formatTime(selectedDateTime)}
             onChange={(e) => handleTimeChange(e.target.value)}
-            className="w-full pl-10 h-11"
+            className="w-full pl-10 h-11 cursor-pointer"
             disabled={disabled}
           />
         </div>

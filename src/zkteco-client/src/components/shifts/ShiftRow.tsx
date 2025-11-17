@@ -28,21 +28,21 @@ export const ShiftRow = ({
     return (
         <TableRow>
             {showEmployeeInfo && (
-                <TableCell className="font-medium">
+                <TableCell className="font-medium whitespace-nowrap">
                     {shift.employeeName}
                 </TableCell>
             )}
-            <TableCell>{formatDateTime(shift.startTime)}</TableCell>
-            <TableCell>{formatDateTime(shift.endTime)}</TableCell>
-            <TableCell>{totalHours.toFixed(2)}h</TableCell>
+            <TableCell className="whitespace-nowrap">{formatDateTime(shift.startTime)}</TableCell>
+            <TableCell className="whitespace-nowrap">{formatDateTime(shift.endTime)}</TableCell>
+            <TableCell className="whitespace-nowrap">{totalHours.toFixed(2)}h</TableCell>
             <TableCell>{shift.description || '-'}</TableCell>
             <TableCell>
                 <StatusBadge status={shift.status} rejectionReason={shift.rejectionReason} />
             </TableCell>
-            <TableCell className="text-sm text-muted-foreground">
+            <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                 {formatDateTime(shift.createdAt)}
             </TableCell>
-            <TableCell className="text-sm text-muted-foreground">
+            <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                 {shift.updatedAt ? formatDateTime(shift.updatedAt) : '-'}
             </TableCell>
             {showActions && (
