@@ -34,8 +34,18 @@ public class CreateShiftHandler(IRepository<Shift> repository)
             };
 
             var createdShift = await repository.AddAsync(shift, cancellationToken);
+            var shiftDto = new ShiftDto
+            {
+                Id = createdShift.Id,
+                ApplicationUserId = createdShift.ApplicationUserId,
+                StartTime = createdShift.StartTime,
+                EndTime = createdShift.EndTime,
+                Description = createdShift.Description,
+                Status = createdShift.Status,
+                CreatedAt = createdShift.CreatedAt
+            };
             
-            return AppResponse<ShiftDto>.Success(createdShift.Adapt<ShiftDto>());
+            return AppResponse<ShiftDto>.Success(shiftDto);
         }
         catch (ArgumentException ex)
         {

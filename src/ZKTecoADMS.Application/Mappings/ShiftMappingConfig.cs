@@ -10,9 +10,7 @@ public class ShiftMappingConfig : IRegister
         config.NewConfig<Shift, ShiftDto>()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.ApplicationUserId, src => src.ApplicationUserId)
-            .Map(dest => dest.EmployeeName, src => src.ApplicationUser != null 
-                ? $"{src.ApplicationUser.FirstName} {src.ApplicationUser.LastName}".Trim() 
-                : string.Empty)
+            .Map(dest => dest.EmployeeName, src => $"{src.ApplicationUser.FirstName} {src.ApplicationUser.LastName}".Trim())
             .Map(dest => dest.StartTime, src => src.StartTime)
             .Map(dest => dest.EndTime, src => src.EndTime)
             .Map(dest => dest.Description, src => src.Description)

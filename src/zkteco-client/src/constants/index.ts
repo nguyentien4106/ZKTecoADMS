@@ -4,3 +4,5 @@ export const UserPrivileges = {
     2: "Enroller",
     14: "Admin"
 }
+
+export const DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss"; // ISO 8601 format

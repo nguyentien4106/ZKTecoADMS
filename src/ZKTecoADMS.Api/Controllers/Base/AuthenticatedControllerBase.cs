@@ -14,6 +14,8 @@ public abstract class AuthenticatedControllerBase : ControllerBase
     protected bool IsAdmin => CurrentUserRole.Equals("Admin", StringComparison.OrdinalIgnoreCase);
     
     protected bool IsManager => CurrentUserRole.Equals("Manager", StringComparison.OrdinalIgnoreCase);
+    
+    protected bool IsEmployee => CurrentUserRole.Equals("Employee", StringComparison.OrdinalIgnoreCase);
 
     private Guid GetCurrentUserId()
     {

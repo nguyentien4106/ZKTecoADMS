@@ -5,7 +5,6 @@ using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Repositories;
 using ZKTecoADMS.Infrastructure;
-using ZKTecoADMS.Infrastructure.Repositories;
 
 namespace ZKTecoADMS.Core.Services;
 
@@ -14,7 +13,6 @@ public class EmployeeService(
     ZKTecoDbContext context,
     IDeviceService deviceService,
     IRepository<Device> deviceRepository,
-    IRepository<Employee> employeeRepository,
     ILogger<EmployeeService> logger) : IEmployeeService
 {
     public async Task<Employee?> GetEmployeeByIdAsync(Guid id)

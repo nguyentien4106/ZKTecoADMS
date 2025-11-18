@@ -28,10 +28,10 @@ public class ShiftTemplatesController(IMediator mediator) : AuthenticatedControl
     }
 
     [HttpGet]
-    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<AppResponse<List<ShiftTemplateDto>>>> GetShiftTemplates()
     {
-        var query = new GetShiftTemplatesQuery(CurrentUserId);
+        var query = new GetShiftTemplatesQuery(CurrentUserId, IsManager);
         var result = await mediator.Send(query);
         return Ok(result);
     }

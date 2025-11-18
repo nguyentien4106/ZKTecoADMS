@@ -103,9 +103,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   // Handlers
   const handleDelete = async (userId: string) => {
     if (!userId) return
-    if (confirm('Are you sure you want to delete this employee?')) {
-      await deleteEmployee.mutateAsync(userId)
-    }
+    await deleteEmployee.mutateAsync(userId)
   }
 
   const handleAddEmployee = async (data: CreateEmployeeRequest) => {

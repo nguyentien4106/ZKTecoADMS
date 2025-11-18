@@ -39,8 +39,18 @@ public class UpdateShiftHandler(IRepository<Shift> repository)
             shift.Description = request.Description;
 
             await repository.UpdateAsync(shift, cancellationToken);
-            
-            return AppResponse<ShiftDto>.Success(shift.Adapt<ShiftDto>());
+            var shiftDto = new ShiftDto
+            {
+                Id = shift.Id,
+                ApplicationUserId = shift.ApplicationUserId,
+                StartTime = shift.StartTime,
+                EndTime = shift.EndTime,
+                Description = shift.Description,
+                Status = shift.Status,
+                CreatedAt = shift.CreatedAt,
+                UpdatedAt = shift.UpdatedAt
+            };
+            return AppResponse<ShiftDto>.Success(shiftDto);
         }
         catch (ArgumentException ex)
         {
