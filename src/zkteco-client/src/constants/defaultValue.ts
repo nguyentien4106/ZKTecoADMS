@@ -1,7 +1,7 @@
 import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
 import { CreateEmployeeRequest } from "@/types/employee";
-import { CreateShiftRequest } from "@/types/shift";
+import { CreateShiftRequest, CreateShiftTemplateRequest } from "@/types/shift";
 import { subMonths } from "date-fns";
 
 export const defaultNewEmployee: CreateEmployeeRequest = {
@@ -40,4 +40,10 @@ export const defaultNewShift: CreateShiftRequest = {
     startTime: '',
     endTime: '',
     description: ''
+}
+
+export const defaultNewShiftTemplate: CreateShiftTemplateRequest = {
+    name: '',
+    startTime: '09:00:00',
+    endTime: '17:00:00',
 }

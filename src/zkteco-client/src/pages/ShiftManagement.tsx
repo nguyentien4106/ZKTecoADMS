@@ -98,13 +98,6 @@ const ShiftManagementDialogs = () => {
         setRejectDialogOpen,
         handleApprove,
         handleReject,
-        createTemplateDialogOpen,
-        updateTemplateDialogOpen,
-        selectedTemplate,
-        setCreateTemplateDialogOpen,
-        setUpdateTemplateDialogOpen,
-        handleCreateTemplate,
-        handleUpdateTemplate,
     } = useShiftManagementContext();
 
     return (
@@ -125,17 +118,8 @@ const ShiftManagementDialogs = () => {
                     />
                 </>
             )}
-            <CreateShiftTemplateDialog
-                open={createTemplateDialogOpen}
-                onOpenChange={setCreateTemplateDialogOpen}
-                onCreate={handleCreateTemplate}
-            />
-            <UpdateShiftTemplateDialog
-                open={updateTemplateDialogOpen}
-                onOpenChange={setUpdateTemplateDialogOpen}
-                template={selectedTemplate}
-                onUpdate={handleUpdateTemplate}
-            />
+            <CreateShiftTemplateDialog />
+            <UpdateShiftTemplateDialog />
         </>
     );
 };

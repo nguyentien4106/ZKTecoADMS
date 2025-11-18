@@ -4,14 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ShiftTemplate } from '@/types/shift';
-
-interface UpdateShiftTemplateDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    template: ShiftTemplate | null;
-    onUpdate: (id: string, data: { name: string; startTime: string; endTime: string; isActive: boolean }) => void;
-}
+import { useShiftManagementContext } from '@/contexts/ShiftManagementContext';
 
 const extractTime = (timeString: string): string => {
     // TimeSpan comes as "HH:mm:ss" format, extract HH:mm for the time input
@@ -26,7 +19,14 @@ const extractTime = (timeString: string): string => {
     return `${hours}:${minutes}`;
 };
 
-export const UpdateShiftTemplateDialog = ({ open, onOpenChange, template, onUpdate }: UpdateShiftTemplateDialogProps) => {
+export const UpdateShiftTemplateDialog = () => {
+    const {
+        selectedTemplate,
+        updateTemplateDialogOpen,
+        setUpdateTemplateDialogOpen,
+        handleUpdateTemplate,
+    } = useShiftManagementContext()
+    
     const [formData, setFormData] = useState({
         name: '',
         startTime: '09:00',
@@ -35,19 +35,19 @@ export const UpdateShiftTemplateDialog = ({ open, onOpenChange, template, onUpda
     });
 
     useEffect(() => {
-        if (template) {
+        if (selectedTemplate) {
             setFormData({
-                name: template.name,
-                startTime: extractTime(template.startTime),
-                endTime: extractTime(template.endTime),
-                isActive: template.isActive,
+                name: selectedTemplate.name,
+                startTime: extractTime(selectedTemplate.startTime),
+                endTime: extractTime(selectedTemplate.endTime),
+                isActive: selectedTemplate.isActive,
             });
         }
-    }, [template]);
+    }, [selectedTemplate]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!template || !formData.name || !formData.startTime || !formData.endTime) {
+        if (!selectedTemplate || !formData.name || !formData.startTime || !formData.endTime) {
             return;
         }
         
@@ -55,7 +55,7 @@ export const UpdateShiftTemplateDialog = ({ open, onOpenChange, template, onUpda
         const startTime = `${formData.startTime}:00`;
         const endTime = `${formData.endTime}:00`;
         
-        onUpdate(template.id, {
+        handleUpdateTemplate(selectedTemplate.id, {
             name: formData.name,
             startTime,
             endTime,
@@ -63,10 +63,10 @@ export const UpdateShiftTemplateDialog = ({ open, onOpenChange, template, onUpda
         });
     };
 
-    if (!template) return null;
+    if (!selectedTemplate) return null;
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={updateTemplateDialogOpen} onOpenChange={setUpdateTemplateDialogOpen}>
             <DialogContent className="max-w-[95vw] sm:max-w-[500px]">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
@@ -131,7 +131,7 @@ export const UpdateShiftTemplateDialog = ({ open, onOpenChange, template, onUpda
                         <Button 
                             type="button" 
                             variant="outline" 
-                            onClick={() => onOpenChange(false)}
+                            onClick={() => setUpdateTemplateDialogOpen(false)}
                             className="w-full sm:w-auto"
                         >
                             Cancel

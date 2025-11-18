@@ -1,6 +1,6 @@
 import { ShiftTemplate } from '@/types/shift';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { formatDateTime, formatTime } from '@/lib/utils';
+import { formatDateTime } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-react';

@@ -3,21 +3,16 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { defaultNewShiftTemplate } from '@/constants/defaultValue';
+import { useShiftManagementContext } from '@/contexts/ShiftManagementContext';
 
-interface CreateShiftTemplateDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onCreate: (data: { name: string; startTime: string; endTime: string }) => void;
-}
-
-const getDefaultTemplate = () => ({
-    name: '',
-    startTime: '09:00',
-    endTime: '17:00',
-});
-
-export const CreateShiftTemplateDialog = ({ open, onOpenChange, onCreate }: CreateShiftTemplateDialogProps) => {
-    const [template, setTemplate] = useState(getDefaultTemplate());
+export const CreateShiftTemplateDialog = () => {
+    const [template, setTemplate] = useState(defaultNewShiftTemplate);
+    const {
+        createTemplateDialogOpen,
+        setCreateTemplateDialogOpen,
+        handleCreateTemplate,
+    } = useShiftManagementContext()
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,24 +24,24 @@ export const CreateShiftTemplateDialog = ({ open, onOpenChange, onCreate }: Crea
         const startTime = `${template.startTime}:00`;
         const endTime = `${template.endTime}:00`;
         
-        onCreate({
+        handleCreateTemplate({
             name: template.name,
             startTime,
             endTime,
         });
         
-        setTemplate(getDefaultTemplate());
+        setTemplate(defaultNewShiftTemplate);
     };
 
     const handleOpenChangeInternal = (open: boolean) => {
-        onOpenChange(open);
+        setCreateTemplateDialogOpen(open);
         if (!open) {
-            setTemplate(getDefaultTemplate());
+            setTemplate(defaultNewShiftTemplate);
         }
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleOpenChangeInternal}>
+        <Dialog open={createTemplateDialogOpen} onOpenChange={handleOpenChangeInternal}>
             <DialogContent className="max-w-[95vw] sm:max-w-[500px]">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
