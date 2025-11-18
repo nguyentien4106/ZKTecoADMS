@@ -1,36 +1,21 @@
 using ZKTecoADMS.Application.DTOs.Shifts;
+using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Repositories;
 
 namespace ZKTecoADMS.Application.Queries.Shifts.GetShiftsByEmployee;
 
-public class GetShiftsByEmployeeHandler(IShiftRepository shiftRepository) 
+public class GetShiftsByEmployeeHandler(IRepository<Shift> repository) 
     : IQueryHandler<GetShiftsByEmployeeQuery, AppResponse<List<ShiftDto>>>
 {
     public async Task<AppResponse<List<ShiftDto>>> Handle(GetShiftsByEmployeeQuery request, CancellationToken cancellationToken)
     {
-        var shifts = await shiftRepository.GetShiftsByApplicationUserIdAsync(request.ApplicationUserId, cancellationToken);
-        
-        var shiftDtos = shifts.Select(s => new ShiftDto
-        {
-            Id = s.Id,
-            ApplicationUserId = s.ApplicationUserId,
-            EmployeeName = s.ApplicationUser != null 
-                ? $"{s.ApplicationUser.FirstName} {s.ApplicationUser.LastName}".Trim() 
-                : string.Empty,
-            StartTime = s.StartTime,
-            EndTime = s.EndTime,
-            Description = s.Description,
-            Status = s.Status,
-            ApprovedByUserId = s.ApprovedByUserId,
-            ApprovedByUserName = s.ApprovedByUser != null 
-                ? $"{s.ApprovedByUser.FirstName} {s.ApprovedByUser.LastName}".Trim() 
-                : null,
-            ApprovedAt = s.ApprovedAt,
-            RejectionReason = s.RejectionReason,
-            CreatedAt = s.CreatedAt,
-            UpdatedAt = s.UpdatedAt
-        }).ToList();
+        var shifts = await repository.GetAllAsync(
+            filter: s => s.ApplicationUserId == request.ApplicationUserId,
+            orderBy: query => query.OrderByDescending(s => s.CreatedAt),
+            includeProperties: new[] { nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser) },
+            cancellationToken: cancellationToken);
 
-        return AppResponse<List<ShiftDto>>.Success(shiftDtos);
+
+        return AppResponse<List<ShiftDto>>.Success(shifts.Adapt<List<ShiftDto>>());
     }
 }

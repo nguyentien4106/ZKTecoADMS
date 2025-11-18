@@ -21,6 +21,7 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
     public DbSet<SystemConfiguration> SystemConfigurations => Set<SystemConfiguration>();
     public DbSet<DeviceInfo> DeviceInfos => Set<DeviceInfo>();
     public DbSet<Shift> Shifts => Set<Shift>();
+    public DbSet<ShiftTemplate> ShiftTemplates => Set<ShiftTemplate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

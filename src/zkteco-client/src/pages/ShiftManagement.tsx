@@ -3,9 +3,14 @@
 // ==========================================
 import { PageHeader } from "@/components/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { ShiftList } from '@/components/shifts/ShiftList';
+import { ShiftTemplateList } from '@/components/shifts/ShiftTemplateList';
 import { ApproveShiftDialog } from '@/components/dialogs/ApproveShiftDialog';
 import { RejectShiftDialog } from '@/components/dialogs/RejectShiftDialog';
+import { CreateShiftTemplateDialog } from '@/components/dialogs/CreateShiftTemplateDialog';
+import { UpdateShiftTemplateDialog } from '@/components/dialogs/UpdateShiftTemplateDialog';
 import { ShiftManagementProvider, useShiftManagementContext } from '@/contexts/ShiftManagementContext';
 
 const ShiftManagementHeader = () => {
@@ -21,9 +26,13 @@ const ShiftManagementTabs = () => {
     const {
         pendingShifts,
         allShifts,
+        templates,
         isLoading,
         handleApproveClick,
         handleRejectClick,
+        setCreateTemplateDialogOpen,
+        handleEditTemplateClick,
+        handleDeleteTemplate,
     } = useShiftManagementContext();
 
     return (
@@ -35,6 +44,9 @@ const ShiftManagementTabs = () => {
                     </TabsTrigger>
                     <TabsTrigger value="all">
                         All Shifts
+                    </TabsTrigger>
+                    <TabsTrigger value="templates">
+                        Templates ({templates.length})
                     </TabsTrigger>
                 </TabsList>
 
@@ -57,6 +69,21 @@ const ShiftManagementTabs = () => {
                         showActions={false}
                     />
                 </TabsContent>
+
+                <TabsContent value="templates" className="mt-6">
+                    <div className="mb-4 flex justify-end">
+                        <Button onClick={() => setCreateTemplateDialogOpen(true)}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Create Template
+                        </Button>
+                    </div>
+                    <ShiftTemplateList
+                        templates={templates}
+                        isLoading={isLoading}
+                        onEdit={handleEditTemplateClick}
+                        onDelete={handleDeleteTemplate}
+                    />
+                </TabsContent>
             </Tabs>
         </div>
     );
@@ -71,23 +98,43 @@ const ShiftManagementDialogs = () => {
         setRejectDialogOpen,
         handleApprove,
         handleReject,
+        createTemplateDialogOpen,
+        updateTemplateDialogOpen,
+        selectedTemplate,
+        setCreateTemplateDialogOpen,
+        setUpdateTemplateDialogOpen,
+        handleCreateTemplate,
+        handleUpdateTemplate,
     } = useShiftManagementContext();
-
-    if (!selectedShift) return null;
 
     return (
         <>
-            <ApproveShiftDialog
-                open={approveDialogOpen}
-                onOpenChange={setApproveDialogOpen}
-                shift={selectedShift}
-                onConfirm={() => handleApprove(selectedShift.id)}
+            {selectedShift && (
+                <>
+                    <ApproveShiftDialog
+                        open={approveDialogOpen}
+                        onOpenChange={setApproveDialogOpen}
+                        shift={selectedShift}
+                        onConfirm={() => handleApprove(selectedShift.id)}
+                    />
+                    <RejectShiftDialog
+                        open={rejectDialogOpen}
+                        onOpenChange={setRejectDialogOpen}
+                        shift={selectedShift}
+                        onSubmit={(reason: string) => handleReject(selectedShift.id, reason)}
+                    />
+                </>
+            )}
+            <CreateShiftTemplateDialog
+                open={createTemplateDialogOpen}
+                onOpenChange={setCreateTemplateDialogOpen}
+                onCreate={handleCreateTemplate}
             />
-            <RejectShiftDialog
-                open={rejectDialogOpen}
-                onOpenChange={setRejectDialogOpen}
-                shift={selectedShift}
-                onSubmit={(reason: string) => handleReject(selectedShift.id, reason)}
+            <UpdateShiftTemplateDialog
+                open={updateTemplateDialogOpen}
+                onOpenChange={setUpdateTemplateDialogOpen}
+                template={selectedTemplate}
+                onUpdate={handleUpdateTemplate}
             />
         </>
     );

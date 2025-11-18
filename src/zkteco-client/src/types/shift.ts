@@ -51,3 +51,43 @@ export interface ShiftListResponse {
     errors: string[];
     message: string;
 }
+
+// Shift Template types
+export interface ShiftTemplate {
+    id: string;
+    createdByUserId: string;
+    name: string;
+    startTime: string;
+    endTime: string;
+    totalHours: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt?: string;
+}
+
+export interface CreateShiftTemplateRequest {
+    name: string;
+    startTime: string;
+    endTime: string;
+}
+
+export interface UpdateShiftTemplateRequest {
+    name: string;
+    startTime: string;
+    endTime: string;
+    isActive: boolean;
+}
+
+export interface ShiftTemplateResponse {
+    isSuccess: boolean;
+    data?: ShiftTemplate;
+    errors: string[];
+    message: string;
+}
+
+export interface ShiftTemplateListResponse {
+    isSuccess: boolean;
+    data?: ShiftTemplate[];
+    errors: string[];
+    message: string;
+}

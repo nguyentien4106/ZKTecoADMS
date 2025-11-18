@@ -136,12 +136,13 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IAttendanceService, AttendanceService>();
         services.AddScoped<IDeviceCmdService, DeviceCmdService>();
         services.AddScoped<IEmployeeOperationService, EmployeeOperationService>();
+        services.AddScoped<IShiftService, ShiftService>();
+        services.AddScoped<IShiftTemplateService, ShiftTemplateService>();
         
         // Repository registration
         services.AddScoped(typeof(IRepositoryPagedQuery<>), typeof(PagedQueryRepository<>));
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped(typeof(Repository<>), typeof(EfRepository<>));
-        services.AddScoped<IShiftRepository, ShiftRepository>();
 
         return services;
     }

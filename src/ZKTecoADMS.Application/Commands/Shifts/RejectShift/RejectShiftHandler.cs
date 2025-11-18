@@ -1,53 +1,30 @@
 using ZKTecoADMS.Application.DTOs.Shifts;
-using ZKTecoADMS.Domain.Entities;
-using ZKTecoADMS.Domain.Enums;
-using ZKTecoADMS.Domain.Repositories;
+using ZKTecoADMS.Application.Interfaces;
 
 namespace ZKTecoADMS.Application.Commands.Shifts.RejectShift;
 
-public class RejectShiftHandler(IShiftRepository shiftRepository) 
+public class RejectShiftHandler(IShiftService shiftService) 
     : ICommandHandler<RejectShiftCommand, AppResponse<ShiftDto>>
 {
     public async Task<AppResponse<ShiftDto>> Handle(RejectShiftCommand request, CancellationToken cancellationToken)
     {
-        var shift = await shiftRepository.GetByIdAsync(request.Id, null, cancellationToken);
-        if (shift == null)
+        try
         {
-            return AppResponse<ShiftDto>.Error("Shift not found");
+            var rejectedShift = await shiftService.RejectShiftAsync(
+                request.Id,
+                request.RejectedByUserId,
+                request.RejectionReason,
+                cancellationToken);
+            
+            return AppResponse<ShiftDto>.Success(rejectedShift.Adapt<ShiftDto>());
         }
-
-        if (shift.Status != ShiftStatus.Pending)
+        catch (ArgumentException ex)
         {
-            return AppResponse<ShiftDto>.Error("Can only reject pending shifts");
+            return AppResponse<ShiftDto>.Error(ex.Message);
         }
-
-        if (string.IsNullOrWhiteSpace(request.RejectionReason))
+        catch (InvalidOperationException ex)
         {
-            return AppResponse<ShiftDto>.Error("Rejection reason is required");
+            return AppResponse<ShiftDto>.Error(ex.Message);
         }
-
-        shift.Status = ShiftStatus.Rejected;
-        shift.ApprovedByUserId = request.RejectedByUserId;
-        shift.ApprovedAt = DateTime.Now;
-        shift.RejectionReason = request.RejectionReason;
-
-        await shiftRepository.UpdateAsync(shift, cancellationToken);
-        
-        var shiftDto = new ShiftDto
-        {
-            Id = shift.Id,
-            ApplicationUserId = shift.ApplicationUserId,
-            StartTime = shift.StartTime,
-            EndTime = shift.EndTime,
-            Description = shift.Description,
-            Status = shift.Status,
-            ApprovedByUserId = shift.ApprovedByUserId,
-            ApprovedAt = shift.ApprovedAt,
-            RejectionReason = shift.RejectionReason,
-            CreatedAt = shift.CreatedAt,
-            UpdatedAt = shift.UpdatedAt
-        };
-
-        return AppResponse<ShiftDto>.Success(shiftDto);
     }
 }

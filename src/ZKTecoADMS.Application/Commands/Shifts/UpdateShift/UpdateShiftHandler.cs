@@ -5,52 +5,50 @@ using ZKTecoADMS.Domain.Repositories;
 
 namespace ZKTecoADMS.Application.Commands.Shifts.UpdateShift;
 
-public class UpdateShiftHandler(IShiftRepository shiftRepository) 
+public class UpdateShiftHandler(IRepository<Shift> repository) 
     : ICommandHandler<UpdateShiftCommand, AppResponse<ShiftDto>>
 {
     public async Task<AppResponse<ShiftDto>> Handle(UpdateShiftCommand request, CancellationToken cancellationToken)
     {
-        var shift = await shiftRepository.GetByIdAsync(request.Id, null, cancellationToken);
-        if (shift == null)
+        try
         {
-            return AppResponse<ShiftDto>.Error("Shift not found");
+            // Validate time range
+            if (request.StartTime >= request.EndTime)
+            {
+                return AppResponse<ShiftDto>.Error("Start time must be before end time");
+            }
+
+            var shift = await repository.GetSingleAsync(
+                s => s.Id == request.Id,
+                includeProperties: new[] { nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser) },
+                cancellationToken: cancellationToken);
+                
+            if (shift == null)
+            {
+                return AppResponse<ShiftDto>.Error("Shift not found");
+            }
+
+            // Only allow updates to pending shifts
+            if (shift.Status != ShiftStatus.Pending)
+            {
+                return AppResponse<ShiftDto>.Error($"Cannot update shift with status {shift.Status}");
+            }
+
+            shift.StartTime = request.StartTime;
+            shift.EndTime = request.EndTime;
+            shift.Description = request.Description;
+
+            await repository.UpdateAsync(shift, cancellationToken);
+            
+            return AppResponse<ShiftDto>.Success(shift.Adapt<ShiftDto>());
         }
-
-        // Only allow updates to pending shifts
-        if (shift.Status != ShiftStatus.Pending)
+        catch (ArgumentException ex)
         {
-            return AppResponse<ShiftDto>.Error("Can only update pending shifts");
+            return AppResponse<ShiftDto>.Error(ex.Message);
         }
-
-        // Validate dates
-        if (request.StartTime >= request.EndTime)
+        catch (InvalidOperationException ex)
         {
-            return AppResponse<ShiftDto>.Error("Start time must be before end time");
+            return AppResponse<ShiftDto>.Error(ex.Message);
         }
-
-        if (request.StartTime < DateTime.Now)
-        {
-            return AppResponse<ShiftDto>.Error("Cannot update shift to past dates");
-        }
-
-        shift.StartTime = request.StartTime;
-        shift.EndTime = request.EndTime;
-        shift.Description = request.Description;
-
-        await shiftRepository.UpdateAsync(shift, cancellationToken);
-        
-        var shiftDto = new ShiftDto
-        {
-            Id = shift.Id,
-            ApplicationUserId = shift.ApplicationUserId,
-            StartTime = shift.StartTime,
-            EndTime = shift.EndTime,
-            Description = shift.Description,
-            Status = shift.Status,
-            CreatedAt = shift.CreatedAt,
-            UpdatedAt = shift.UpdatedAt
-        };
-
-        return AppResponse<ShiftDto>.Success(shiftDto);
     }
 }

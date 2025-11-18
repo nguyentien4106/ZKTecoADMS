@@ -48,3 +48,4 @@ public class AuthController(IMediator _bus) : ControllerBase
         return Task.FromResult<ActionResult>(Ok(User));
     }
 }
+

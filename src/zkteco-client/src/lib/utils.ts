@@ -23,3 +23,10 @@ export function calculateTotalHours(startTime: string, endTime: string): number 
   const diffInHours = diffInMs / (1000 * 60 * 60);
   return Math.round(diffInHours * 100) / 100; // Round to 2 decimal places
 }
+
+export function formatTime(timeString: string): string {
+  const date = new Date(timeString);
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+}

@@ -1,47 +1,27 @@
 using ZKTecoADMS.Application.DTOs.Shifts;
-using ZKTecoADMS.Domain.Entities;
-using ZKTecoADMS.Domain.Enums;
-using ZKTecoADMS.Domain.Repositories;
+using ZKTecoADMS.Application.Interfaces;
 
 namespace ZKTecoADMS.Application.Commands.Shifts.ApproveShift;
 
-public class ApproveShiftHandler(IShiftRepository shiftRepository) 
+public class ApproveShiftHandler(IShiftService shiftService) 
     : ICommandHandler<ApproveShiftCommand, AppResponse<ShiftDto>>
 {
     public async Task<AppResponse<ShiftDto>> Handle(ApproveShiftCommand request, CancellationToken cancellationToken)
     {
-        var shift = await shiftRepository.GetByIdAsync(request.Id, null, cancellationToken);
-        if (shift == null)
+        try
         {
-            return AppResponse<ShiftDto>.Error("Shift not found");
+            var approvedShift = await shiftService.ApproveShiftAsync(
+                request.Id, 
+                request.ApprovedByUserId, 
+                cancellationToken);
+            
+
+
+            return AppResponse<ShiftDto>.Success(approvedShift.Adapt<ShiftDto>());
         }
-
-        if (shift.Status != ShiftStatus.Pending)
+        catch (InvalidOperationException ex)
         {
-            return AppResponse<ShiftDto>.Error("Can only approve pending shifts");
+            return AppResponse<ShiftDto>.Error(ex.Message);
         }
-
-        shift.Status = ShiftStatus.Approved;
-        shift.ApprovedByUserId = request.ApprovedByUserId;
-        shift.ApprovedAt = DateTime.Now;
-        shift.RejectionReason = null;
-
-        await shiftRepository.UpdateAsync(shift, cancellationToken);
-        
-        var shiftDto = new ShiftDto
-        {
-            Id = shift.Id,
-            ApplicationUserId = shift.ApplicationUserId,
-            StartTime = shift.StartTime,
-            EndTime = shift.EndTime,
-            Description = shift.Description,
-            Status = shift.Status,
-            ApprovedByUserId = shift.ApprovedByUserId,
-            ApprovedAt = shift.ApprovedAt,
-            CreatedAt = shift.CreatedAt,
-            UpdatedAt = shift.UpdatedAt
-        };
-
-        return AppResponse<ShiftDto>.Success(shiftDto);
     }
 }

@@ -785,11 +785,48 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasIndex("ApprovedByUserId");
 
-                    b.HasIndex("Status");
-
-                    b.HasIndex("StartTime", "EndTime");
-
                     b.ToTable("Shifts");
+                });
+
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.ShiftTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ManagerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ManagerId");
+
+                    b.ToTable("ShiftTemplates");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.SyncLog", b =>
@@ -1099,6 +1136,17 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("ApprovedByUser");
+                });
+
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.ShiftTemplate", b =>
+                {
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "Manager")
+                        .WithMany()
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.SyncLog", b =>

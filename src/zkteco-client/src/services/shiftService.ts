@@ -40,4 +40,5 @@ export const shiftService = {
     rejectShift: async (id: string, data: RejectShiftRequest) => {
         return await apiService.post<Shift>(`/api/shifts/${id}/reject`, data);
     },
+
 };

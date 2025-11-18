@@ -2,24 +2,34 @@
 // src/contexts/ShiftManagementContext.tsx
 // ==========================================
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { Shift } from '@/types/shift';
+import { Shift, ShiftTemplate } from '@/types/shift';
 import { 
   usePendingShifts, 
   useManagedShifts, 
   useApproveShift, 
-  useRejectShift 
+  useRejectShift,
 } from '@/hooks/useShifts';
+import {
+  useShiftTemplates,
+  useCreateShiftTemplate,
+  useUpdateShiftTemplate,
+  useDeleteShiftTemplate
+} from '@/hooks/useShiftTemplate';
 
 interface ShiftManagementContextValue {
   // State
   pendingShifts: Shift[];
   allShifts: Shift[];
+  templates: ShiftTemplate[];
   isLoading: boolean;
   
   // Dialog states
   approveDialogOpen: boolean;
   rejectDialogOpen: boolean;
   selectedShift: Shift | null;
+  createTemplateDialogOpen: boolean;
+  updateTemplateDialogOpen: boolean;
+  selectedTemplate: ShiftTemplate | null;
   
   // Actions
   setApproveDialogOpen: (open: boolean) => void;
@@ -28,6 +38,14 @@ interface ShiftManagementContextValue {
   handleReject: (id: string, rejectionReason: string) => Promise<void>;
   handleApproveClick: (shift: Shift) => void;
   handleRejectClick: (shift: Shift) => void;
+  
+  // Template actions
+  setCreateTemplateDialogOpen: (open: boolean) => void;
+  setUpdateTemplateDialogOpen: (open: boolean) => void;
+  handleCreateTemplate: (data: { name: string; startTime: string; endTime: string }) => Promise<void>;
+  handleUpdateTemplate: (id: string, data: { name: string; startTime: string; endTime: string; isActive: boolean }) => Promise<void>;
+  handleDeleteTemplate: (id: string) => Promise<void>;
+  handleEditTemplateClick: (template: ShiftTemplate) => void;
 }
 
 const ShiftManagementContext = createContext<ShiftManagementContextValue | undefined>(undefined);
@@ -49,14 +67,22 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
+  const [createTemplateDialogOpen, setCreateTemplateDialogOpen] = useState(false);
+  const [updateTemplateDialogOpen, setUpdateTemplateDialogOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<ShiftTemplate | null>(null);
 
   // Hooks
   const { data: pendingShifts = [], isLoading: isPendingLoading } = usePendingShifts();
   const { data: allShifts = [], isLoading: isAllLoading } = useManagedShifts();
+  const { data: templates = [], isLoading: isTemplatesLoading } = useShiftTemplates();
+
   const approveShiftMutation = useApproveShift();
   const rejectShiftMutation = useRejectShift();
+  const createTemplateMutation = useCreateShiftTemplate();
+  const updateTemplateMutation = useUpdateShiftTemplate();
+  const deleteTemplateMutation = useDeleteShiftTemplate();
 
-  const isLoading = isPendingLoading || isAllLoading;
+  const isLoading = isPendingLoading || isAllLoading || isTemplatesLoading;
 
   const handleApprove = async (id: string) => {
     await approveShiftMutation.mutateAsync(id);
@@ -80,16 +106,40 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
     setRejectDialogOpen(true);
   };
 
+  const handleCreateTemplate = async (data: { name: string; startTime: string; endTime: string }) => {
+    await createTemplateMutation.mutateAsync(data);
+    setCreateTemplateDialogOpen(false);
+  };
+
+  const handleUpdateTemplate = async (id: string, data: { name: string; startTime: string; endTime: string; isActive: boolean }) => {
+    await updateTemplateMutation.mutateAsync({ id, data });
+    setUpdateTemplateDialogOpen(false);
+    setSelectedTemplate(null);
+  };
+
+  const handleDeleteTemplate = async (id: string) => {
+    await deleteTemplateMutation.mutateAsync(id);
+  };
+
+  const handleEditTemplateClick = (template: ShiftTemplate) => {
+    setSelectedTemplate(template);
+    setUpdateTemplateDialogOpen(true);
+  };
+
   const value: ShiftManagementContextValue = {
     // State
     pendingShifts,
     allShifts,
+    templates,
     isLoading,
     
     // Dialog states
     approveDialogOpen,
     rejectDialogOpen,
     selectedShift,
+    createTemplateDialogOpen,
+    updateTemplateDialogOpen,
+    selectedTemplate,
     
     // Actions
     setApproveDialogOpen,
@@ -98,6 +148,14 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
     handleReject,
     handleApproveClick,
     handleRejectClick,
+    
+    // Template actions
+    setCreateTemplateDialogOpen,
+    setUpdateTemplateDialogOpen,
+    handleCreateTemplate,
+    handleUpdateTemplate,
+    handleDeleteTemplate,
+    handleEditTemplateClick,
   };
 
   return (

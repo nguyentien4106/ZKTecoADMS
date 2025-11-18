@@ -4,7 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { shiftService } from '@/services/shiftService';
 import { toast } from 'sonner';
-import { CreateShiftRequest, UpdateShiftRequest, RejectShiftRequest } from '@/types/shift';
+import { CreateShiftRequest, UpdateShiftRequest, RejectShiftRequest, CreateShiftTemplateRequest, UpdateShiftTemplateRequest } from '@/types/shift';
 
 // Query hooks
 export const useMyShifts = () => {

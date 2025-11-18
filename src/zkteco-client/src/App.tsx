@@ -18,6 +18,7 @@ import { ForgotPassword } from './pages/auth/ForgotPassword'
 import { ResetPassword } from './pages/auth/ResetPassword'
 import { MyShifts } from './pages/MyShifts'
 import { ShiftManagement } from './pages/ShiftManagement'
+import { Profile } from './pages/Profile'
 import { UserRole } from './constants/roles'
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
         {/* Routes accessible by all authenticated users */}
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="profile" element={<Profile />} />
         
         {/* Employee can only access attendance (their own) */}
         <Route path="attendance" element={<Attendance />} />
