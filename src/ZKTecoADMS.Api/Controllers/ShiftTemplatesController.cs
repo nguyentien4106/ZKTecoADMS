@@ -11,7 +11,7 @@ using ZKTecoADMS.Application.Models;
 namespace ZKTecoADMS.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/shifts/templates")]
 public class ShiftTemplatesController(IMediator mediator) : AuthenticatedControllerBase
 {
     [HttpPost]
