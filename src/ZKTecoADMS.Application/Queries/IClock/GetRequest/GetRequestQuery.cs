@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using ZKTecoADMS.Application.Behaviours;
 
 namespace ZKTecoADMS.Application.Queries.IClock.GetRequest;

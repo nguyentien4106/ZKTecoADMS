@@ -1,6 +1,4 @@
-using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
-using ZKTecoADMS.Domain.Repositories;
 
 namespace ZKTecoADMS.Application.Commands.Shifts.DeleteShift;
 

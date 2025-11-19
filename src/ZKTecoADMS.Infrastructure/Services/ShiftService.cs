@@ -37,7 +37,7 @@ public class ShiftService(
         var shifts = await repository.GetAllAsync(
             filter: s => s.ApplicationUser != null && s.ApplicationUser.ManagerId == managerId,
             orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: new[] { nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser) },
+            includeProperties: [nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser)],
             cancellationToken: cancellationToken);
 
         return shifts.ToList();

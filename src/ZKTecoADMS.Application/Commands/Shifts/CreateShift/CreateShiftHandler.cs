@@ -1,11 +1,9 @@
 using ZKTecoADMS.Application.DTOs.Shifts;
-using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
-using ZKTecoADMS.Domain.Repositories;
 
 namespace ZKTecoADMS.Application.Commands.Shifts.CreateShift;
 
-public class CreateShiftHandler(IRepository<Shift> repository) 
+public class CreateShiftHandler(IRepository<Shift> shiftRepository) 
     : ICommandHandler<CreateShiftCommand, AppResponse<ShiftDto>>
 {
     public async Task<AppResponse<ShiftDto>> Handle(CreateShiftCommand request, CancellationToken cancellationToken)
@@ -24,6 +22,29 @@ public class CreateShiftHandler(IRepository<Shift> repository)
                 return AppResponse<ShiftDto>.Error("Cannot create shift for past dates");
             }
 
+            // Check for overlapping shifts using optimized repository method
+            var overlappingShift = await shiftRepository.GetSingleAsync(
+                s => s.ApplicationUserId == request.ApplicationUserId &&
+                    s.Status != ShiftStatus.Rejected &&
+                    s.Status != ShiftStatus.Cancelled &&
+                    (
+                        // New shift starts during an existing shift
+                        (request.StartTime >= s.StartTime && request.StartTime < s.EndTime) ||
+                        // New shift ends during an existing shift
+                        (request.EndTime > s.StartTime && request.EndTime <= s.EndTime) ||
+                        // New shift completely encompasses an existing shift
+                        (request.StartTime <= s.StartTime && request.EndTime >= s.EndTime)
+                    ),
+                cancellationToken: cancellationToken
+            );
+            
+
+            if (overlappingShift != null)
+            {
+                return AppResponse<ShiftDto>.Error(
+                    $"This shift overlaps with an existing shift from {overlappingShift.StartTime:g} to {overlappingShift.EndTime:g}");
+            }
+
             var shift = new Shift
             {
                 ApplicationUserId = request.ApplicationUserId,
@@ -33,7 +54,7 @@ public class CreateShiftHandler(IRepository<Shift> repository)
                 Status = ShiftStatus.Pending
             };
 
-            var createdShift = await repository.AddAsync(shift, cancellationToken);
+            var createdShift = await shiftRepository.AddAsync(shift, cancellationToken);
             var shiftDto = new ShiftDto
             {
                 Id = createdShift.Id,
