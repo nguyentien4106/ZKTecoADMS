@@ -19,15 +19,15 @@ public class AuthenticateService(
         var refreshToken = await refreshTokenService.GetTokenAsync(user);
         var currentUserRefreshToken = await refreshTokenRepository.GetSingleAsync(rf => rf.ApplicationUserId == user.Id, cancellationToken: cancellationToken);
 
-        var refreshTokenEntity = currentUserRefreshToken == null ? new UserRefreshToken
+        var refreshTokenEntity = currentUserRefreshToken ?? new UserRefreshToken
         {
             Id = Guid.NewGuid(),
             ApplicationUserId = user.Id,
-        } : currentUserRefreshToken;
+        };
 
         refreshTokenEntity.RefreshToken = refreshToken;
 
-        await refreshTokenRepository.AddOrUpdateAsync(refreshTokenEntity);
+        await refreshTokenRepository.AddOrUpdateAsync(refreshTokenEntity, cancellationToken);
 
         return AppResponse<AuthenticateResponse>.Success(new AuthenticateResponse(accessToken, refreshToken));
     }

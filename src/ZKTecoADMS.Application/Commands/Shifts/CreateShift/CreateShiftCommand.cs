@@ -6,4 +6,5 @@ public record CreateShiftCommand(
     Guid ApplicationUserId,
     DateTime StartTime,
     DateTime EndTime,
-    string? Description) : ICommand<AppResponse<ShiftDto>>;
+    string? Description,
+    bool IsManager) : ICommand<AppResponse<ShiftDto>>;

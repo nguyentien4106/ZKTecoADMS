@@ -17,7 +17,7 @@ public class AccessTokenService(ITokenGeneratorService tokenGenerator, JwtSettin
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email ?? ""),
                 new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName),
-                new Claim("userName", user.UserName),
+                new Claim("userName", user.UserName!),
                 ..rolesClaims
             ];
 

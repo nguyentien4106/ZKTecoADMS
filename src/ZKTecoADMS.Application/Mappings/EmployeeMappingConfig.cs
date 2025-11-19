@@ -13,7 +13,7 @@ public class EmployeeMappingConfig : IRegister
             .Map(dest => dest.Pin, src => src.Pin)
             .Map(dest => dest, src => src)
             .Map(dest => dest.ApplicationUser, src => src.ApplicationUser != null
-                ? new EmployeeAccountDto
+                ? new AccountDto
                 {
                     Email = src.ApplicationUser.Email!,
                     FirstName = src.ApplicationUser.FirstName!,

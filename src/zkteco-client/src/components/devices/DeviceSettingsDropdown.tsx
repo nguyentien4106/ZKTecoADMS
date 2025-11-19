@@ -28,32 +28,32 @@ interface DeviceSettingsDropdownProps {
 
   const getConfirmationContent = (confirmAction: DeviceCommandTypes) => {
     switch (confirmAction) {
-      case DeviceCommandTypes.CLEAR_ATTENDANCEs:
+      case DeviceCommandTypes.ClearAttendances:
         return {
           title: 'Clear All Attendances?',
           description: 'This will permanently delete all attendance records from this device. This action cannot be undone.',
         }
-      case DeviceCommandTypes.CLEAR_USERS:
+      case DeviceCommandTypes.ClearEmployees:
         return {
           title: 'Clear All Users?',
           description: 'This will remove all user data from this device. This action cannot be undone.',
         }
-      case DeviceCommandTypes.CLEAR_DATA:
+      case DeviceCommandTypes.ClearData:
         return {
           title: 'Clear All Data?',
           description: 'This will permanently delete all data (users, attendances, etc.) from this device. This action cannot be undone.',
         }
-      case DeviceCommandTypes.RESTART_DEVICE:
+      case DeviceCommandTypes.RestartDevice:
         return {
           title: 'Reboot Device',
           description: 'This will restart the device. Any unsaved data may be lost.',
         }
-      case DeviceCommandTypes.SYNC_ATTENDANCES:
+      case DeviceCommandTypes.SyncAttendances:
         return {
           title: 'Sync Attendances',
           description: 'This will synchronize attendance records from the device to the server.',
         }
-      case DeviceCommandTypes.SYNC_USERS:
+      case DeviceCommandTypes.SyncUsers:
         return {
           title: 'Sync Users',
           description: 'This will synchronize user data from the device to the server.',
@@ -79,22 +79,22 @@ export const DeviceSettingsDropdown = ({
 
   const handleConfirm = async () => {
     switch (confirmAction) {
-      case DeviceCommandTypes.SYNC_ATTENDANCES:
+      case DeviceCommandTypes.SyncAttendances:
         await handleSyncAttendances(deviceId)
         break
-      case DeviceCommandTypes.SYNC_USERS:
+      case DeviceCommandTypes.SyncUsers:
         await handleSyncUsers(deviceId)
         break
-      case DeviceCommandTypes.CLEAR_ATTENDANCEs:
+      case DeviceCommandTypes.ClearAttendances:
         await handleClearAttendances(deviceId)
         break
-      case DeviceCommandTypes.CLEAR_USERS:
+      case DeviceCommandTypes.ClearEmployees:
         await handleClearUsers(deviceId)
         break
-      case DeviceCommandTypes.CLEAR_DATA:
+      case DeviceCommandTypes.ClearData:
         await handleClearData(deviceId)
         break
-      case DeviceCommandTypes.RESTART_DEVICE:
+      case DeviceCommandTypes.RestartDevice:
         await handleRestartDevice(deviceId)
         break
       default:
@@ -115,39 +115,39 @@ export const DeviceSettingsDropdown = ({
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>Device Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.SYNC_ATTENDANCES)}>
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.SyncAttendances)}>
             <RefreshCcwDotIcon className="w-4 h-4 mr-2 text-green-500" />
             Sync Attendances
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.SYNC_USERS)}>
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.SyncUsers)}>
             <RefreshCcwDotIcon className="w-4 h-4 mr-2 text-green-500" />
             Sync Users
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.CLEAR_ATTENDANCEs)}>
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.ClearAttendances)}>
             <Trash2 className="w-4 h-4 mr-2 text-red-500" />
             Clear Attendances
           </DropdownMenuItem>
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.CLEAR_USERS)}>
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.ClearEmployees)}>
             <Trash2 className="w-4 h-4 mr-2 text-red-500" />
             Clear Users
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.CLEAR_DATA)}>
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.ClearData)}>
             <Trash2 className="w-4 h-4 mr-2 text-red-500" />
             Clear All Data
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.RESTART_DEVICE)}>
+          <DropdownMenuItem onClick={() => setConfirmAction(DeviceCommandTypes.RestartDevice)}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Reboot Device
           </DropdownMenuItem>

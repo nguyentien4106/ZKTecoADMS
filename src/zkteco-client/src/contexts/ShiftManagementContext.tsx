@@ -2,12 +2,14 @@
 // src/contexts/ShiftManagementContext.tsx
 // ==========================================
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { Shift, ShiftTemplate } from '@/types/shift';
+import { CreateShiftRequest, Shift, ShiftTemplate } from '@/types/shift';
 import { 
   usePendingShifts, 
   useManagedShifts, 
   useApproveShift, 
   useRejectShift,
+  useAssignShift,
+  useCreateShift,
 } from '@/hooks/useShifts';
 import {
   useShiftTemplates,
@@ -30,6 +32,7 @@ interface ShiftManagementContextValue {
   createTemplateDialogOpen: boolean;
   updateTemplateDialogOpen: boolean;
   selectedTemplate: ShiftTemplate | null;
+  assignShiftDialogOpen: boolean;
   
   // Actions
   setApproveDialogOpen: (open: boolean) => void;
@@ -46,6 +49,10 @@ interface ShiftManagementContextValue {
   handleUpdateTemplate: (id: string, data: { name: string; startTime: string; endTime: string; isActive: boolean }) => Promise<void>;
   handleDeleteTemplate: (id: string) => Promise<void>;
   handleEditTemplateClick: (template: ShiftTemplate) => void;
+  
+  // Assign shift actions
+  setAssignShiftDialogOpen: (open: boolean) => void;
+  handleCreateShift: (data: CreateShiftRequest) => Promise<void>;
 }
 
 const ShiftManagementContext = createContext<ShiftManagementContextValue | undefined>(undefined);
@@ -70,6 +77,7 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
   const [createTemplateDialogOpen, setCreateTemplateDialogOpen] = useState(false);
   const [updateTemplateDialogOpen, setUpdateTemplateDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<ShiftTemplate | null>(null);
+  const [assignShiftDialogOpen, setAssignShiftDialogOpen] = useState(false);
 
   // Hooks
   const { data: pendingShifts = [], isLoading: isPendingLoading } = usePendingShifts();
@@ -81,7 +89,8 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
   const createTemplateMutation = useCreateShiftTemplate();
   const updateTemplateMutation = useUpdateShiftTemplate();
   const deleteTemplateMutation = useDeleteShiftTemplate();
-
+  const createShiftMutation = useCreateShift();
+  
   const isLoading = isPendingLoading || isAllLoading || isTemplatesLoading;
 
   const handleApprove = async (id: string) => {
@@ -126,6 +135,11 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
     setUpdateTemplateDialogOpen(true);
   };
 
+  const handleCreateShift = async (data: CreateShiftRequest) => {
+    await createShiftMutation.mutateAsync(data);
+    setAssignShiftDialogOpen(false);
+  };
+
   const value: ShiftManagementContextValue = {
     // State
     pendingShifts,
@@ -140,6 +154,7 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
     createTemplateDialogOpen,
     updateTemplateDialogOpen,
     selectedTemplate,
+    assignShiftDialogOpen,
     
     // Actions
     setApproveDialogOpen,
@@ -156,6 +171,10 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
     handleUpdateTemplate,
     handleDeleteTemplate,
     handleEditTemplateClick,
+    
+    // Assign shift actions
+    setAssignShiftDialogOpen,
+    handleCreateShift,
   };
 
   return (

@@ -20,6 +20,7 @@ import { MyShifts } from './pages/MyShifts'
 import { ShiftManagement } from './pages/ShiftManagement'
 import { Profile } from './pages/Profile'
 import { UserRole } from './constants/roles'
+import EmployeeDashboardDemo from './pages/EmployeeDashboardDemo'
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      
+      <Route path="/demo-dashboard" element={<EmployeeDashboardDemo />} />
       <Route
         path="/"
         element={
@@ -58,7 +59,7 @@ function App() {
         
         {/* Manager and Admin only routes */}
         <Route
-          path="shift-management"
+          path="shifts"
           element={
             <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
               <ShiftManagement />

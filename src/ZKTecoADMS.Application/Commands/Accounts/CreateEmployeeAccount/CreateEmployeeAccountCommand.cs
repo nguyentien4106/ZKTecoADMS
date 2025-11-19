@@ -2,7 +2,7 @@ using ZKTecoADMS.Application.DTOs.Employees;
 
 namespace ZKTecoADMS.Application.Commands.Accounts.CreateEmployeeAccount;
 
-public class CreateEmployeeAccountCommand : ICommand<AppResponse<EmployeeAccountDto>>
+public class CreateEmployeeAccountCommand : ICommand<AppResponse<AccountDto>>
 {
     public required string Email { get; set; }
 

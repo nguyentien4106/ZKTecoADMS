@@ -1,17 +1,17 @@
-// ==========================================
-// src/pages/ShiftManagement.tsx
-// ==========================================
 import { PageHeader } from "@/components/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Plus, UserPlus } from "lucide-react";
 import { ShiftList } from '@/components/shifts/ShiftList';
 import { ShiftTemplateList } from '@/components/shifts/ShiftTemplateList';
 import { ApproveShiftDialog } from '@/components/dialogs/ApproveShiftDialog';
 import { RejectShiftDialog } from '@/components/dialogs/RejectShiftDialog';
 import { CreateShiftTemplateDialog } from '@/components/dialogs/CreateShiftTemplateDialog';
 import { UpdateShiftTemplateDialog } from '@/components/dialogs/UpdateShiftTemplateDialog';
+import { CreateShiftDialog } from '@/components/dialogs/CreateShiftDialog';
 import { ShiftManagementProvider, useShiftManagementContext } from '@/contexts/ShiftManagementContext';
+import { useEffect, useState } from "react";
 
 const ShiftManagementHeader = () => {
     return (
@@ -33,14 +33,32 @@ const ShiftManagementTabs = () => {
         setCreateTemplateDialogOpen,
         handleEditTemplateClick,
         handleDeleteTemplate,
+        setAssignShiftDialogOpen,
     } = useShiftManagementContext();
 
+    const [activeTab, setActiveTab] = useState<string>("all");
+    
+    useEffect(() => {
+        if (pendingShifts.length > 0) {
+            setActiveTab("pending");
+        }
+    }, [pendingShifts])
     return (
         <div className="mt-6">
-            <Tabs defaultValue="pending" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList>
                     <TabsTrigger value="pending">
-                        Pending ({pendingShifts.length})
+                        Pending
+                        {
+                            pendingShifts.length > 0 && (
+                                <Badge
+                                    variant="destructive"
+                                    className="ml-2"
+                                >
+                                    {pendingShifts.length}
+                                </Badge>
+                            )
+                        }
                     </TabsTrigger>
                     <TabsTrigger value="all">
                         All Shifts
@@ -62,6 +80,12 @@ const ShiftManagementTabs = () => {
                 </TabsContent>
 
                 <TabsContent value="all" className="mt-6">
+                    <div className="mb-4 flex justify-end">
+                        <Button onClick={() => setAssignShiftDialogOpen(true)}>
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Assign Shift
+                        </Button>
+                    </div>
                     <ShiftList
                         shifts={allShifts}
                         isLoading={isLoading}
@@ -98,6 +122,9 @@ const ShiftManagementDialogs = () => {
         setRejectDialogOpen,
         handleApprove,
         handleReject,
+        assignShiftDialogOpen,
+        setAssignShiftDialogOpen,
+        handleCreateShift,
     } = useShiftManagementContext();
 
     return (
@@ -120,6 +147,12 @@ const ShiftManagementDialogs = () => {
             )}
             <CreateShiftTemplateDialog />
             <UpdateShiftTemplateDialog />
+            <CreateShiftDialog 
+                open={assignShiftDialogOpen}
+                onOpenChange={setAssignShiftDialogOpen}
+                onSubmit={handleCreateShift}
+                mode="assign"
+            />
         </>
     );
 };

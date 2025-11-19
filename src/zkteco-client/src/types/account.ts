@@ -1,9 +1,11 @@
-export interface EmployeeAccount {
+export interface Account {
+    id: string
     email: string
     firstName: string
     lastName: string
     phoneNumber?: string
     employeeDeviceId: string
+    fullName: string
 }
 
 export interface CreateEmployeeAccountRequest {

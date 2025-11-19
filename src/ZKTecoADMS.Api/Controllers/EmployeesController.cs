@@ -6,7 +6,6 @@ using ZKTecoADMS.Application.Commands.Employees.DeleteEmployee;
 using ZKTecoADMS.Application.Commands.Employees.UpdateEmployee;
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Employees;
-using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Application.Models;
 using ZKTecoADMS.Application.Queries.Employees.GetEmployeeDevices;
 using ZKTecoADMS.Domain.Entities;
@@ -16,7 +15,7 @@ namespace ZKTecoADMS.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Policy = PolicyNames.AtLeastManager)]
-public class EmployeesController(IEmployeeService employeeService, ILogger<EmployeesController> logger, IMediator bus) : AuthenticatedControllerBase
+public class EmployeesController(IMediator bus) : AuthenticatedControllerBase
 {
     [HttpPost("devices")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]

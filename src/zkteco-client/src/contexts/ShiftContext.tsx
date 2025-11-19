@@ -76,7 +76,7 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
     await deleteShiftMutation.mutateAsync(id);
   };
 
-  const handleEditClick = (shift: Shift) => {
+  const handleEdit = (shift: Shift) => {
     setSelectedShift(shift);
     setUpdateDialogOpen(true);
   };
@@ -97,7 +97,7 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
     handleCreate,
     handleUpdate,
     handleDelete,
-    handleEdit: handleEditClick,
+    handleEdit,
   };
 
   return (

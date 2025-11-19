@@ -115,4 +115,22 @@ export const useRejectShift = () => {
     },
   });
 };
+
+export const useAssignShift = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateShiftRequest & { employeeUserId: string }) =>
+      shiftService.assignShift(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      toast.success('Shift assigned successfully');
+    },
+    onError: (error: any) => {
+      toast.error('Failed to assign shift', {
+        description: error.message || 'An error occurred',
+      });
+    },
+  });
+};
   

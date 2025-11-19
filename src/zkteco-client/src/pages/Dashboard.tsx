@@ -1,95 +1,56 @@
 // ==========================================
 // src/pages/Dashboard.tsx
 // ==========================================
-import { PageHeader } from '@/components/PageHeader'
+import { useRoleAccess } from '@/hooks/useRoleAccess'
+import { UserRole } from '@/constants/roles'
+import { AdminDashboard } from './AdminDashboard'
+import { ManagerDashboard } from './ManagerDashboard'
+import { EmployeeDashboard } from '@/components/employee-dashboard'
+import { useEmployeeDashboard } from '@/hooks/useEmployeeDashboard'
+import { useState } from 'react'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { useDashboardSummary, useAttendanceTrends, useTopPerformers, useLateEmployees, useDepartmentStats, useDeviceStatus } from '@/hooks/useDashboard'
-import { SummaryCards } from '@/components/dashboard/SummaryCards'
-import { AttendanceTrendChart } from '@/components/dashboard/AttendanceTrendChart'
-import { TopPerformersList } from '@/components/dashboard/TopPerformersList'
-import { LateEmployeesList } from '@/components/dashboard/LateEmployeesList'
-import { DepartmentStatsCard } from '@/components/dashboard/DepartmentStatsCard'
-import { DeviceStatusList } from '@/components/dashboard/DeviceStatusList'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Button } from '@/components/ui/button'
-import { RefreshCw } from 'lucide-react'
 
 export const Dashboard = () => {
-  const trendDays = 30
-  const performerCount = 10
+  const { getUserRole } = useRoleAccess()
+  const userRole = getUserRole()
+  const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month')
 
-  // Fetch all dashboard data
-  const { data: summary, isLoading: summaryLoading, refetch: refetchSummary } = useDashboardSummary()
-  const { data: trends, isLoading: trendsLoading } = useAttendanceTrends(trendDays)
-  const { data: topPerformers, isLoading: performersLoading } = useTopPerformers({ count: performerCount })
-  const { data: lateEmployees, isLoading: lateLoading } = useLateEmployees({ count: performerCount })
-  const { data: departments, isLoading: deptLoading } = useDepartmentStats()
-  const { data: devices, isLoading: devicesLoading } = useDeviceStatus()
+  // Employee dashboard data
+  const { data: employeeData, isLoading: employeeLoading, refetch: refetchEmployee } = useEmployeeDashboard({ period })
 
-  const isLoading = summaryLoading
-
-  if (isLoading) {
+  // Show loading while determining role
+  if (!userRole) {
     return <LoadingSpinner />
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <PageHeader
-          title="Dashboard"
-          description="Overview of your attendance system performance"
-        />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => refetchSummary()}
-          className="gap-2"
-        >
-          <RefreshCw className="w-4 h-4" />
-          Refresh
-        </Button>
-      </div>
+  // Render dashboard based on user role
+  switch (userRole) {
+    case UserRole.ADMIN:
+      return <AdminDashboard />
 
-      {/* Summary Cards */}
-      <SummaryCards summary={summary} isLoading={summaryLoading} />
+    case UserRole.MANAGER:
+      return <ManagerDashboard />
 
-      {/* Tabs for Different Views */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="departments">Departments</TabsTrigger>
-          <TabsTrigger value="devices">Devices</TabsTrigger>
-        </TabsList>
+    case UserRole.EMPLOYEE:
+      return (
+        <div className="container mx-auto p-6">
+          <EmployeeDashboard
+            data={employeeData}
+            isLoading={employeeLoading}
+            onPeriodChange={setPeriod}
+            onRefresh={refetchEmployee}
+          />
+        </div>
+      )
 
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <AttendanceTrendChart data={trends} isLoading={trendsLoading} />
-            <DeviceStatusList devices={devices} isLoading={devicesLoading} />
+    default:
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+            <p className="text-muted-foreground">You don't have permission to view this dashboard.</p>
           </div>
-          
-          <DepartmentStatsCard departments={departments} isLoading={deptLoading} />
-        </TabsContent>
-
-        {/* Performance Tab */}
-        <TabsContent value="performance" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <TopPerformersList performers={topPerformers} isLoading={performersLoading} />
-            <LateEmployeesList employees={lateEmployees} isLoading={lateLoading} />
-          </div>
-        </TabsContent>
-
-        {/* Departments Tab */}
-        <TabsContent value="departments" className="space-y-4">
-          <DepartmentStatsCard departments={departments} isLoading={deptLoading} />
-        </TabsContent>
-
-        {/* Devices Tab */}
-        <TabsContent value="devices" className="space-y-4">
-          <DeviceStatusList devices={devices} isLoading={devicesLoading} />
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
+        </div>
+      )
+  }
 }

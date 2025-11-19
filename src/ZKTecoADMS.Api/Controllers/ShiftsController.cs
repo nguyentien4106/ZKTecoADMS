@@ -37,10 +37,11 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
     public async Task<ActionResult<AppResponse<ShiftDto>>> CreateShift([FromBody] CreateShiftRequest request)
     {
         var command = new CreateShiftCommand(
-            CurrentUserId,
+            request.EmployeeUserId ?? CurrentUserId,
             request.StartTime,
             request.EndTime,
-            request.Description);
+            request.Description,
+            IsManager);
         
         var result = await mediator.Send(command);
         return Ok(result);

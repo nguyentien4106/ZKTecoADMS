@@ -1,12 +1,12 @@
 // ==========================================
 // src/services/accountService.ts
 // ==========================================
-import { CreateEmployeeAccountRequest, EmployeeAccount, UpdateEmployeeAccountRequest } from '@/types/account'
+import { CreateEmployeeAccountRequest, Account, UpdateEmployeeAccountRequest } from '@/types/account'
 import { apiService } from './api'
 
 export const accountService = {
   createUserAccount: async (employeeAccount: CreateEmployeeAccountRequest) => {
-    return await apiService.post<EmployeeAccount>(
+    return await apiService.post<Account>(
       '/api/Accounts',
       employeeAccount
     )
@@ -16,9 +16,15 @@ export const accountService = {
     employeeDeviceId: string,
     employeeAccount: UpdateEmployeeAccountRequest
   ) => {
-    return await apiService.put<EmployeeAccount>(
+    return await apiService.put<Account>(
       `/api/Accounts/${employeeDeviceId}`,
       employeeAccount
+    )
+  },
+
+  getEmployeeAccountsByManager: async () => {
+    return await apiService.get<Account[]>(
+      '/api/Accounts/employees'
     )
   },
 }

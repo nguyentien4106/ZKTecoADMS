@@ -9,6 +9,7 @@ using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Employees;
 using ZKTecoADMS.Application.DTOs.Users;
 using ZKTecoADMS.Application.Models;
+using ZKTecoADMS.Application.Queries.Employees.GetEmployeesByManager;
 using ZKTecoADMS.Application.Queries.Users.GetCurrentUserProfile;
 
 namespace ZKTecoADMS.Api.Controllers;
@@ -18,9 +19,18 @@ namespace ZKTecoADMS.Api.Controllers;
 public class AccountsController(IMediator mediator) : AuthenticatedControllerBase
 {
 
+    [HttpGet("employees")]
+    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    public async Task<ActionResult<AppResponse<IEnumerable<AccountDto>>>> GetEmployeesByManager(CancellationToken cancellationToken)
+    {
+        var query = new GetEmployeesByManagerQuery(CurrentUserId);
+        var result = await mediator.Send(query, cancellationToken);
+        return Ok(result);
+    }
+    
     [HttpPost]
     [Authorize(Policy = PolicyNames.AtLeastManager)]
-    public async Task<AppResponse<EmployeeAccountDto>> CreateEmployeeAccount([FromBody] CreateEmployeeAccountRequest request, CancellationToken cancellationToken)
+    public async Task<AppResponse<AccountDto>> CreateEmployeeAccount([FromBody] CreateEmployeeAccountRequest request, CancellationToken cancellationToken)
     {
         var command = request.Adapt<CreateEmployeeAccountCommand>();
         command.ManagerId = CurrentUserId;
@@ -61,7 +71,6 @@ public class AccountsController(IMediator mediator) : AuthenticatedControllerBas
         return Ok(result);
     }
 
-    [Authorize]
     [HttpPut("profile/password")]
     public async Task<ActionResult<AppResponse<UserProfileDto>>> UpdatePassword([FromBody] UpdatePasswordRequest request, CancellationToken cancellationToken)
     {

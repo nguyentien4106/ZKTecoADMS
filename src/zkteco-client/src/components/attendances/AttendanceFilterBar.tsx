@@ -74,7 +74,7 @@ export const AttendanceFilterBar = ({
               <div className="flex flex-col gap-3">
                 <Label className="text-sm font-medium px-1">From Date</Label>
                 <DatePicker
-                  value={filter.fromDate}
+                  value={new Date(filter.fromDate)}
                   onSelectDate={date => onDateChange(date, 'fromDate')}
                   placeholder="Select start date"
                 />
@@ -85,7 +85,7 @@ export const AttendanceFilterBar = ({
               <div className="flex flex-col gap-3">
                 <Label className="text-sm font-medium px-1">To Date</Label>
                 <DatePicker
-                  value={filter.toDate}
+                  value={new Date(filter.toDate)}
                   onSelectDate={date => onDateChange(date, 'toDate')}
                   placeholder="Select end date"
                 />

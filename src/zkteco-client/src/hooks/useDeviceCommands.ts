@@ -58,12 +58,12 @@ export const useDeviceCommands = (options?: {
   }
 
   return {
-    handleSyncUsers: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.SYNC_USERS, 'Sync Users'),
-    handleSyncAttendances: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.SYNC_ATTENDANCES, 'Sync Attendances'),
-    handleClearAttendances: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.CLEAR_ATTENDANCEs, 'Clear Attendances'),
-    handleClearData: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.CLEAR_DATA, 'Clear Data'),
-    handleClearUsers: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.CLEAR_USERS, 'Clear Users'),
-    handleRestartDevice: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.RESTART_DEVICE, 'Restart Device')
+    handleSyncUsers: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.SyncUsers, 'Sync Employees'),
+    handleSyncAttendances: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.SyncAttendances, 'Sync Attendances'),
+    handleClearAttendances: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.ClearAttendances, 'Clear Attendances'),
+    handleClearData: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.ClearData, 'Clear Data'),
+    handleClearUsers: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.ClearEmployees, 'Clear Employees'),
+    handleRestartDevice: (deviceId) => executeCommand(deviceId, DeviceCommandTypes.RestartDevice, 'Restart Device')
   }
 }
 

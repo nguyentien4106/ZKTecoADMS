@@ -48,3 +48,19 @@ export const defaultNewShiftTemplate: CreateShiftTemplateRequest = {
     startTime: '09:00:00',
     endTime: '17:00:00',
 }
+const now = new Date();
+const tomorrow = new Date(now);
+tomorrow.setDate(tomorrow.getDate() + 1);
+
+export const defaultNewShiftWithEmployeeUserId = {
+    employeeUserId: '',
+    startTime: tomorrow,
+    endTime: tomorrow,
+    description: ''
+}
+
+export const defaultTemplateShift = {
+    templateId: '',
+    date: new Date(),
+    description: '',
+}

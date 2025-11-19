@@ -24,11 +24,11 @@ import { useMemo } from 'react'
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/devices', icon: Monitor, label: 'Devices' },
-  { to: '/device-commands', icon: Terminal, label: 'Device Commands' },
+  { to: '/device-commands', icon: Terminal, label: 'Commands' },
   { to: '/employees', icon: Users, label: 'Employees' },
   { to: '/attendance', icon: Clock, label: 'Attendance' },
   { to: '/my-shifts', icon: Calendar, label: 'My Shifts' },
-  { to: '/shift-management', icon: CalendarCheck, label: 'Shift Management' },
+  { to: '/shifts', icon: CalendarCheck, label: 'Shifts' },
   { to: '/reports', icon: FileText, label: 'Reports' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]

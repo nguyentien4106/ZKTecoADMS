@@ -8,5 +8,5 @@ public class UserRefreshToken : Entity<Guid>
 
     public string RefreshToken { get; set; } = string.Empty;
 
-    public ApplicationUser ApplicationUser {get;set;} = null!;
+    public ApplicationUser ApplicationUser { get; set; } = null!;
 }

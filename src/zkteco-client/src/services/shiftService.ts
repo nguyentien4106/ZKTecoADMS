@@ -41,4 +41,8 @@ export const shiftService = {
         return await apiService.post<Shift>(`/api/shifts/${id}/reject`, data);
     },
 
+    assignShift: async (data: CreateShiftRequest & { employeeUserId: string }) => {
+        return await apiService.post<Shift>('/api/shifts', data);
+    },
+
 };

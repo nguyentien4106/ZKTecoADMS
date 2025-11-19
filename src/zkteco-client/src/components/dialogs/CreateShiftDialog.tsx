@@ -6,66 +6,71 @@ import { Textarea } from '@/components/ui/textarea';
 import { DateTimePicker } from '@/components/ui/datetime-picker';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useShiftContext } from '@/contexts/ShiftContext';
 import { useShiftTemplates } from '@/hooks/useShiftTemplate';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, getDate } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { DateTimeFormat } from '@/constants';
+import { useEmployeesByManager } from '@/hooks/useAccount';
+import { defaultNewShiftWithEmployeeUserId, defaultTemplateShift } from '@/constants/defaultValue';
+import { CreateShiftRequest } from '@/types/shift';
 
-const getDefaultNewShift = () => {
-    const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    return {
-        startTime: now,
-        endTime: tomorrow,
-        description: '',
-    };
+type CreateShiftDialogProps =
+{
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onSubmit: (data: CreateShiftRequest) => Promise<void>;
+    mode : 'request' | 'assign';
+    title?: string;
+    description?: string;
 };
 
-const getDefaultTemplateShift = () => ({
-    templateId: '',
-    date: new Date(),
-    description: '',
-});
+const getDateString = (time: string, dateStr: Date) => {
+    const [hours, minutes] = time.split(':');
+    const date = new Date(dateStr);
+    date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    return format(date, DateTimeFormat);
+}
 
-export const CreateShiftDialog = () => {
-    const {
-        createDialogOpen,
-        setCreateDialogOpen,
-        handleCreate,
-    } = useShiftContext();
-
+export const CreateShiftDialog = ({ 
+    open, 
+    onOpenChange, 
+    onSubmit,
+    mode = 'request',
+    title,
+    description: dialogDescription
+}: CreateShiftDialogProps) => {
     const { data: templates = [], isLoading: templatesLoading } = useShiftTemplates();
+    const includeEmployee = mode === 'assign';
+    const { data: employees = [], isLoading: employeesLoading } = useEmployeesByManager(includeEmployee);
     const [activeTab, setActiveTab] = useState<'manual' | 'template'>('manual');
-    const [newShift, setNewShift] = useState(getDefaultNewShift());
-    const [templateShift, setTemplateShift] = useState(getDefaultTemplateShift());
+    const [newShift, setNewShift] = useState(defaultNewShiftWithEmployeeUserId);
+    const [templateShift, setTemplateShift] = useState(defaultTemplateShift);
+    const hasTemplates = templates.length > 0;
 
     const now = new Date();
     const maxEndTime = new Date();
     maxEndTime.setDate(maxEndTime.getDate() + 1);
 
-    const hasTemplates = templates.length > 0;
-
-    const handleManualSubmit = (e: React.FormEvent) => {
+    const handleManualSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newShift.startTime || !newShift.endTime) {
             return;
         }
-        
-        handleCreate({
+
+        const data: CreateShiftRequest = {
+            employeeUserId: newShift.employeeUserId,
             startTime: format(newShift.startTime, DateTimeFormat),
             endTime: format(newShift.endTime, DateTimeFormat),
-            description: newShift.description,
-        });
-        setNewShift(getDefaultNewShift());
+            description: newShift.description
+        }
+        await onSubmit(data);
+        setNewShift(defaultNewShiftWithEmployeeUserId);
     };
 
-    const handleTemplateSubmit = (e: React.FormEvent) => {
+    const handleTemplateSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!templateShift.templateId || !templateShift.date) {
             return;
@@ -74,40 +79,39 @@ export const CreateShiftDialog = () => {
         const selectedTemplate = templates.find(t => t.id === templateShift.templateId);
         if (!selectedTemplate) return;
 
-        // Parse the TimeSpan format "HH:mm:ss" and combine with selected date
-        const [startHours, startMinutes] = selectedTemplate.startTime.split(':');
-        const [endHours, endMinutes] = selectedTemplate.endTime.split(':');
-        
-        const startTime = new Date(templateShift.date);
-        startTime.setHours(parseInt(startHours), parseInt(startMinutes), 0, 0);
-
-        const endTime = new Date(templateShift.date);
-        endTime.setHours(parseInt(endHours), parseInt(endMinutes), 0, 0);
-
-        handleCreate({
-            startTime: format(startTime, DateTimeFormat),
-            endTime: format(endTime, DateTimeFormat),
+        const data: CreateShiftRequest = {
+            employeeUserId: newShift.employeeUserId == '' ? null : newShift.employeeUserId,
+            startTime: getDateString(selectedTemplate.startTime, templateShift.date),
+            endTime: getDateString(selectedTemplate.endTime, templateShift.date),
             description: templateShift.description,
-        });
-        setTemplateShift(getDefaultTemplateShift());
+        };
+        console.log('Submitting shift from template:', data);
+        await onSubmit(data);
+        setNewShift(defaultNewShiftWithEmployeeUserId);
+        setTemplateShift(defaultTemplateShift);
     };
 
     const handleOpenChange = (open: boolean) => {
-        setCreateDialogOpen(open);
+        onOpenChange(open);
         if (!open) {
-            setNewShift(getDefaultNewShift());
-            setTemplateShift(getDefaultTemplateShift());
+            setNewShift(defaultNewShiftWithEmployeeUserId);
+            setTemplateShift(defaultTemplateShift);
             setActiveTab('manual');
         }
     };
 
+    const defaultTitle = mode === 'assign' ? 'Assign Shift to Employee' : 'Request New Shift';
+    const defaultDescription = mode === 'assign' 
+        ? 'Assign a shift directly to an employee'
+        : 'Submit a shift request for manager approval';
+
     return (
-        <Dialog open={createDialogOpen} onOpenChange={handleOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Request New Shift</DialogTitle>
+                    <DialogTitle>{title || defaultTitle}</DialogTitle>
                     <DialogDescription>
-                        Submit a shift request for manager approval
+                        {dialogDescription || defaultDescription}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -122,6 +126,31 @@ export const CreateShiftDialog = () => {
                     <TabsContent value="manual">
                         <form onSubmit={handleManualSubmit}>
                             <div className="space-y-4 py-4">
+                                {includeEmployee && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="employee">Employee</Label>
+                                        {employeesLoading ? (
+                                            <div className="text-sm text-muted-foreground">Loading employees...</div>
+                                        ) : (
+                                            <Select
+                                                value={'employeeUserId' in newShift ? newShift.employeeUserId : ''}
+                                                onValueChange={(value) => setNewShift({ ...newShift, employeeUserId: value })}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select an employee..." />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {employees.map((employee) => (
+                                                        <SelectItem key={employee.id} value={employee.id}>
+                                                            {employee.fullName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    </div>
+                                )}
+
                                 <div className="space-y-2">
                                     <Label htmlFor="startTime">Start Time</Label>
                                     <DateTimePicker
@@ -137,7 +166,7 @@ export const CreateShiftDialog = () => {
                                         date={newShift.endTime}
                                         setDate={(date) => setNewShift({ ...newShift, endTime: date || maxEndTime })}
                                         minDate={newShift.startTime || now}
-                                        maxDate={maxEndTime}
+                                        maxDate={newShift.startTime ? new Date(newShift.startTime.getTime() + 24 * 60 * 60 * 1000) : maxEndTime}
                                     />
                                 </div>
 
@@ -163,7 +192,13 @@ export const CreateShiftDialog = () => {
                                 >
                                     Cancel
                                 </Button>
-                                <Button type="submit" className="w-full sm:w-auto">Submit Request</Button>
+                                <Button 
+                                    type="submit" 
+                                    className="w-full sm:w-auto"
+                                    disabled={includeEmployee && !('employeeUserId' in newShift && newShift.employeeUserId)}
+                                >
+                                    {mode === 'assign' ? 'Assign Shift' : 'Submit Request'}
+                                </Button>
                             </DialogFooter>
                         </form>
                     </TabsContent>
@@ -171,6 +206,31 @@ export const CreateShiftDialog = () => {
                     <TabsContent value="template">
                         <form onSubmit={handleTemplateSubmit}>
                             <div className="space-y-4 py-4">
+                                {includeEmployee && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="templateEmployee">Employee</Label>
+                                        {employeesLoading ? (
+                                            <div className="text-sm text-muted-foreground">Loading employees...</div>
+                                        ) : (
+                                            <Select
+                                                value={'employeeUserId' in newShift ? newShift.employeeUserId : ''}
+                                                onValueChange={(value) => setNewShift({ ...newShift, employeeUserId: value })}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select an employee..." />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {employees.map((employee) => (
+                                                        <SelectItem key={employee.id} value={employee.id}>
+                                                            {employee.fullName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    </div>
+                                )}
+
                                 <div className="space-y-2">
                                     <Label htmlFor="template">Select Shift Template</Label>
                                     {templatesLoading ? (
@@ -244,7 +304,13 @@ export const CreateShiftDialog = () => {
                                 >
                                     Cancel
                                 </Button>
-                                <Button type="submit" className="w-full sm:w-auto">Submit Request</Button>
+                                <Button 
+                                    type="submit" 
+                                    className="w-full sm:w-auto"
+                                    disabled={includeEmployee && !('employeeUserId' in templateShift && templateShift.employeeUserId)}
+                                >
+                                    {mode === 'assign' ? 'Assign Shift' : 'Submit Request'}
+                                </Button>
                             </DialogFooter>
                         </form>
                     </TabsContent>

@@ -23,6 +23,7 @@ export interface Shift {
 }
 
 export interface CreateShiftRequest {
+    employeeUserId?: string | null;
     startTime: string;
     endTime: string;
     description?: string;

@@ -24,10 +24,10 @@ export const ROLE_PERMISSIONS = {
     '/attendance',
     '/reports',
     '/settings',
-    '/shift-management',
+    '/shifts',
   ],
   [UserRole.MANAGER]: [
-    '/shift-management',
+    '/shifts',
     '/device-commands',
     '/devices',
     '/employees',

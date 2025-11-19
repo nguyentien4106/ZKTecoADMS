@@ -13,7 +13,7 @@ import {
 } from '@/hooks/useEmployees'
 import { useDevices } from '@/hooks/useDevices'
 import { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee'
-import { EmployeeAccount } from '@/types/account'
+import { Account } from '@/types/account'
 
 interface EmployeeContextValue {
   // State
@@ -49,7 +49,7 @@ interface EmployeeContextValue {
     email: string,
     password: string,
     phoneNumber?: string
-  ) => Promise<EmployeeAccount | undefined>
+  ) => Promise<Account | undefined>
   handleFilterSubmit: (deviceIds: string[]) => void
   handleOpenCreateDialog: () => void
   
@@ -177,7 +177,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     try {
       // Check if the user already has an account
       const isUpdateMode = !!employeeForAccount?.applicationUser
-      let updatedEmployeeAccount: EmployeeAccount | undefined = undefined;
+      let updatedEmployeeAccount: Account | undefined = undefined;
       if (isUpdateMode) {
         // Update existing account
         

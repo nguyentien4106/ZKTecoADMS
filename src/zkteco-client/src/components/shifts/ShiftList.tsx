@@ -7,6 +7,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { ShiftRow } from './ShiftRow';
+import { LoadingSpinner } from '../LoadingSpinner';
 
 interface ShiftListProps {
     shifts: Shift[];
@@ -30,7 +31,9 @@ export const ShiftList = ({
     onDelete
 }: ShiftListProps) => {
     if (isLoading) {
-        return <div className="text-center py-8">Loading shifts...</div>;
+        return <div className="text-center py-8">
+            <LoadingSpinner />
+        </div>;
     }
 
     if (shifts.length === 0) {

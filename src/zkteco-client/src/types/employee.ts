@@ -1,4 +1,4 @@
-import { EmployeeAccount } from "./account";
+import { Account } from "./account";
 
 
 export interface CreateEmployeeRequest {
@@ -35,5 +35,5 @@ export interface Employee {
   updatedAt: string;
   deviceId: string;
   deviceName?: string;
-  applicationUser?: EmployeeAccount | null;
+  applicationUser?: Account | null;
 }

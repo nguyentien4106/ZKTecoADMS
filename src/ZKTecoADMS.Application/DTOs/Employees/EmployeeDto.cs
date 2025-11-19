@@ -13,15 +13,16 @@ public class EmployeeDto
     public Guid DeviceId { get; set; }
     public string? DeviceName { get; set; }
 
-    public EmployeeAccountDto? ApplicationUser { get; set; }
+    public AccountDto? ApplicationUser { get; set; }
 }
 
-public class EmployeeAccountDto
+public class AccountDto
 {
+    public Guid Id { get; set; }
     public required string Email { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
-
+    public string FullName => $"{FirstName} {LastName}";
     public string? PhoneNumber { get; set; }
 
 }

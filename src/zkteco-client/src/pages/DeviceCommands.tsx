@@ -44,7 +44,7 @@ export const DeviceCommands = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Device Commands"
+        title="Commands"
         description="Send commands and monitor their execution status"
       />
 

@@ -12,7 +12,9 @@ const MyShiftsContent = () => {
         shifts, 
         isLoading, 
         selectedShift, 
-        setCreateDialogOpen ,
+        createDialogOpen,
+        setCreateDialogOpen,
+        handleCreate,
         handleEdit,
         handleDelete,
     } = useShiftContext();
@@ -38,7 +40,12 @@ const MyShiftsContent = () => {
                     onDelete={handleDelete}
                 />
             </div>
-            <CreateShiftDialog />
+            <CreateShiftDialog 
+                open={createDialogOpen}
+                onOpenChange={setCreateDialogOpen}
+                onSubmit={handleCreate}
+                mode="request"
+            />
 
             {selectedShift && (
                 <UpdateShiftDialog />
