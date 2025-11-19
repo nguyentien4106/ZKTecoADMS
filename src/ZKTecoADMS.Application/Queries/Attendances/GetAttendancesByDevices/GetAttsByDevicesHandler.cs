@@ -13,12 +13,13 @@ public class GetAttsByDevicesHandler(IRepositoryPagedQuery<Attendance> attReposi
             filter: a => 
                 a.AttendanceTime.Date <= request.Filter.ToDate.Date
                 && a.AttendanceTime.Date >= request.Filter.FromDate.Date
-                && request.Filter.DeviceIds.Contains(a.DeviceId),
+                && request.Filter.DeviceIds.Contains(a.DeviceId)
+                && a.EmployeeId.HasValue,
             projection: a => new AttendanceDto(
                 a.Id,
                 a.AttendanceTime,
-                a.Device.DeviceName,      // Only loads DeviceName field
-                a.Employee.Name ?? string.Empty,  // Only loads Name field
+                a.Device.DeviceName,
+                a.Employee!.Name,
                 a.VerifyMode,
                 a.AttendanceState,
                 a.WorkCode

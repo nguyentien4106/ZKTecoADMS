@@ -1,5 +1,5 @@
 export interface AttendancesFilterParams {
-    fromDate: Date
-    toDate: Date
+    fromDate: string
+    toDate: string
     deviceIds?: string[]
 }

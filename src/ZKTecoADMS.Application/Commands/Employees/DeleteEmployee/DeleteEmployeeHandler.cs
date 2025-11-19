@@ -1,5 +1,6 @@
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace ZKTecoADMS.Application.Commands.Employees.DeleteEmployee;
 
@@ -10,6 +11,11 @@ public class DeleteEmployeeHandler(
     public async Task<AppResponse<Guid>> Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
     {
         var employee = await employeeRepository.GetByIdAsync(request.EmployeeId, cancellationToken: cancellationToken);
+        
+        if (employee == null)
+        {
+            return AppResponse<Guid>.Fail("Employee not found");
+        }
 
         employee.IsActive = false;
         await employeeRepository.UpdateAsync(employee, cancellationToken);

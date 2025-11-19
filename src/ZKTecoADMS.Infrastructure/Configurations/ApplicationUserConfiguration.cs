@@ -16,6 +16,14 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             .IsRequired()
             .HasMaxLength(50);
         
+        // One-to-One relationship with Employee (configured from ApplicationUser side)
+        // When ApplicationUser is deleted, the Employee's ApplicationUserId will be set to null
+        builder.HasOne(u => u.Employee)
+            .WithOne(e => e.ApplicationUser)
+            .HasForeignKey<Employee>(e => e.ApplicationUserId)
+            .OnDelete(DeleteBehavior.SetNull)
+            .IsRequired(false);
+        
         // Many-to-One relationship with Manager (ApplicationUser)
         // One manager can manage many employees
         

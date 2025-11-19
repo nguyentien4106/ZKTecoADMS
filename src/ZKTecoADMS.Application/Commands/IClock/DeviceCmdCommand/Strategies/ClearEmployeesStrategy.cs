@@ -4,13 +4,13 @@ using ZKTecoADMS.Domain.Enums;
 namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand.Strategies;
 
 [DeviceCommandStrategy(DeviceCommandTypes.ClearEmployees)]
-public class ClearUsersStrategy(IRepository<Employee> userRepository) : IDeviceCommandStrategy
+public class ClearEmployeesStrategy(IRepository<Employee> employeeRepository) : IDeviceCommandStrategy
 {
     public async Task ExecuteAsync(Device device, Guid objectRefId, ClockCommandResponse response, CancellationToken cancellationToken)
     {
         if (response.IsSuccess)
         {
-            await userRepository.DeleteAsync(u => u.DeviceId == device.Id, cancellationToken);
+            await employeeRepository.DeleteAsync(u => u.DeviceId == device.Id, cancellationToken);
         }
     }
 }

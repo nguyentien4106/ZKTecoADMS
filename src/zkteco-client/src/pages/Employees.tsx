@@ -3,11 +3,11 @@
 // ==========================================
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
-import { UsersTable } from "@/components/users/UsersTable";
+import { EmployeesTable } from "@/components/employees";
 import { Plus } from "lucide-react";
 import { CreateUserDialog } from "@/components/dialogs/CreateEmployeeDialog";
 import { CreateEmployeeAccountDialog } from "@/components/dialogs/CreateEmployeeAccountDialog";
-import FilterBar from "@/components/users/FilterBar";
+import FilterBar from "@/components/employees/FilterBar";
 import { EmployeeProvider, useEmployeeContext } from "@/contexts/EmployeeContext";
 
 const EmployeesContent = () => {
@@ -37,7 +37,7 @@ const EmployeesContent = () => {
         selectedDeviceIds={selectedDeviceIds}
       />
 
-      <UsersTable />
+      <EmployeesTable />
 
       <CreateUserDialog />
 

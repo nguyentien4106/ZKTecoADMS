@@ -2,7 +2,8 @@ import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
 import { CreateEmployeeRequest } from "@/types/employee";
 import { CreateShiftRequest, CreateShiftTemplateRequest } from "@/types/shift";
-import { subMonths } from "date-fns";
+import { format, subMonths } from "date-fns";
+import { DateTimeFormat } from ".";
 
 export const defaultNewEmployee: CreateEmployeeRequest = {
     pin: '',
@@ -24,8 +25,8 @@ const today = new Date()
 const threeMonthsAgo = subMonths(today, 3)
 
 export const defaultAttendanceFilter: AttendancesFilterParams = {
-    fromDate: threeMonthsAgo,
-    toDate: today,
+    fromDate: format(threeMonthsAgo, DateTimeFormat),
+    toDate: format(today, DateTimeFormat),
     deviceIds: []
 }
 

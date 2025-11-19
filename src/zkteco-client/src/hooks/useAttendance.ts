@@ -14,7 +14,6 @@ export const useAttendancesByDevices = (
   return useQuery({
     queryKey: ['attendance', 'devices', filter],
     queryFn: () => {
-      console.log('qeryFn called with filter:', filter);
       return attendanceService.getByDevices(paginationRequest, filter)
     },
     enabled: !!filter?.deviceIds?.length && filter.fromDate <= filter.toDate,

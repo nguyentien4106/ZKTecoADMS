@@ -21,12 +21,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .HasForeignKey(i => i.DeviceId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        // One-to-One relationship with ApplicationUser (optional)
-        builder.HasOne(u => u.ApplicationUser)
-            .WithOne(a => a.Employee)
-            .HasForeignKey<Employee>(u => u.ApplicationUserId)
-            .OnDelete(DeleteBehavior.SetNull)
-            .IsRequired(false);
+        // One-to-One relationship configured in ApplicationUserConfiguration
 
     }
 }

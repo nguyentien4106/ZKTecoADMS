@@ -5,9 +5,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { employeeService } from '@/services/employeeService';
 import { toast } from 'sonner';
-import { CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee';
+import { CreateEmployeeRequest, Employee, UpdateEmployeeRequest } from '@/types/employee';
 import { accountService } from '@/services/accountService';
 import { CreateEmployeeAccountRequest, UpdateEmployeeAccountRequest } from '@/types/account';
+import { AppResponse } from '@/types';
 
 export const useEmployees = (deviceIds: string[]) => {
   return useQuery({
@@ -25,8 +26,26 @@ export const useEmployee = (id: string) => {
 };
 
 export const useCreateEmployee = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (data: CreateEmployeeRequest) => employeeService.create(data),
+    onSuccess: (results: AppResponse<Employee>[]) => {
+      queryClient.setQueryData(
+        ['employees'],
+        (oldData: Employee[]) => {
+          if (!oldData) return;
+          const newEmployees = results.filter(res => res.isSuccess).map(res => res.data);
+          const failedEmployees = results.filter(res => !res.isSuccess);
+          failedEmployees.forEach(failed => {
+            toast.error(`Failed to create employee: ${failed.errors.join("\n")}`);
+          });
+          return [...oldData, ...newEmployees].sort((a, b) => a.pin.localeCompare(b.pin));
+        }
+      );
+      toast.success('Employee created successfully');
+    },
+
   });
 };
 

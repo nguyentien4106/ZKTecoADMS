@@ -25,15 +25,19 @@ interface EmployeeContextValue {
   // Dialog states
   createDialogOpen: boolean
   createAccountDialogOpen: boolean
+  deleteDialogOpen: boolean
   employeeToEdit: Employee | null
   employeeForAccount: Employee | null
+  employeeToDelete: Employee | null
   isCreatingAccount: boolean
   
   // Actions
   setCreateDialogOpen: (open: boolean) => void
   setCreateAccountDialogOpen: (open: boolean) => void
+  setDeleteDialogOpen: (open: boolean) => void
   setSelectedDeviceIds: (deviceIds: string[]) => void
-  handleDelete: (userId: string) => Promise<void>
+  handleDelete: (employee: Employee) => void
+  handleConfirmDelete: () => Promise<void>
   handleAddEmployee: (data: CreateEmployeeRequest) => Promise<void>
   handleUpdateEmployee: (data: UpdateEmployeeRequest) => Promise<void>
   handleEdit: (user: Employee) => void
@@ -71,8 +75,10 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   // Dialog states
   const [createDialogOpen, setCreateDialogOpenState] = useState(false)
   const [createAccountDialogOpen, setCreateAccountDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [employeeToEdit, setEmployeeToEdit] = useState<Employee | null>(null)
   const [employeeForAccount, setEmployeeForAccount] = useState<Employee | null>(null)
+  const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null)
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([])
   
@@ -101,9 +107,16 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   }
 
   // Handlers
-  const handleDelete = async (userId: string) => {
-    if (!userId) return
-    await deleteEmployee.mutateAsync(userId)
+  const handleDelete = (employee: Employee) => {
+    setEmployeeToDelete(employee)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!employeeToDelete?.id) return
+    await deleteEmployee.mutateAsync(employeeToDelete.id)
+    setDeleteDialogOpen(false)
+    setEmployeeToDelete(null)
   }
 
   const handleAddEmployee = async (data: CreateEmployeeRequest) => {
@@ -215,15 +228,19 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     // Dialog states
     createDialogOpen,
     createAccountDialogOpen,
+    deleteDialogOpen,
     employeeToEdit,
     employeeForAccount,
+    employeeToDelete,
     isCreatingAccount,
     
     // Actions
     setCreateDialogOpen,
     setCreateAccountDialogOpen,
+    setDeleteDialogOpen,
     setSelectedDeviceIds,
     handleDelete,
+    handleConfirmDelete,
     handleAddEmployee,
     handleUpdateEmployee,
     handleEdit,
