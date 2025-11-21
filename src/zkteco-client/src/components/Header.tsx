@@ -49,9 +49,6 @@ export const Header = () => {
         >
           <Menu className="w-5 h-5" />
         </Button>
-        <h2 className="text-lg font-semibold hidden sm:block">
-          {document.title || 'ZKTeco Management'}
-        </h2>
       </div>
       
       <div className="flex items-center gap-1 md:gap-2">

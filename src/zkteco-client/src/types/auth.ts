@@ -24,6 +24,8 @@ export interface AuthUser {
   exp: number;
   iss: string;
   userName: string
+  employeeId?: string;
+  managerId?: string;
 }
 
 export interface ForgotPasswordRequest {
@@ -48,4 +50,5 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   applicationUserId: string | null;
+  isManager: boolean;
 }

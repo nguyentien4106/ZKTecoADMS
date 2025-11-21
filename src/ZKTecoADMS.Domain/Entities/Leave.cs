@@ -7,19 +7,25 @@ namespace ZKTecoADMS.Domain.Entities;
 public class Leave : AuditableEntity<Guid>
 {
     [Required]
-    public Guid ApplicationUserId { get; set; }
+    public Guid EmployeeUserId { get; set; }
+
+    [Required]
+    public Guid ManagerId { get; set; }
     
     [Required]
     public LeaveType Type { get; set; }
-    
+
+    [Required]
+    public Guid ShiftId { get; set; }
+
     [Required]
     public DateTime StartDate { get; set; }
-    
+
     [Required]
     public DateTime EndDate { get; set; }
     
     [Required]
-    public bool IsFullDay { get; set; }
+    public bool IsHalfShift { get; set; }
     
     [Required]
     [MaxLength(1000)]
@@ -31,11 +37,8 @@ public class Leave : AuditableEntity<Guid>
     [MaxLength(500)]
     public string? RejectionReason { get; set; }
     
-    public Guid? ApprovedByUserId { get; set; }
-    
-    public DateTime? ApprovedAt { get; set; }
-    
     // Navigation Properties
     public virtual ApplicationUser ApplicationUser { get; set; } = null!;
-    public virtual ApplicationUser? ApprovedByUser { get; set; }
+    public virtual ApplicationUser Manager { get; set; } = null!;
+    public virtual Shift Shift { get; set; } = null!;
 }

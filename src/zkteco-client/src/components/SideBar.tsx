@@ -20,6 +20,7 @@ import { useSidebar } from '@/contexts/SidebarContext'
 import { Button } from '@/components/ui/button'
 import { useRoleAccess } from '@/hooks/useRoleAccess'
 import { useMemo } from 'react'
+import logoIcon from '@/assets/logo-icon.png'
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -66,10 +67,11 @@ export const Sidebar = () => {
           isOpen ? "justify-between px-6" : "md:justify-center px-6 md:px-0"
         )}>
           <h1 className={cn(
-            "text-xl font-bold text-primary transition-opacity duration-300",
+            "text-xl font-bold text-primary transition-opacity duration-300 cursor-pointer",
             !isOpen && "md:hidden"
           )}>
-            ZKTeco Manager
+            <img src={logoIcon} alt="Logo" className="w-15 h-10 inline-block" />
+            <i>work</i><b style={{color: '#FFD700'}}>Fina</b>
           </h1>
           <Button
             variant="ghost"

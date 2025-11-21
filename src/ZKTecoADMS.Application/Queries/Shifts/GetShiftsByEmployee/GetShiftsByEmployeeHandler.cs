@@ -12,7 +12,7 @@ public class GetShiftsByEmployeeHandler(IRepository<Shift> repository)
         var shifts = await repository.GetAllAsync(
             filter: s => s.ApplicationUserId == request.ApplicationUserId && (!request.Status.HasValue || s.Status == request.Status.Value),
             orderBy: query => request.Status.HasValue ? query.OrderBy(s => s.StartTime) : query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: [nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser)],
+            includeProperties: [nameof(Shift.ApplicationUser)],
             cancellationToken: cancellationToken);
 
 

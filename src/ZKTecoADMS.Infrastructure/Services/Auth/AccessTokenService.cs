@@ -3,6 +3,7 @@ using ZKTecoADMS.Application.Settings;
 using ZKTecoADMS.Domain.Entities;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using ZKTecoADMS.Application.Constants;
 
 namespace ZKTecoADMS.Infrastructure.Services.Auth;
 
@@ -17,7 +18,9 @@ public class AccessTokenService(ITokenGeneratorService tokenGenerator, JwtSettin
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email ?? ""),
                 new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName),
-                new Claim("userName", user.UserName!),
+                new Claim(ClaimTypeNames.UserName, user.UserName!),
+                new Claim(ClaimTypeNames.EmployeeId, user.Employee?.Id.ToString() ?? ""),
+                new Claim(ClaimTypeNames.ManagerId, user.ManagerId?.ToString() ?? ""),
                 ..rolesClaims
             ];
 

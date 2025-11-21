@@ -27,4 +27,7 @@ public class ApplicationUser : IdentityUser<Guid>
     public virtual ICollection<Leave> ApprovedLeaves { get; set; } = [];
     
     public virtual ICollection<ApplicationUser> ManagedEmployees { get; set; } = [];
+    
+    public virtual ICollection<Leave> ManagedLeaves { get; set; } = [];
+
 }

@@ -10,7 +10,8 @@ public class LeaveConfiguration : IEntityTypeConfiguration<Leave>
     {
         builder.HasKey(l => l.Id);
         
-        builder.HasIndex(l => l.ApplicationUserId);
+        builder.HasIndex(l => l.EmployeeUserId);
+        builder.HasIndex(l => l.ShiftId).IsUnique();
         
         builder.Property(l => l.CreatedAt).HasDefaultValueSql("NOW()");
         builder.Property(l => l.UpdatedAt).HasDefaultValueSql("NOW()");
@@ -18,14 +19,19 @@ public class LeaveConfiguration : IEntityTypeConfiguration<Leave>
         // Relationship: ApplicationUser -> RequestedLeaves
         builder.HasOne(l => l.ApplicationUser)
             .WithMany(u => u.RequestedLeaves)
-            .HasForeignKey(l => l.ApplicationUserId)
+            .HasForeignKey(l => l.EmployeeUserId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        // Relationship: ApprovedByUser -> ApprovedLeaves
-        builder.HasOne(l => l.ApprovedByUser)
-            .WithMany(u => u.ApprovedLeaves)
-            .HasForeignKey(l => l.ApprovedByUserId)
-            .OnDelete(DeleteBehavior.SetNull)
-            .IsRequired(false);
+        // Relationship: Manager -> ManagedLeaves
+        builder.HasOne(l => l.Manager)
+            .WithMany(u => u.ManagedLeaves)
+            .HasForeignKey(l => l.ManagerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Relationship: Shift -> Leave (One-to-One Optional)
+        builder.HasOne(l => l.Shift)
+            .WithOne(s => s.Leave)
+            .HasForeignKey<Leave>(l => l.ShiftId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -17,7 +17,7 @@ public class CancelLeaveHandler(IRepository<Leave> leaveRepository)
             }
 
             // Verify ownership
-            if (leave.ApplicationUserId != request.ApplicationUserId)
+            if (leave.EmployeeUserId != request.ApplicationUserId)
             {
                 return AppResponse<bool>.Error("You are not authorized to cancel this leave request");
             }

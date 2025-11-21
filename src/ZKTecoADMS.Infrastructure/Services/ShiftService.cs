@@ -17,7 +17,7 @@ public class ShiftService(
     {
         return await repository.GetSingleAsync(
             s => s.Id == id,
-            includeProperties: new[] { nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser) },
+            includeProperties: new[] { nameof(Shift.ApplicationUser) },
             cancellationToken: cancellationToken);
     }
 
@@ -26,7 +26,7 @@ public class ShiftService(
         var shifts = await repository.GetAllAsync(
             filter: s => s.ApplicationUserId == applicationUserId,
             orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: new[] { nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser) },
+            includeProperties: new[] { nameof(Shift.ApplicationUser) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
@@ -37,7 +37,7 @@ public class ShiftService(
         var shifts = await repository.GetAllAsync(
             filter: s => s.ApplicationUser != null && s.ApplicationUser.ManagerId == managerId,
             orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: [nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser)],
+            includeProperties: new[] { nameof(Shift.ApplicationUser) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
@@ -59,7 +59,7 @@ public class ShiftService(
         var shifts = await repository.GetAllAsync(
             filter: s => s.Status == status,
             orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: new[] { nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser) },
+            includeProperties: new[] { nameof(Shift.ApplicationUser) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
@@ -70,7 +70,7 @@ public class ShiftService(
         var shifts = await repository.GetAllAsync(
             filter: s => s.StartTime >= startDate && s.EndTime <= endDate,
             orderBy: query => query.OrderBy(s => s.StartTime),
-            includeProperties: new[] { nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser) },
+            includeProperties: new[] { nameof(Shift.ApplicationUser) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
@@ -168,8 +168,7 @@ public class ShiftService(
         }
 
         shift.Status = ShiftStatus.Approved;
-        shift.ApprovedByUserId = approvedByUserId;
-        shift.ApprovedAt = DateTime.UtcNow;
+        shift.UpdatedAt = DateTime.UtcNow;
         shift.RejectionReason = null;
 
         await repository.UpdateAsync(shift, cancellationToken);
@@ -208,8 +207,7 @@ public class ShiftService(
         }
 
         shift.Status = ShiftStatus.Rejected;
-        shift.ApprovedByUserId = rejectedByUserId;
-        shift.ApprovedAt = DateTime.UtcNow;
+        shift.UpdatedAt = DateTime.Now;
         shift.RejectionReason = rejectionReason;
 
         await repository.UpdateAsync(shift, cancellationToken);

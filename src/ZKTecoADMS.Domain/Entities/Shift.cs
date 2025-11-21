@@ -21,14 +21,11 @@ public class Shift : AuditableEntity<Guid>
     [Required]
     public ShiftStatus Status { get; set; } = ShiftStatus.Pending;
     
-    public Guid? ApprovedByUserId { get; set; }
-    
-    public DateTime? ApprovedAt { get; set; }
-    
     [MaxLength(500)]
     public string? RejectionReason { get; set; }
     
     // Navigation Properties
     public virtual ApplicationUser ApplicationUser { get; set; } = null!;
-    public virtual ApplicationUser? ApprovedByUser { get; set; }
+
+    public virtual Leave? Leave { get; set; }
 }

@@ -2,4 +2,4 @@ using ZKTecoADMS.Application.DTOs.Leaves;
 
 namespace ZKTecoADMS.Application.Queries.Leaves.GetMyLeaves;
 
-public record GetMyLeavesQuery(Guid ApplicationUserId) : IQuery<AppResponse<List<LeaveDto>>>;
+public record GetMyLeavesQuery(Guid ApplicationUserId, bool IsManager) : IQuery<AppResponse<List<LeaveDto>>>;

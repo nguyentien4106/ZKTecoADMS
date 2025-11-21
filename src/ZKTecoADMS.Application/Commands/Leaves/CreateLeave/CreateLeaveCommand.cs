@@ -4,9 +4,11 @@ using ZKTecoADMS.Domain.Enums;
 namespace ZKTecoADMS.Application.Commands.Leaves.CreateLeave;
 
 public record CreateLeaveCommand(
-    Guid ApplicationUserId,
-    LeaveType Type,
+    Guid EmployeeUserId,
+    Guid ManagerId,
+    Guid ShiftId,
     DateTime StartDate,
     DateTime EndDate,
-    bool IsFullDay,
+    LeaveType Type,
+    bool IsHalfShift,
     string Reason) : ICommand<AppResponse<LeaveDto>>;

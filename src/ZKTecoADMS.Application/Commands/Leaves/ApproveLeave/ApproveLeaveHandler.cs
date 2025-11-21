@@ -1,58 +1,39 @@
-using ZKTecoADMS.Application.DTOs.Leaves;
 using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Commands.Leaves.ApproveLeave;
 
 public class ApproveLeaveHandler(IRepository<Leave> leaveRepository)
-    : ICommandHandler<ApproveLeaveCommand, AppResponse<LeaveDto>>
+    : ICommandHandler<ApproveLeaveCommand, AppResponse<bool>>
 {
-    public async Task<AppResponse<LeaveDto>> Handle(ApproveLeaveCommand request, CancellationToken cancellationToken)
+    public async Task<AppResponse<bool>> Handle(ApproveLeaveCommand request, CancellationToken cancellationToken)
     {
         try
         {
             var leave = await leaveRepository.GetByIdAsync(
                 request.LeaveId,
-                includeProperties: new[] { "ApplicationUser" },
+                includeProperties: ["ApplicationUser", "Shift"],
                 cancellationToken: cancellationToken);
 
             if (leave == null)
             {
-                return AppResponse<LeaveDto>.Error("Leave not found");
+                return AppResponse<bool>.Error("Leave not found");
             }
 
             if (leave.Status != LeaveStatus.Pending)
             {
-                return AppResponse<LeaveDto>.Error($"Cannot approve leave with status: {leave.Status}");
+                return AppResponse<bool>.Error($"Cannot approve leave with status: {leave.Status}");
             }
 
             leave.Status = LeaveStatus.Approved;
-            leave.ApprovedByUserId = request.ApprovedByUserId;
-            leave.ApprovedAt = DateTime.UtcNow;
-
+            leave.UpdatedAt = DateTime.Now;
+            
             await leaveRepository.UpdateAsync(leave, cancellationToken);
 
-            var leaveDto = new LeaveDto
-            {
-                Id = leave.Id,
-                ApplicationUserId = leave.ApplicationUserId,
-                EmployeeName = leave.ApplicationUser?.FirstName + " " + leave.ApplicationUser?.LastName ?? "",
-                Type = leave.Type,
-                StartDate = leave.StartDate,
-                EndDate = leave.EndDate,
-                IsFullDay = leave.IsFullDay,
-                Reason = leave.Reason,
-                Status = leave.Status,
-                ApprovedByUserId = leave.ApprovedByUserId,
-                ApprovedAt = leave.ApprovedAt,
-                CreatedAt = leave.CreatedAt,
-                UpdatedAt = leave.UpdatedAt
-            };
-
-            return AppResponse<LeaveDto>.Success(leaveDto);
+            return AppResponse<bool>.Success(true);
         }
         catch (Exception ex)
         {
-            return AppResponse<LeaveDto>.Error(ex.Message);
+            return AppResponse<bool>.Error(ex.Message);
         }
     }
 }

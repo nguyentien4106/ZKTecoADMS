@@ -71,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         logout,
         applicationUserId: String(user?.[JWT_CLAIMS.NAME_IDENTIFIER]) || null,
+        isManager: user?.[JWT_CLAIMS.ROLE] === 'Manager',
       }}
     >
       {children}

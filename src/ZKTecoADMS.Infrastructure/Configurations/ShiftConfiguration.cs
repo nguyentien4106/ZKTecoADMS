@@ -21,11 +21,5 @@ public class ShiftConfiguration : IEntityTypeConfiguration<Shift>
             .HasForeignKey(s => s.ApplicationUserId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        // Relationship: ApprovedByUser -> ApprovedShifts
-        builder.HasOne(s => s.ApprovedByUser)
-            .WithMany(u => u.ApprovedShifts)
-            .HasForeignKey(s => s.ApprovedByUserId)
-            .OnDelete(DeleteBehavior.SetNull)
-            .IsRequired(false);
     }
 }

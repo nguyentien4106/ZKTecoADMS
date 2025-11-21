@@ -1,3 +1,4 @@
+import { LeaveType } from '@/types/leave';
 import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
 import { CreateEmployeeRequest } from "@/types/employee";
@@ -64,3 +65,25 @@ export const defaultTemplateShift = {
     date: new Date(),
     description: '',
 }
+
+export interface LeaveDialogState {
+    selectedEmployeeId: string;
+    selectedShiftId: string;
+    type: LeaveType;
+    isHalfShift: boolean;
+    halfShiftType: '' | 'first' | 'second';
+    startDate: Date | undefined;
+    endDate: Date | undefined;
+    reason: string;
+}
+
+export const defaultLeaveDialogState: LeaveDialogState = {
+    selectedEmployeeId: '',
+    selectedShiftId: '',
+    type: LeaveType.PERSONAL,
+    isHalfShift: false,
+    halfShiftType: '',
+    startDate: undefined,
+    endDate: undefined,
+    reason: '',
+};

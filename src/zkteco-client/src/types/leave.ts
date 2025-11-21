@@ -49,9 +49,9 @@ export interface LeaveRequest {
   employeeId: string;
   employeeName: string;
   type: LeaveType;
-  startDate: string; // ISO Date string
-  endDate: string; // ISO Date string
-  isFullDay: boolean;
+  startDate: Date;
+  endDate: Date;
+  isHalfShift: boolean;
   reason: string;
   status: LeaveStatus;
   rejectionReason?: string;
@@ -60,10 +60,12 @@ export interface LeaveRequest {
 
 export interface CreateLeaveRequest {
   type: LeaveType;
+  isHalfShift: boolean;
+  reason: string;
   startDate: string;
   endDate: string;
-  isFullDay: boolean;
-  reason: string;
+  shiftId: string;
+  employeeUserId?: string | null;
 }
 
 export interface RejectLeaveRequest {

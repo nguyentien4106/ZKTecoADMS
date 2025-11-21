@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using MediatR;
 using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Commands.Leaves.CreateLeave;
 using ZKTecoADMS.Application.Commands.Leaves.CancelLeave;
@@ -9,7 +7,6 @@ using ZKTecoADMS.Application.Commands.Leaves.RejectLeave;
 using ZKTecoADMS.Application.Queries.Leaves.GetMyLeaves;
 using ZKTecoADMS.Application.Queries.Leaves.GetPendingLeaves;
 using ZKTecoADMS.Application.Queries.Leaves.GetAllLeaves;
-using ZKTecoADMS.Api.Models.Responses;
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Leaves;
 using ZKTecoADMS.Application.Models;
@@ -25,7 +22,7 @@ public class LeavesController(IMediator mediator) : AuthenticatedControllerBase
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<AppResponse<List<LeaveDto>>>> GetMyLeaves()
     {
-        var query = new GetMyLeavesQuery(CurrentUserId);
+        var query = new GetMyLeavesQuery(CurrentUserId, IsManager);
         var result = await mediator.Send(query);
         return Ok(result);
     }
@@ -34,12 +31,22 @@ public class LeavesController(IMediator mediator) : AuthenticatedControllerBase
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<AppResponse<LeaveDto>>> CreateLeave([FromBody] CreateLeaveRequest request)
     {
+        if(ManagerId.HasValue == false)
+        {
+            return AppResponse<LeaveDto>.Error("ManagerId is not assigned to the current user.");
+        }
+
+        var managerId = request.EmployeeUserId.HasValue ? CurrentUserId : ManagerId.Value;
+        var employeeUserId = request.EmployeeUserId ?? CurrentUserId;
+
         var command = new CreateLeaveCommand(
-            CurrentUserId,
-            request.Type,
+            employeeUserId,
+            managerId,
+            request.ShiftId,
             request.StartDate,
             request.EndDate,
-            request.IsFullDay,
+            request.Type,
+            request.IsHalfShift,
             request.Reason);
         
         var result = await mediator.Send(command);
@@ -57,26 +64,26 @@ public class LeavesController(IMediator mediator) : AuthenticatedControllerBase
 
     // Manager endpoints - can view and approve/reject leaves
     [HttpGet("pending")]
-    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<AppResponse<List<LeaveDto>>>> GetPendingLeaves()
     {
-        var query = new GetPendingLeavesQuery();
+        var query = new GetPendingLeavesQuery(CurrentUserId, IsManager);
         var result = await mediator.Send(query);
         return Ok(result);
     }
 
     [HttpGet]
-    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<AppResponse<List<LeaveDto>>>> GetAllLeaves()
     {
-        var query = new GetAllLeavesQuery();
+        var query = new GetAllLeavesQuery(CurrentUserId, IsManager);
         var result = await mediator.Send(query);
         return Ok(result);
     }
 
     [HttpPost("{id}/approve")]
     [Authorize(Policy = PolicyNames.AtLeastManager)]
-    public async Task<ActionResult<AppResponse<LeaveDto>>> ApproveLeave(Guid id)
+    public async Task<ActionResult<AppResponse<bool>>> ApproveLeave(Guid id)
     {
         var command = new ApproveLeaveCommand(id, CurrentUserId);
         var result = await mediator.Send(command);
@@ -85,7 +92,7 @@ public class LeavesController(IMediator mediator) : AuthenticatedControllerBase
 
     [HttpPost("{id}/reject")]
     [Authorize(Policy = PolicyNames.AtLeastManager)]
-    public async Task<ActionResult<AppResponse<LeaveDto>>> RejectLeave(Guid id, [FromBody] RejectLeaveRequest request)
+    public async Task<ActionResult<AppResponse<bool>>> RejectLeave(Guid id, [FromBody] RejectLeaveRequest request)
     {
         var command = new RejectLeaveCommand(id, CurrentUserId, request.RejectionReason);
         var result = await mediator.Send(command);

@@ -4,6 +4,7 @@ using ZKTecoADMS.Application.Interfaces.Auth;
 using ZKTecoADMS.Application.Models;
 using ZKTecoADMS.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ZKTecoADMS.Application.Commands.Auth.Login;
 
@@ -19,8 +20,12 @@ public class LoginCommandHandler(
 {
     public async Task<AppResponse<AuthenticateResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        // Find user by email
-        var user = await userManager.FindByEmailAsync(request.Email);
+        // Find user by email with Employee and Manager includes
+        var user = await userManager.Users
+            .Include(u => u.Employee)
+            .Include(u => u.Manager)
+            .SingleOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+            
         if (user == null)
         {
             return AppResponse<AuthenticateResponse>.Error($"{request.Email} is not found.");

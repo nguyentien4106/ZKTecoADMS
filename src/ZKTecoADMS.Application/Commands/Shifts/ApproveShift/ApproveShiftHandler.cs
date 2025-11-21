@@ -14,8 +14,6 @@ public class ApproveShiftHandler(IShiftService shiftService)
                 request.Id, 
                 request.ApprovedByUserId, 
                 cancellationToken);
-            
-
 
             return AppResponse<ShiftDto>.Success(approvedShift.Adapt<ShiftDto>());
         }

@@ -51,7 +51,8 @@ public class CreateShiftHandler(IRepository<Shift> shiftRepository)
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
                 Description = request.IsManager ? "Assigned by manager. " + request.Description : request.Description,
-                Status = request.IsManager ? ShiftStatus.Approved : ShiftStatus.Pending
+                Status = request.IsManager ? ShiftStatus.Approved : ShiftStatus.Pending,
+                IsActive = true
             };
 
             var createdShift = await shiftRepository.AddAsync(shift, cancellationToken);

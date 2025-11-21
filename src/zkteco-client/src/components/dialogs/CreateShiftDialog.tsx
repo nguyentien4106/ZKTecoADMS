@@ -61,7 +61,7 @@ export const CreateShiftDialog = ({
         }
 
         const data: CreateShiftRequest = {
-            employeeUserId: newShift.employeeUserId,
+            employeeUserId: newShift.employeeUserId === '' ? null : newShift.employeeUserId,
             startTime: format(newShift.startTime, DateTimeFormat),
             endTime: format(newShift.endTime, DateTimeFormat),
             description: newShift.description

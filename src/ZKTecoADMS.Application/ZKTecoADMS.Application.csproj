@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Attendances\" />
     <Folder Include="Queries\Attendances\" />
     <Folder Include="Settings\" />
   </ItemGroup>

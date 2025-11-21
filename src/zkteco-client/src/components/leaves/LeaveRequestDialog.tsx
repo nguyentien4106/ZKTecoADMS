@@ -1,38 +1,31 @@
 import { useState, useEffect } from 'react';
+import { defaultLeaveDialogState, LeaveDialogState } from '@/constants/defaultValue';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CreateLeaveRequest, LeaveType } from '@/types/leave';
+import { LeaveType } from '@/types/leave';
 import { format, differenceInHours, isBefore, isAfter } from 'date-fns';
 import { useMyShifts } from '@/hooks/useShifts';
 import { ShiftStatus } from '@/types/shift';
-import { Calendar, Clock, FileText, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, FileText, AlertCircle, UserPlus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { DateTimePicker } from '@/components/ui/datetime-picker';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { DateTimeFormat } from '@/constants';
+import { useLeaveContext } from '@/contexts/LeaveContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEmployeesByManager } from '@/hooks/useAccount';
 
-interface LeaveRequestDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (data: CreateLeaveRequest) => Promise<void>;
-}
-
-export const LeaveRequestDialog = ({
-  open,
-  onOpenChange,
-  onSubmit
-}: LeaveRequestDialogProps) => {
+export const LeaveRequestDialog = () => {
+  const { createDialogOpen, setCreateDialogOpen, handleCreate } = useLeaveContext();
+  const { isManager } = useAuth();
+  const { data: employees = [] } = useEmployeesByManager(isManager);
   const { data: shifts = [] } = useMyShifts(ShiftStatus.Approved);
-  const [selectedShiftId, setSelectedShiftId] = useState<string>('');
-  const [type, setType] = useState<LeaveType>(LeaveType.PERSONAL);
-  const [isFullDay, setIsFullDay] = useState(true);
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [reason, setReason] = useState('');
+  const [dialogState, setDialogState] = useState<LeaveDialogState>({ ...defaultLeaveDialogState });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { selectedEmployeeId, selectedShiftId, type, isHalfShift, halfShiftType, startDate, endDate, reason } = dialogState;
 
   // Filter approved shifts that are in the future or ongoing
   const approvedShifts = shifts.filter(shift => 
@@ -42,14 +35,26 @@ export const LeaveRequestDialog = ({
 
   const selectedShift = approvedShifts.find(s => s.id === selectedShiftId);
 
-  // Auto-fill dates when shift is selected or when toggling full day
+  // Auto-fill dates when shift is selected or when toggling half shift
   useEffect(() => {
     if (selectedShift) {
-      setStartDate(new Date(selectedShift.startTime));
-      setEndDate(new Date(selectedShift.endTime));
+      if (isHalfShift) {
+        const shiftStart = new Date(selectedShift.startTime);
+        const shiftEnd = new Date(selectedShift.endTime);
+        const midTime = new Date(shiftStart.getTime() + (shiftEnd.getTime() - shiftStart.getTime()) / 2);
+        if (halfShiftType === 'first') {
+          setDialogState((prev: LeaveDialogState) => ({ ...prev, startDate: shiftStart, endDate: midTime }));
+        } else if (halfShiftType === 'second') {
+          setDialogState((prev: LeaveDialogState) => ({ ...prev, startDate: midTime, endDate: shiftEnd }));
+        } else {
+          setDialogState((prev: LeaveDialogState) => ({ ...prev, startDate: undefined, endDate: undefined }));
+        }
+      } else {
+        setDialogState((prev: LeaveDialogState) => ({ ...prev, startDate: new Date(selectedShift.startTime), endDate: new Date(selectedShift.endTime) }));
+      }
     }
-  }, [selectedShift?.id, isFullDay]);
-
+  }, [selectedShift?.id, isHalfShift, halfShiftType]);
+  
   // Validation logic
   const validateDates = () => {
     if (!startDate || !endDate || !selectedShift) {
@@ -90,23 +95,20 @@ export const LeaveRequestDialog = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedShift || !validation.valid || !startDate || !endDate) return;
+    if (isManager && !selectedEmployeeId) return;
 
     setIsSubmitting(true);
     try {
-      await onSubmit({
+      await handleCreate({
         type,
+        isHalfShift,
+        reason,
+        employeeUserId: isManager ? selectedEmployeeId : null,
+        shiftId: selectedShift.id,
         startDate: format(startDate, DateTimeFormat),
         endDate: format(endDate, DateTimeFormat),
-        isFullDay,
-        reason
       });
-      // Reset form
-      setSelectedShiftId('');
-      setReason('');
-      setType(LeaveType.PERSONAL);
-      setIsFullDay(true);
-      setStartDate(undefined);
-      setEndDate(undefined);
+      handleClose();
     } catch (error) {
       console.error(error);
     } finally {
@@ -115,26 +117,27 @@ export const LeaveRequestDialog = ({
   };
 
   const handleClose = () => {
-    setSelectedShiftId('');
-    setReason('');
-    setType(LeaveType.PERSONAL);
-    setIsFullDay(true);
-    setStartDate(undefined);
-    setEndDate(undefined);
-    onOpenChange(false);
+    setDialogState({ ...defaultLeaveDialogState });
+    setCreateDialogOpen(false);
   };
 
-  const handleFullDayToggle = (checked: boolean) => {
-    setIsFullDay(checked);
-    if (checked && selectedShift) {
-      // Reset to full shift times
-      setStartDate(new Date(selectedShift.startTime));
-      setEndDate(new Date(selectedShift.endTime));
+  const handleHalfShiftToggle = (checked: boolean) => {
+    setDialogState((prev) => ({
+      ...prev,
+      isHalfShift: checked,
+      halfShiftType: '',
+    }));
+    if (!checked && selectedShift) {
+      setDialogState((prev) => ({
+        ...prev,
+        startDate: new Date(selectedShift.startTime),
+        endDate: new Date(selectedShift.endTime),
+      }));
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={createDialogOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
@@ -142,17 +145,50 @@ export const LeaveRequestDialog = ({
             Request Leave
           </DialogTitle>
           <DialogDescription>
-            Submit a leave request for your approved shift.
+            {isManager 
+              ? "Create a leave request for an employee." 
+              : "Submit a leave request for your approved shift."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+          {/* Employee Selection (Manager only) */}
+          {isManager && (
+            <div className="space-y-3">
+              <Label htmlFor="employee" className="text-base font-semibold flex items-center gap-2">
+                <UserPlus className="h-4 w-4" />
+                Select Employee
+              </Label>
+              <Select value={selectedEmployeeId} onValueChange={v => setDialogState(prev => ({ ...prev, selectedEmployeeId: v }))}>
+                <SelectTrigger id="employee">
+                  <SelectValue placeholder="Choose an employee" />
+                </SelectTrigger>
+                <SelectContent>
+                  {employees.length === 0 ? (
+                    <div className="p-4 text-sm text-muted-foreground text-center">
+                      No employees available
+                    </div>
+                  ) : (
+                    employees.map((employee: any) => (
+                      <SelectItem key={employee.id} value={employee.id}>
+                        <div className="flex flex-col gap-1">
+                          <span className="font-medium">{employee.fullName || employee.email}</span>
+                          <span className="text-xs text-muted-foreground">{employee.email}</span>
+                        </div>
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Shift Selection */}
           <div className="space-y-3">
             <Label htmlFor="shift" className="text-base font-semibold flex items-center gap-2">
               <Clock className="h-4 w-4" />
               Select Shift
             </Label>
-            <Select value={selectedShiftId} onValueChange={setSelectedShiftId}>
+            <Select value={selectedShiftId} onValueChange={v => setDialogState(prev => ({ ...prev, selectedShiftId: v }))}>
               <SelectTrigger id="shift" className="h-auto">
                 <SelectValue placeholder="Choose a shift" />
               </SelectTrigger>
@@ -204,7 +240,7 @@ export const LeaveRequestDialog = ({
               <FileText className="h-4 w-4" />
               Leave Type
             </Label>
-            <Select value={type.toString()} onValueChange={(v) => setType(parseInt(v) as LeaveType)}>
+            <Select value={type.toString()} onValueChange={v => setDialogState(prev => ({ ...prev, type: parseInt(v) as LeaveType }))}>
               <SelectTrigger id="type">
                 <SelectValue placeholder="Select leave type" />
               </SelectTrigger>
@@ -217,73 +253,42 @@ export const LeaveRequestDialog = ({
             </Select>
           </div>
 
-          {/* Full Day Toggle */}
+          {/* Half Shift Toggle */}
           <div className="space-y-3">
             <Label className="text-base font-semibold">Leave Duration</Label>
             <div className="flex items-start space-x-3 p-4 rounded-lg border-2 bg-card hover:bg-accent/50 transition-colors">
               <input
                 type="checkbox"
-                id="isFullDay"
+                id="isHalfShift"
                 className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary cursor-pointer mt-0.5"
-                checked={isFullDay}
-                onChange={(e) => handleFullDayToggle(e.target.checked)}
+                checked={isHalfShift}
+                onChange={e => handleHalfShiftToggle(e.target.checked)}
               />
-              <Label htmlFor="isFullDay" className="cursor-pointer flex-1">
-                <span className="font-medium">Full Shift Leave</span>
+              <Label htmlFor="isHalfShift" className="cursor-pointer flex-1">
+                <span className="font-medium">Is Half Shift</span>
                 <span className="block text-sm text-muted-foreground font-normal mt-1">
-                  Uncheck to specify a partial leave period
+                  Check to request leave for half of your shift
                 </span>
               </Label>
             </div>
           </div>
 
-          {/* Partial Leave Date/Time Pickers */}
-          {!isFullDay && selectedShift && (
-            <div className="space-y-4 p-5 border-2 rounded-lg bg-gradient-to-br from-accent/40 to-accent/20">
-              <div className="flex items-center gap-2 font-semibold text-lg">
-                <Clock className="h-5 w-5 text-primary" />
-                Specify Partial Leave Period
-              </div>
-              
-              <div className="space-y-4">
-                {/* Leave Start Time */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label className="font-semibold text-base">Leave Start Time</Label>
-                    <span className="text-xs text-muted-foreground bg-background px-2 py-1 rounded">
-                      Shift: {format(new Date(selectedShift.startTime), 'h:mm a')}
-                    </span>
-                  </div>
-                  <DateTimePicker 
-                    date={startDate} 
-                    setDate={setStartDate}
-                    timeOnly={true}
-                  />
-                </div>
-
-                {/* Leave End Time */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label className="font-semibold text-base">Leave End Time</Label>
-                    <span className="text-xs text-muted-foreground bg-background px-2 py-1 rounded">
-                      Shift: {format(new Date(selectedShift.endTime), 'h:mm a')}
-                    </span>
-                  </div>
-                  <DateTimePicker 
-                    date={endDate} 
-                    setDate={setEndDate}
-                    timeOnly={true}
-                  />
-                </div>
-              </div>
-
-              {/* Helper text */}
-              <div className="flex items-start gap-2 p-3 bg-background/80 rounded-md border">
-                <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-muted-foreground">
-                  Select the exact start and end times for your partial leave. Both times must fall within your shift period on {format(new Date(selectedShift.startTime), 'MMMM dd, yyyy')}.
-                </p>
-              </div>
+          {/* Half Shift Type Select */}
+          {isHalfShift && selectedShift && (
+            <div className="space-y-3">
+              <Label htmlFor="halfShiftType" className="text-base font-semibold flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                Select Half Shift
+              </Label>
+              <Select value={halfShiftType} onValueChange={v => setDialogState(prev => ({ ...prev, halfShiftType: v as 'first' | 'second' }))}>
+                <SelectTrigger id="halfShiftType">
+                  <SelectValue placeholder="Choose half shift" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="first">1st Half</SelectItem>
+                  <SelectItem value="second">2nd Half</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           )}
 
@@ -297,7 +302,7 @@ export const LeaveRequestDialog = ({
                     {duration} hour{duration !== 1 ? 's' : ''}
                   </p>
                 </div>
-                {!isFullDay && selectedShift && (
+                {!isHalfShift && selectedShift && (
                   <div className="text-right">
                     <p className="text-sm text-muted-foreground mb-1">Percentage</p>
                     <p className="text-2xl font-bold">
@@ -325,7 +330,7 @@ export const LeaveRequestDialog = ({
             <Textarea
               id="reason"
               value={reason}
-              onChange={(e) => setReason(e.target.value)}
+              onChange={e => setDialogState(prev => ({ ...prev, reason: e.target.value }))}
               placeholder="Please provide a detailed reason for your leave request..."
               className="min-h-[120px] resize-none"
               required
@@ -341,7 +346,13 @@ export const LeaveRequestDialog = ({
             </Button>
             <Button 
               type="submit" 
-              disabled={isSubmitting || !selectedShiftId || !reason.trim() || !validation.valid}
+              disabled={
+                isSubmitting || 
+                !selectedShiftId || 
+                !reason.trim() || 
+                !validation.valid ||
+                (isManager && !selectedEmployeeId)
+              }
               className="min-w-[140px]"
             >
               {isSubmitting ? 'Submitting...' : 'Submit Request'}

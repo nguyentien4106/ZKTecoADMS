@@ -15,11 +15,7 @@ public class ShiftMappingConfig : IRegister
             .Map(dest => dest.EndTime, src => src.EndTime)
             .Map(dest => dest.Description, src => src.Description)
             .Map(dest => dest.Status, src => src.Status)
-            .Map(dest => dest.ApprovedByUserId, src => src.ApprovedByUserId)
-            .Map(dest => dest.ApprovedByUserName, src => src.ApprovedByUser != null 
-                ? $"{src.ApprovedByUser.FirstName} {src.ApprovedByUser.LastName}".Trim() 
-                : null)
-            .Map(dest => dest.ApprovedAt, src => src.ApprovedAt)
+            .Map(dest => dest.ApprovedAt, src => src.UpdatedAt)
             .Map(dest => dest.RejectionReason, src => src.RejectionReason)
             .Map(dest => dest.CreatedAt, src => src.CreatedAt)
             .Map(dest => dest.UpdatedAt, src => src.UpdatedAt)
