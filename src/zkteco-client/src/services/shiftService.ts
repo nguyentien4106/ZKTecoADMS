@@ -3,13 +3,14 @@ import type {
     CreateShiftRequest, 
     UpdateShiftRequest, 
     RejectShiftRequest,
-    Shift
+    Shift,
+    ShiftStatus
 } from '@/types/shift';
 
 export const shiftService = {
     // Employee endpoints
-    getMyShifts: async () => {
-        return await apiService.get<Shift[]>('/api/shifts/my-shifts');
+    getMyShifts: async (status?: ShiftStatus) => {
+        return await apiService.get<Shift[]>('/api/shifts/my-shifts' + (status ? `?status=${status}` : ''));
     },
 
     createShift: async (data: CreateShiftRequest) => {

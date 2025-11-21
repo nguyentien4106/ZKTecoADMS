@@ -14,6 +14,7 @@ using ZKTecoADMS.Api.Models.Responses;
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Shifts;
 using ZKTecoADMS.Application.Models;
+using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Api.Controllers;
 
@@ -24,10 +25,10 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
     // Employee endpoints - can manage their own shifts
     [HttpGet("my-shifts")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
-    public async Task<ActionResult<AppResponse<List<ShiftDto>>>> GetMyShifts()
+    public async Task<ActionResult<AppResponse<List<ShiftDto>>>> GetMyShifts([FromQuery]ShiftStatus? status)
     {
         // Assuming CurrentUserId links to an Employee
-        var query = new GetShiftsByEmployeeQuery(CurrentUserId);
+        var query = new GetShiftsByEmployeeQuery(CurrentUserId, status);
         var result = await mediator.Send(query);
         return Ok(result);
     }

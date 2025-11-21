@@ -35,12 +35,15 @@ export const ROLE_PERMISSIONS = {
     '/attendance',
     '/reports',
     '/settings',
+    '/leaves',
+    '/leave-management'
   ],
   [UserRole.EMPLOYEE]: [
     '/dashboard',
     '/attendance',
     '/settings',
     '/employees',
-    '/my-shifts'
+    '/my-shifts',
+    '/leaves'
   ]
 }

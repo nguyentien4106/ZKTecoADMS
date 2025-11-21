@@ -10,9 +10,9 @@ public class GetShiftsByEmployeeHandler(IRepository<Shift> repository)
     public async Task<AppResponse<List<ShiftDto>>> Handle(GetShiftsByEmployeeQuery request, CancellationToken cancellationToken)
     {
         var shifts = await repository.GetAllAsync(
-            filter: s => s.ApplicationUserId == request.ApplicationUserId,
-            orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: new[] { nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser) },
+            filter: s => s.ApplicationUserId == request.ApplicationUserId && (!request.Status.HasValue || s.Status == request.Status.Value),
+            orderBy: query => request.Status.HasValue ? query.OrderBy(s => s.StartTime) : query.OrderByDescending(s => s.CreatedAt),
+            includeProperties: [nameof(Shift.ApplicationUser), nameof(Shift.ApprovedByUser)],
             cancellationToken: cancellationToken);
 
 

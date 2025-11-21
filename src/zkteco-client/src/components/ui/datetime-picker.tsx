@@ -17,6 +17,7 @@ interface DateTimePickerProps {
   minDate?: Date;
   maxDate?: Date;
   disabled?: boolean;
+  timeOnly?: boolean; // Only show time picker, not date
 }
 
 export function DateTimePicker({
@@ -25,6 +26,7 @@ export function DateTimePicker({
   minDate,
   maxDate,
   disabled = false,
+  timeOnly = false,
 }: DateTimePickerProps) {
   const [selectedDateTime, setSelectedDateTime] = React.useState<Date | undefined>(date);
 
@@ -67,43 +69,45 @@ export function DateTimePicker({
 
   return (
     <div className="flex flex-col sm:flex-row items-start gap-2 sm:gap-3">
-      <div className="flex-1 w-full">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "w-full justify-start text-left font-normal h-11",
-                !selectedDateTime && "text-muted-foreground"
-              )}
-              disabled={disabled}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDateTime ? (
-                format(selectedDateTime, "MMMM do, yyyy")
-              ) : (
-                <span>Select date</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={selectedDateTime}
-              style={{ minWidth: '250px' }}
-              onSelect={handleDateSelect}
-              disabled={(date) => {
-                if (minDate && date < minDate) return true;
-                if (maxDate && date > maxDate) return true;
-                return false;
-              }}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
+      {!timeOnly && (
+        <div className="flex-1 w-full">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal h-11",
+                  !selectedDateTime && "text-muted-foreground"
+                )}
+                disabled={disabled}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDateTime ? (
+                  format(selectedDateTime, "MMMM do, yyyy")
+                ) : (
+                  <span>Select date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDateTime}
+                style={{ minWidth: '250px' }}
+                onSelect={handleDateSelect}
+                disabled={(date) => {
+                  if (minDate && date < minDate) return true;
+                  if (maxDate && date > maxDate) return true;
+                  return false;
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
 
-      <div className="flex-1 w-full">
+      <div className={cn("flex-1 w-full", timeOnly && "max-w-full")}>
         <div className="relative cursor-pointer" onClick={(e) => {
           const input = e.currentTarget.querySelector('input');
           if (input && !disabled) {

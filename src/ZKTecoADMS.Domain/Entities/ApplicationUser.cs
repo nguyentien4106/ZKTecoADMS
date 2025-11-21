@@ -22,5 +22,9 @@ public class ApplicationUser : IdentityUser<Guid>
     public virtual ICollection<Shift> RequestedShifts { get; set; } = [];
     public virtual ICollection<Shift> ApprovedShifts { get; set; } = [];
     
+    // Leave relationships
+    public virtual ICollection<Leave> RequestedLeaves { get; set; } = [];
+    public virtual ICollection<Leave> ApprovedLeaves { get; set; } = [];
+    
     public virtual ICollection<ApplicationUser> ManagedEmployees { get; set; } = [];
 }

@@ -29,6 +29,7 @@ const navItems = [
   { to: '/attendance', icon: Clock, label: 'Attendance' },
   { to: '/my-shifts', icon: Calendar, label: 'My Shifts' },
   { to: '/shifts', icon: CalendarCheck, label: 'Shifts' },
+  { to: '/leaves', icon: CalendarCheck, label: 'Leaves' },
   { to: '/reports', icon: FileText, label: 'Reports' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
@@ -55,14 +56,21 @@ export const Sidebar = () => {
       {/* Sidebar */}
       <aside 
         className={cn(
-          'fixed md:static inset-y-0 left-0 z-50 w-64 bg-card border-r border-border',
-          'transform transition-transform duration-300 ease-in-out',
-          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-          !isOpen && 'md:w-0 md:border-0 md:overflow-hidden'
+          'fixed md:static inset-y-0 left-0 z-50 bg-card border-r border-border',
+          'transform transition-all duration-300 ease-in-out',
+          isOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0 md:w-16',
         )}
       >
-        <div className="flex items-center justify-between h-16 px-6 border-b border-border">
-          <h1 className="text-xl font-bold text-primary">ZKTeco Manager</h1>
+        <div className={cn(
+          "flex items-center h-16 border-b border-border transition-all duration-300",
+          isOpen ? "justify-between px-6" : "md:justify-center px-6 md:px-0"
+        )}>
+          <h1 className={cn(
+            "text-xl font-bold text-primary transition-opacity duration-300",
+            !isOpen && "md:hidden"
+          )}>
+            ZKTeco Manager
+          </h1>
           <Button
             variant="ghost"
             size="icon"
@@ -72,7 +80,10 @@ export const Sidebar = () => {
             <X className="w-5 h-5" />
           </Button>
         </div>
-        <nav className="p-4 space-y-1">
+        <nav className={cn(
+          "p-4 space-y-1 transition-all duration-300",
+          !isOpen && "md:p-2"
+        )}>
           {allowedNavItems.map((item) => (
             <NavLink
               key={item.to}
@@ -87,14 +98,21 @@ export const Sidebar = () => {
                 cn(
                   'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
                   'hover:bg-accent hover:text-accent-foreground',
+                  !isOpen && 'md:justify-center md:px-0 md:w-12 md:h-12',
                   isActive
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground'
                 )
               }
+              title={!isOpen ? item.label : undefined}
             >
-              <item.icon className="w-5 h-5" />
-              <span className="font-medium">{item.label}</span>
+              <item.icon className="w-5 h-5 flex-shrink-0" />
+              <span className={cn(
+                "font-medium transition-opacity duration-300",
+                !isOpen && "md:hidden"
+              )}>
+                {item.label}
+              </span>
             </NavLink>
           ))}
         </nav>

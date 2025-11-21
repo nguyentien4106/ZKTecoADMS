@@ -4,13 +4,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { shiftService } from '@/services/shiftService';
 import { toast } from 'sonner';
-import { CreateShiftRequest, UpdateShiftRequest, RejectShiftRequest } from '@/types/shift';
+import { CreateShiftRequest, UpdateShiftRequest, RejectShiftRequest, ShiftStatus } from '@/types/shift';
 
 // Query hooks
-export const useMyShifts = () => {
+export const useMyShifts = (status?: ShiftStatus) => {
   return useQuery({
-    queryKey: ['shifts', 'my-shifts'],
-    queryFn: () => shiftService.getMyShifts(),
+    queryKey: ['shifts', 'my-shifts', status],
+    queryFn: () => shiftService.getMyShifts(status),
   });
 };
 
