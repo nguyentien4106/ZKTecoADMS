@@ -23,6 +23,7 @@ import { ShiftManagement } from './pages/ShiftManagement'
 import { Profile } from './pages/Profile'
 import { UserRole } from './constants/roles'
 import EmployeeDashboardDemo from './pages/EmployeeDashboardDemo'
+import { MonthlyAttendanceSummary } from './pages/MonthlyAttendanceSummary'
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         
         {/* Employee can only access attendance (their own) */}
         <Route path="attendance" element={<Attendance />} />
+        <Route path="attendance-summary" element={<MonthlyAttendanceSummary />} />
         
         {/* Employee can access their shifts */}
         <Route

@@ -105,7 +105,7 @@ public class DeviceService(
 
     public async Task<IEnumerable<Device>> GetAllDevicesByEmployeeAsync(Guid employeeId)
     {
-        return await context.Devices.Where(d => d.ApplicationUserId == employeeId).ToListAsync();
+        return await context.Devices.Where(d => d.ManagerId == employeeId).ToListAsync();
     }
 
     public Task<IEnumerable<Device>> GetAllDevicesAsync()

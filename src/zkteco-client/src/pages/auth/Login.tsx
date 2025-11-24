@@ -16,7 +16,7 @@ export const Login = () => {
   const location = useLocation();
   const { login, isAuthenticated } = useAuth();
   
-  const [email, setEmail] = useState('admin@gmail.com');
+  const [email, setEmail] = useState('manager');
   const [password, setPassword] = useState('Ti100600@');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,8 +64,7 @@ export const Login = () => {
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
-                  type="email"
-                  placeholder="admin@zkteco.com"
+                  placeholder="manager"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"

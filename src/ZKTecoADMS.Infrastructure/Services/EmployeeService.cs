@@ -1,5 +1,7 @@
 using System.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Domain.Entities;
@@ -13,6 +15,8 @@ public class EmployeeService(
     ZKTecoDbContext context,
     IDeviceService deviceService,
     IRepository<Device> deviceRepository,
+    UserManager<ApplicationUser> userManager,
+    IConfiguration configuration,
     ILogger<EmployeeService> logger) : IEmployeeService
 {
     public async Task<Employee?> GetEmployeeByIdAsync(Guid id)
@@ -52,16 +56,61 @@ public class EmployeeService(
             .Where(u => u.DeviceId == deviceId)
             .Select(u => u.Pin)
             .ToListAsync();
+            
+        var device = await deviceRepository.GetSingleAsync(d => d.Id == deviceId);
         
+        if(device == null)
+        {
+            throw new ArgumentException("Device not found", nameof(deviceId));
+        }
+
         var validEmployees = newEmployees.Where(u => !employeePins.Contains(u.Pin)).ToList();
         if (validEmployees.Count != 0)
         {
             await context.Employees.AddRangeAsync(validEmployees);
             await context.SaveChangesAsync();
         }
+        await CreateEmployeeAccounts(validEmployees, device);
 
         logger.LogInformation("Created {Count} employees", validEmployees.Count);
         return validEmployees;
+    }
+
+    private async Task CreateEmployeeAccounts(IEnumerable<Employee> validEmployees, Device device)
+    {
+        foreach (var employee in validEmployees)
+        {
+            var name = $"{employee.Name}{employee.Pin}".Replace(" ", "").ToLower();
+            var user = new ApplicationUser
+            {
+                UserName = name,
+                Email = $"{name}@gmail.com",
+                FirstName = employee.Name,
+                LastName = "Defaiult",
+                EmailConfirmed = true,
+                PhoneNumber = "",
+                PhoneNumberConfirmed = true,
+                Employee = employee,
+                ManagerId = device.ManagerId,
+                CreatedBy = "System",
+                Created = DateTime.Now
+            };
+
+            var result = await userManager.CreateAsync(user, configuration["DefaultEmployeeAccountPassword"] ?? "Tien100600@");
+
+            if (result.Succeeded)
+            {
+                logger.LogInformation("Created application user for employee: {EmployeeName} (PIN: {PIN})", employee.Name, employee.Pin);
+                await userManager.AddToRoleAsync(user, "Employee");
+            }
+            else
+            {
+                logger.LogError("Failed to create application user for employee: {EmployeeName} (PIN: {PIN}). Errors: {Errors}",
+                    employee.Name,
+                    employee.Pin,
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+            }   
+        }
     }
 
     public async Task UpdateEmployeeAsync(Employee employee)

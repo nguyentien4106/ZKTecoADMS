@@ -89,7 +89,7 @@ public class ZKTecoDbInitializer(
 
     private async Task SeedUserAsync(Roles role)
     {
-        var userEmail = role.ToString() + "@gmail.com";
+        var userEmail = role.ToString().ToLower() + "@gmail.com";
 
         if (await userManager.FindByEmailAsync(userEmail) != null)
         {
@@ -102,7 +102,7 @@ public class ZKTecoDbInitializer(
             UserName = userEmail.Split("@")[0],
             Email = userEmail,
             FirstName = "System",
-            LastName = "" + role.ToString().ToUpperInvariant(),
+            LastName = "" + role.ToString(),
             EmailConfirmed = true,
             PhoneNumber = "+1234567890",
             PhoneNumberConfirmed = true,

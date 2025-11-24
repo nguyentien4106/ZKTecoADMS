@@ -16,5 +16,10 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
         builder.HasOne(d => d.DeviceInfo)
             .WithOne(di => di.Device)
             .HasForeignKey<Device>(d => d.DeviceInfoId);
+
+        builder.HasOne(d => d.Manager)
+            .WithMany(m => m.Devices)
+            .HasForeignKey(d => d.ManagerId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -29,12 +29,12 @@ public class Device : AuditableEntity<Guid>
     [MaxLength(20)]
     public string DeviceStatus { get; set; } = "Offline";
 
-    public Guid ApplicationUserId { get; set; }
+    public Guid ManagerId { get; set; }
     public Guid DeviceInfoId { get; set; }
 
     // Navigation Properties
 
-    public virtual ApplicationUser ApplicationUser { get; set; } = null!;
+    public virtual ApplicationUser Manager { get; set; } = null!;
     public virtual DeviceInfo DeviceInfo { get; set; } = null!;
     public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
     public virtual ICollection<Attendance> AttendanceLogs { get; set; } = new List<Attendance>();

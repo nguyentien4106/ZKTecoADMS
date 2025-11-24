@@ -58,6 +58,9 @@ export const useCreateDevice = () => {
       );
       
       toast.success('Device created successfully');
+    },
+    onError: (err) => {
+      toast.error('Failed to create device', { description: err.message});
     }
   });
 };
@@ -70,12 +73,9 @@ export const useDeleteDevice = () => {
     onSuccess: (_data, deletedId) => {
       queryClient.setQueryData(
         ['devices'],
-        (oldData: PaginatedResponse<Device> | undefined) => {
-          if (!oldData) return { items: [] };
-          return {
-            ...oldData,
-            items: oldData.items.filter(device => device.id !== deletedId)
-          };
+        (oldData: Device[] | undefined) => {
+          if (!oldData) return [];
+          return oldData.filter(device => device.id !== deletedId);
         }
       );
       

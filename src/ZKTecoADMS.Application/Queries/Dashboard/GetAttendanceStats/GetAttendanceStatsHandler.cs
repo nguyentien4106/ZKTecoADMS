@@ -28,7 +28,7 @@ public class GetAttendanceStatsHandler(
         var attendances = await attendanceRepository.GetAllAsync(cancellationToken: cancellationToken);
 
         var workShifts = shifts
-            .Where(s => s.ApplicationUserId == user.Id)
+            .Where(s => s.EmployeeUserId == user.Id)
             .Where(s => s.Status == ShiftStatus.Approved)
             .Where(s => s.StartTime.Date >= startDate && s.StartTime.Date <= endDate)
             .OrderBy(s => s.StartTime)

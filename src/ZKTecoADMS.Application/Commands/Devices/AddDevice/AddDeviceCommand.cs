@@ -8,5 +8,5 @@ public record AddDeviceCommand : ICommand<AppResponse<DeviceDto>>
     public string DeviceName { get; set; }
     public string? Location { get; set; }
     public string? Description { get; set; }
-    public Guid ApplicationUserId { get; set; }
+    public Guid ManagerId { get; set; }
 }

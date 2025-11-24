@@ -5,7 +5,7 @@ namespace ZKTecoADMS.Application.Commands.Employees.UpdateEmployee;
 public record UpdateEmployeeCommand(
     Guid EmployeeId,
     string PIN, 
-    string FullName, 
+    string Name, 
     string? CardNumber, 
     string? Password, 
     int Privilege, 

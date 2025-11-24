@@ -24,7 +24,7 @@ public class CreateShiftHandler(IRepository<Shift> shiftRepository)
 
             // Check for overlapping shifts using optimized repository method
             var overlappingShift = await shiftRepository.GetSingleAsync(
-                s => s.ApplicationUserId == request.ApplicationUserId &&
+                s => s.EmployeeUserId == request.EmployeeUserId &&
                     s.Status != ShiftStatus.Rejected &&
                     s.Status != ShiftStatus.Cancelled &&
                     (
@@ -47,7 +47,7 @@ public class CreateShiftHandler(IRepository<Shift> shiftRepository)
 
             var shift = new Shift
             {
-                ApplicationUserId = request.ApplicationUserId,
+                EmployeeUserId = request.EmployeeUserId,
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
                 Description = request.IsManager ? "Assigned by manager. " + request.Description : request.Description,
@@ -59,7 +59,7 @@ public class CreateShiftHandler(IRepository<Shift> shiftRepository)
             var shiftDto = new ShiftDto
             {
                 Id = createdShift.Id,
-                ApplicationUserId = createdShift.ApplicationUserId,
+                EmployeeUserId = createdShift.EmployeeUserId,
                 StartTime = createdShift.StartTime,
                 EndTime = createdShift.EndTime,
                 Description = createdShift.Description,

@@ -13,7 +13,8 @@ import {
   X,
   Terminal,
   Calendar,
-  CalendarCheck
+  CalendarCheck,
+  CalendarClock
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from '@/contexts/SidebarContext'
@@ -28,6 +29,7 @@ const navItems = [
   { to: '/device-commands', icon: Terminal, label: 'Commands' },
   { to: '/employees', icon: Users, label: 'Employees' },
   { to: '/attendance', icon: Clock, label: 'Attendance' },
+  { to: '/attendance-summary', icon: CalendarClock, label: 'Attendance Summary' },
   { to: '/my-shifts', icon: Calendar, label: 'My Shifts' },
   { to: '/shifts', icon: CalendarCheck, label: 'Shifts' },
   { to: '/leaves', icon: CalendarCheck, label: 'Leaves' },

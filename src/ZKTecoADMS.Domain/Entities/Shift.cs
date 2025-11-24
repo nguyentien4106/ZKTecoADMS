@@ -7,7 +7,7 @@ namespace ZKTecoADMS.Domain.Entities;
 public class Shift : AuditableEntity<Guid>
 {
     [Required]
-    public Guid ApplicationUserId { get; set; }
+    public Guid EmployeeUserId { get; set; }
     
     [Required]
     public DateTime StartTime { get; set; }
@@ -26,6 +26,8 @@ public class Shift : AuditableEntity<Guid>
     
     // Navigation Properties
     public virtual ApplicationUser ApplicationUser { get; set; } = null!;
+
+    public virtual Employee Employee { get; set; } = null!;
 
     public virtual Leave? Leave { get; set; }
 }

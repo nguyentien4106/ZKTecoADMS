@@ -32,5 +32,6 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             .HasForeignKey(e => e.ManagerId)
             .OnDelete(DeleteBehavior.SetNull)
             .IsRequired(false);
+
     }
 }

@@ -15,8 +15,8 @@ using ZKTecoADMS.Application.Constants;
 namespace ZKTecoADMS.API.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
+[Authorize(Policy = PolicyNames.AtLeastManager)]
 public class DevicesController(
     IMediator bus
     ) : AuthenticatedControllerBase
@@ -47,16 +47,16 @@ public class DevicesController(
     }
 
     [HttpPost]
-    public async Task<ActionResult<DeviceDto>> AddDevice([FromBody] AddDeviceRequest request)
+    public async Task<ActionResult<AppResponse<DeviceDto>>> AddDevice([FromBody] AddDeviceRequest request)
     {
         var cmd = request.Adapt<AddDeviceCommand>();
-        cmd.ApplicationUserId = CurrentUserId;
+        cmd.ManagerId = CurrentUserId;
         
         return Ok(await bus.Send(cmd));
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteDevice(Guid id)
+    public async Task<ActionResult<AppResponse<Guid>>> DeleteDevice(Guid id)
     {
         var cmd = new DeleteDeviceCommand(id);
         return Ok(await bus.Send(cmd));

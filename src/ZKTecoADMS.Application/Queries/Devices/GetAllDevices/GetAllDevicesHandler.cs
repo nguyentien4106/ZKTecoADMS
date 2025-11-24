@@ -22,7 +22,7 @@ public class GetAllDevicesHandler(IRepository<Device> deviceRepository) : IQuery
         {
             // Filter by userId for non-admin users
             results = await deviceRepository.GetAllAsync(
-                filter: d => d.ApplicationUserId == request.UserId,
+                filter: d => d.ManagerId == request.UserId,
                 cancellationToken: cancellationToken
             );
         }

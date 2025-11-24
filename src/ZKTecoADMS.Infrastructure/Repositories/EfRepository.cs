@@ -16,6 +16,8 @@ public class EfRepository<TEntity>(
 {
     protected readonly DbSet<TEntity> dbSet = context.Set<TEntity>();
 
+    public DbSet<TEntity> DbSet => dbSet;
+
     public override async Task<IEnumerable<TEntity>> GetAllAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
@@ -352,5 +354,32 @@ public class EfRepository<TEntity>(
         }
     }
 
+    public override async Task<TEntity?> GetLastOrDefaultAsync(Expression<Func<TEntity, object>> keySelector,Expression<Func<TEntity, bool>>? filter = null, string[]? includeProperties = null, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            IQueryable<TEntity> query = dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            return await query.OrderByDescending(keySelector).FirstOrDefaultAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving last or default entity of type {EntityType}", typeof(TEntity).Name);
+            throw;
+        }
+    }
+
 }
- 

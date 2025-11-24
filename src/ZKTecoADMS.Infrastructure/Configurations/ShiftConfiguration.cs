@@ -10,7 +10,7 @@ public class ShiftConfiguration : IEntityTypeConfiguration<Shift>
     {
         builder.HasKey(s => s.Id);
         
-        builder.HasIndex(s => s.ApplicationUserId);
+        builder.HasIndex(s => s.EmployeeUserId);
         
         builder.Property(s => s.CreatedAt).HasDefaultValueSql("NOW()");
         builder.Property(s => s.UpdatedAt).HasDefaultValueSql("NOW()");
@@ -18,7 +18,7 @@ public class ShiftConfiguration : IEntityTypeConfiguration<Shift>
         // Relationship: ApplicationUser -> RequestedShifts
         builder.HasOne(s => s.ApplicationUser)
             .WithMany(u => u.RequestedShifts)
-            .HasForeignKey(s => s.ApplicationUserId)
+            .HasForeignKey(s => s.EmployeeUserId)
             .OnDelete(DeleteBehavior.Cascade);
         
     }

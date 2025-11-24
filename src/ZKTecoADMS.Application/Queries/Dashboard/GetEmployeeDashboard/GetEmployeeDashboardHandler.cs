@@ -40,7 +40,7 @@ public class GetEmployeeDashboardHandler(
         var shifts = await shiftRepository.GetAllAsync(cancellationToken: cancellationToken);
         
         var todayShift = shifts
-            .Where(s => s.ApplicationUserId == userId)
+            .Where(s => s.EmployeeUserId == userId)
             .Where(s => s.StartTime.Date == today)
             .Where(s => s.Status == ShiftStatus.Approved)
             .OrderBy(s => s.StartTime)
@@ -66,7 +66,7 @@ public class GetEmployeeDashboardHandler(
         var shifts = await shiftRepository.GetAllAsync(cancellationToken: cancellationToken);
         
         var nextShift = shifts
-            .Where(s => s.ApplicationUserId == userId)
+            .Where(s => s.EmployeeUserId == userId)
             .Where(s => s.StartTime > now)
             .Where(s => s.Status == ShiftStatus.Approved)
             .OrderBy(s => s.StartTime)
@@ -186,7 +186,7 @@ public class GetEmployeeDashboardHandler(
 
         // Get approved shifts in the period
         var workShifts = shifts
-            .Where(s => s.ApplicationUserId == user.Id)
+            .Where(s => s.EmployeeUserId == user.Id)
             .Where(s => s.Status == ShiftStatus.Approved)
             .Where(s => s.StartTime.Date >= startDate && s.StartTime.Date <= endDate)
             .OrderBy(s => s.StartTime)

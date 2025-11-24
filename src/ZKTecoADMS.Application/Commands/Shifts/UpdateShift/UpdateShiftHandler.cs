@@ -42,7 +42,7 @@ public class UpdateShiftHandler(IRepository<Shift> repository)
             var shiftDto = new ShiftDto
             {
                 Id = shift.Id,
-                ApplicationUserId = shift.ApplicationUserId,
+                EmployeeUserId = shift.EmployeeUserId,
                 StartTime = shift.StartTime,
                 EndTime = shift.EndTime,
                 Description = shift.Description,

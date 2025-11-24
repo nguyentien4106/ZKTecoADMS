@@ -22,6 +22,9 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .OnDelete(DeleteBehavior.Cascade);
         
         // One-to-One relationship configured in ApplicationUserConfiguration
-
+        builder.HasOne(e => e.ApplicationUser)
+            .WithOne(u => u.Employee)
+            .HasForeignKey<Employee>(u => u.ApplicationUserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

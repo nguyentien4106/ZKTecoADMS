@@ -24,11 +24,11 @@ public class LoginCommandHandler(
         var user = await userManager.Users
             .Include(u => u.Employee)
             .Include(u => u.Manager)
-            .SingleOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+            .SingleOrDefaultAsync(u => u.UserName == request.UserName, cancellationToken);
             
         if (user == null)
         {
-            return AppResponse<AuthenticateResponse>.Error($"{request.Email} is not found.");
+            return AppResponse<AuthenticateResponse>.Error($"{request.UserName} is not found.");
         }
 
         // Check if the user's email is confirmed (if required)

@@ -11,7 +11,7 @@ public class GetDevicesByUserHandler(IRepository<Device> deviceRepository) : IQu
     public async Task<AppResponse<IEnumerable<DeviceDto>>> Handle(GetDevicesByUserQuery request, CancellationToken cancellationToken)
     {
         var devices = await deviceRepository
-            .GetAllAsync(d => d.ApplicationUserId == request.UserId, cancellationToken: cancellationToken);
+            .GetAllAsync(d => d.ManagerId == request.UserId, cancellationToken: cancellationToken);
 
         return AppResponse<IEnumerable<DeviceDto>>.Success(devices.Adapt<IEnumerable<DeviceDto>>());
     }

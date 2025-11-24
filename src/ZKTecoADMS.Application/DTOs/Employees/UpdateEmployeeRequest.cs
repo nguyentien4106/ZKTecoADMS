@@ -2,7 +2,7 @@ namespace ZKTecoADMS.Application.DTOs.Employees;
 
 public record UpdateEmployeeRequest(
     string PIN, 
-    string FullName,
+    string Name,
     string? CardNumber,
     string? Password,
     int Privilege,

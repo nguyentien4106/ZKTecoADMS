@@ -31,3 +31,16 @@ export const useAttendanceByUser = (
     enabled: !!userId,
   });
 };
+
+export const useMonthlyAttendanceSummary = (
+  employeeIds: string[],
+  year: number,
+  month: number,
+  enabled: boolean = true
+) => {
+  return useQuery({
+    queryKey: ['attendance', 'monthly-summary', employeeIds, year, month],
+    queryFn: () => attendanceService.getMonthlySummary(employeeIds, year, month),
+    enabled: enabled && employeeIds.length > 0 && !!year && !!month,
+  });
+};

@@ -12,8 +12,8 @@ using ZKTecoADMS.Infrastructure;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     [DbContext(typeof(ZKTecoDbContext))]
-    [Migration("20251121183441_inital")]
-    partial class inital
+    [Migration("20251124172332_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -300,9 +300,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ApplicationUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
@@ -354,6 +351,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<Guid>("ManagerId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("SerialNumber")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -369,7 +369,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("ManagerId");
 
                     b.HasIndex("SerialNumber")
                         .IsUnique();
@@ -745,10 +745,13 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<Guid>("EmployeeUserId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsFullDay")
+                    b.Property<bool>("IsHalfShift")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
@@ -771,6 +774,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.Property<Guid>("ShiftId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -806,10 +812,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ApplicationUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ApplicationUserId1")
+                    b.Property<Guid?>("ApplicationUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -829,6 +832,12 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EmployeeUserId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("timestamp without time zone");
@@ -864,7 +873,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("ApplicationUserId1");
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EmployeeUserId");
 
                     b.ToTable("Shifts");
                 });
@@ -1119,13 +1130,13 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Device", b =>
                 {
-                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "ApplicationUser")
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "Manager")
                         .WithMany("Devices")
-                        .HasForeignKey("ApplicationUserId")
+                        .HasForeignKey("ManagerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
+                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceCommand", b =>
@@ -1166,7 +1177,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "ApplicationUser")
                         .WithOne("Employee")
                         .HasForeignKey("ZKTecoADMS.Domain.Entities.Employee", "ApplicationUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ZKTecoADMS.Domain.Entities.Device", "Device")
                         .WithMany("Employees")
@@ -1234,17 +1245,25 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Shift", b =>
                 {
-                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany("RequestedShifts")
-                        .HasForeignKey("ApplicationUserId")
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", null)
+                        .WithMany("ApprovedShifts")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("ZKTecoADMS.Domain.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", null)
-                        .WithMany("ApprovedShifts")
-                        .HasForeignKey("ApplicationUserId1");
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("RequestedShifts")
+                        .HasForeignKey("EmployeeUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.ShiftTemplate", b =>

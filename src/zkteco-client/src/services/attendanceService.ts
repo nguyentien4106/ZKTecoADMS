@@ -2,7 +2,7 @@
 // ==========================================
 // src/services/attendanceService.ts
 // ==========================================
-import { AttendancesFilterParams } from '@/types/attendance';
+import { AttendancesFilterParams, MonthlyAttendanceSummary } from '@/types/attendance';
 import { apiService } from './api';
 import type { AttendanceLog, PaginatedResponse, PaginationRequest } from '@/types';
 
@@ -25,6 +25,13 @@ export const attendanceService = {
   getByUser: (userId: number, startDate?: string, endDate?: string) => {
     const params = { startDate, endDate };
     return apiService.get<AttendanceLog[]>(`/api/attendances/users/${userId}`, params);
+  },
+
+  getMonthlySummary: (employeeIds: string[], year: number, month: number) => {
+    return apiService.post<MonthlyAttendanceSummary>(
+      `/api/attendances/monthly-summary?year=${year}&month=${month}`,
+      { employeeIds }
+    );
   }
 
 };

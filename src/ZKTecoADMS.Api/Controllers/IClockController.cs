@@ -19,9 +19,9 @@ public class ClockController(
     /// </summary>
     [HttpGet("cdata")]
     public async Task<IActionResult> CData([FromQuery] string SN, [FromQuery] string? options, 
-        [FromQuery] string? pushver, [FromQuery] string? language)
+        [FromQuery] string? pushver, [FromQuery] string? language, [FromQuery] string? type)
     {
-        var query = new CDataGetQuery(SN, options, pushver, language);
+        var query = new CDataGetQuery(SN, options, pushver, language, type);
         var response = await bus.Send(query);
         
         return Content(response, "text/plain");

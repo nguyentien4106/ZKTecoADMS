@@ -1,5 +1,6 @@
 using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Queries.Attendances.GetAttendancesByDevices;
+using ZKTecoADMS.Application.Queries.Attendances.GetMonthlyAttendanceSummary;
 using ZKTecoADMS.Application.DTOs.Attendances;
 using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Application.Models;
@@ -36,4 +37,19 @@ public class AttendancesController(
         return Ok(logs);
     }
 
+    [HttpPost("monthly-summary")]
+    public async Task<ActionResult<AppResponse<MonthlyAttendanceSummaryDto>>> GetMonthlyAttendanceSummary(
+        [FromQuery] int year,
+        [FromQuery] int month,
+        [FromBody] GetMonthlyAttendanceSummaryRequest request)
+    {
+        var query = new GetMonthlyAttendanceSummaryQuery(request.EmployeeIds, year, month);
+        return Ok(await bus.Send(query));
+    }
+
+}
+
+public class GetMonthlyAttendanceSummaryRequest
+{
+    public List<Guid> EmployeeIds { get; set; } = [];
 }

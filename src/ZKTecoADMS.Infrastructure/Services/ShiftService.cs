@@ -24,7 +24,7 @@ public class ShiftService(
     public async Task<List<Shift>> GetShiftsByApplicationUserIdAsync(Guid applicationUserId, CancellationToken cancellationToken = default)
     {
         var shifts = await repository.GetAllAsync(
-            filter: s => s.ApplicationUserId == applicationUserId,
+            filter: s => s.EmployeeUserId == applicationUserId,
             orderBy: query => query.OrderByDescending(s => s.CreatedAt),
             includeProperties: new[] { nameof(Shift.ApplicationUser) },
             cancellationToken: cancellationToken);
@@ -91,7 +91,7 @@ public class ShiftService(
         
         logger.LogInformation(
             "Created shift for user {UserId} from {StartTime} to {EndTime}",
-            shift.ApplicationUserId,
+            shift.EmployeeUserId,
             shift.StartTime,
             shift.EndTime);
 

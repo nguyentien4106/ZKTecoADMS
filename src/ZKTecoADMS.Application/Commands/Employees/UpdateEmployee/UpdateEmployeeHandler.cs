@@ -17,7 +17,7 @@ public class UpdateEmployeeHandler(
             return  AppResponse<EmployeeDto>.Fail("Employee not found");
         }
         employee.Pin = request.PIN;
-        employee.Name = request.FullName;
+        employee.Name = request.Name;
         employee.CardNumber = request.CardNumber;
         employee.Password = request.Password;
         employee.Privilege = request.Privilege;

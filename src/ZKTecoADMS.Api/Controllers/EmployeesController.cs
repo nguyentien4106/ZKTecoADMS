@@ -41,7 +41,7 @@ public class EmployeesController(IMediator bus) : AuthenticatedControllerBase
         var cmd = new UpdateEmployeeCommand(
             employeeId,
             request.PIN,
-            request.FullName,
+            request.Name,
             request.CardNumber,
             request.Password,
             request.Privilege,

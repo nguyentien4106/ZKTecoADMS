@@ -45,7 +45,7 @@ public class GetManagerDashboardHandler(
 
             // Get all shifts for today for managed employees  
             var todayShifts = (await shiftRepository.GetAllAsync(
-                filter: s => managedUserIds.Contains(s.ApplicationUserId) &&
+                filter: s => managedUserIds.Contains(s.EmployeeUserId) &&
                            s.StartTime >= startOfDay &&
                            s.StartTime <= endOfDay &&
                            s.Status == ShiftStatus.Approved,
@@ -59,7 +59,7 @@ public class GetManagerDashboardHandler(
                            l.EndDate >= startOfDay,
                 includeProperties: new[] { "Shift", "Shift.ApplicationUser", "Shift.ApplicationUser.Employee" },
                 cancellationToken: cancellationToken))
-                .Where(l => managedUserIds.Contains(l.Shift.ApplicationUserId))
+                .Where(l => managedUserIds.Contains(l.Shift.EmployeeUserId))
                 .ToList();
 
             // Get all employees for the managed users to map attendance
@@ -123,15 +123,15 @@ public class GetManagerDashboardHandler(
 
             // Build late employees list (checked in but late, excluding those on leave)
             var lateEmployees = new List<LateEmployeeDto>();
-            foreach (var shift in todayShifts.Where(s => !onLeaveUserIds.Contains(s.ApplicationUserId)))
+            foreach (var shift in todayShifts.Where(s => !onLeaveUserIds.Contains(s.EmployeeUserId)))
             {
-                if (employeeCheckIns.TryGetValue(shift.ApplicationUserId, out var checkIn))
+                if (employeeCheckIns.TryGetValue(shift.EmployeeUserId, out var checkIn))
                 {
                     if (checkIn.AttendanceTime > shift.StartTime)
                     {
                         lateEmployees.Add(new LateEmployeeDto
                         {
-                            EmployeeUserId = shift.ApplicationUserId,
+                            EmployeeUserId = shift.EmployeeUserId,
                 FullName = GetFullName(shift.ApplicationUser),
                             Email = shift.ApplicationUser.Email ?? "",
                             ShiftId = shift.Id,
@@ -147,11 +147,11 @@ public class GetManagerDashboardHandler(
             // Build absent employees list (no check-in and not on leave)
             var checkedInUserIds = employeeCheckIns.Keys.ToHashSet();
             var absentEmployees = todayShifts
-                .Where(s => !onLeaveUserIds.Contains(s.ApplicationUserId) &&
-                           !checkedInUserIds.Contains(s.ApplicationUserId))
+                .Where(s => !onLeaveUserIds.Contains(s.EmployeeUserId) &&
+                           !checkedInUserIds.Contains(s.EmployeeUserId))
                 .Select(s => new AbsentEmployeeDto
                 {
-                    EmployeeUserId = s.ApplicationUserId,
+                    EmployeeUserId = s.EmployeeUserId,
                     FullName = GetFullName(s.ApplicationUser),
                     Email = s.ApplicationUser.Email ?? "",
                     ShiftId = s.Id,
@@ -168,14 +168,14 @@ public class GetManagerDashboardHandler(
                 DateTime? checkInTime = null;
                 DateTime? checkOutTime = null;
 
-                if (onLeaveUserIds.Contains(s.ApplicationUserId))
+                if (onLeaveUserIds.Contains(s.EmployeeUserId))
                 {
                     status = "On Leave";
                 }
-                else if (employeeCheckIns.TryGetValue(s.ApplicationUserId, out var checkIn))
+                else if (employeeCheckIns.TryGetValue(s.EmployeeUserId, out var checkIn))
                 {
                     checkInTime = checkIn.AttendanceTime;
-                    if (employeeCheckOuts.TryGetValue(s.ApplicationUserId, out var checkOut))
+                    if (employeeCheckOuts.TryGetValue(s.EmployeeUserId, out var checkOut))
                     {
                         checkOutTime = checkOut.AttendanceTime;
                     }
@@ -189,7 +189,7 @@ public class GetManagerDashboardHandler(
 
                 return new TodayEmployeeDto
                 {
-                    EmployeeUserId = s.ApplicationUserId,
+                    EmployeeUserId = s.EmployeeUserId,
                     FullName = GetFullName(s.ApplicationUser),
                     Email = s.ApplicationUser.Email ?? "",
                     ShiftId = s.Id,

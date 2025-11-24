@@ -4,6 +4,14 @@ namespace ZKTecoADMS.Domain.Repositories;
 
 public interface IRepository<TEntity>
 {
+    
+    Task<TEntity?> GetLastOrDefaultAsync(
+        Expression<Func<TEntity, object>> keySelector,
+        Expression<Func<TEntity, bool>>? filter = null,
+        string[]? includeProperties = null,
+        CancellationToken cancellationToken = default
+    );
+
     Task<IEnumerable<TEntity>> GetAllAsync(
             Expression<Func<TEntity, bool>>? filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
