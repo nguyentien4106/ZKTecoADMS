@@ -24,6 +24,8 @@ export const StatusBadge = ({ status, rejectionReason }: StatusBadgeProps) => {
                 return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Rejected</Badge>;
             case ShiftStatus.Cancelled:
                 return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">Cancelled</Badge>;
+            case ShiftStatus.ApprovedLeave:
+                return <Badge variant="outline" className="bg-blue-50 text-green-700 border-red-200">Approved Leave</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
         }

@@ -10,7 +10,7 @@ public class GetMyLeavesHandler(IRepository<Leave> repository)
         var leaves = await repository.GetAllAsync(
             filter: l => l.EmployeeUserId == request.ApplicationUserId,
             orderBy: query => query.OrderByDescending(l => l.CreatedAt),
-            includeProperties: [nameof(Leave.ApplicationUser), nameof(Leave.Shift)],
+            includeProperties: [nameof(Leave.EmployeeUser), nameof(Leave.Shift)],
             cancellationToken: cancellationToken);
 
         return AppResponse<List<LeaveDto>>.Success(leaves.Adapt<List<LeaveDto>>());

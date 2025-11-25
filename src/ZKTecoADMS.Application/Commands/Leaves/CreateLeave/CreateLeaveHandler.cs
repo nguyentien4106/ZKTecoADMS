@@ -4,15 +4,16 @@ using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Commands.Leaves.CreateLeave;
 
-public class CreateLeaveHandler(IRepository<Leave> leaveRepository,
-    IRepository<Shift> shiftRepository)
-    : ICommandHandler<CreateLeaveCommand, AppResponse<LeaveDto>>
+public class CreateLeaveHandler(
+    IRepository<Leave> leaveRepository,
+    IRepository<Shift> shiftRepository
+    ) : ICommandHandler<CreateLeaveCommand, AppResponse<LeaveDto>>
 {
     public async Task<AppResponse<LeaveDto>> Handle(CreateLeaveCommand request, CancellationToken cancellationToken)
     {
         try
         {
-            var shift = await shiftRepository.GetByIdAsync(request.ShiftId, cancellationToken: cancellationToken);
+            var shift = await shiftRepository.GetByIdAsync(request.ShiftId, [nameof(Shift.EmployeeUser)], cancellationToken: cancellationToken);
             if (shift == null)
             {
                 return AppResponse<LeaveDto>.Error("Invalid shift for the specified employee");

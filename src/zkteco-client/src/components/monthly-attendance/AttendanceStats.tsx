@@ -8,7 +8,7 @@ import { DailyAttendance } from '@/types/attendance'
 export const AttendanceStats = () => {
   const { data } = useMonthlyAttendanceContext()
 
-  if (!data) return null
+  if (!data || !data.dailyRecords) return null
 
   const totalDays = data.dailyRecords.length
   const daysPresent = data.dailyRecords.filter((d: DailyAttendance) => d.attendances.length > 0).length

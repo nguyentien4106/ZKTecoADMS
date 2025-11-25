@@ -20,6 +20,7 @@ import { PasswordInput, validatePassword } from '@/components/PasswordInput'
 interface FormData {
   firstName: string
   lastName: string
+  userName: string
   email: string
   password: string
   confirmPassword: string
@@ -32,6 +33,7 @@ interface FormErrors {
   email?: string
   password?: string
   confirmPassword?: string
+  userName?: string
 }
 
 const initialFormData: FormData = {
@@ -41,6 +43,7 @@ const initialFormData: FormData = {
   password: '',
   confirmPassword: '',
   phoneNumber: '',
+  userName: '',
 }
 
 export const CreateEmployeeAccountDialog = () => {
@@ -54,6 +57,7 @@ export const CreateEmployeeAccountDialog = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [errors, setErrors] = useState<FormErrors>({})
   
+  console.log('employeeForAccount:', employeeForAccount)
   const isUpdateMode = !! employeeForAccount?.applicationUser
 
   // Pre-fill form with existing account data when in update mode
@@ -66,6 +70,7 @@ export const CreateEmployeeAccountDialog = () => {
         password: '',
         confirmPassword: '',
         phoneNumber: employeeForAccount.applicationUser.phoneNumber || '',
+        userName: employeeForAccount.applicationUser.userName || '',
       })
     } else if (createAccountDialogOpen) {
       setFormData(initialFormData)
@@ -132,14 +137,15 @@ export const CreateEmployeeAccountDialog = () => {
     if (!employeeForAccount?.id) return
     
     try {
-      await handleCreateAccountSubmit(
-        employeeForAccount.id, 
-        formData.firstName, 
-        formData.lastName, 
-        formData.email, 
-        formData.password, 
-        formData.phoneNumber
-      )
+      await handleCreateAccountSubmit({
+        employeeDeviceId: employeeForAccount.id, 
+        firstName: formData.firstName, 
+        lastName: formData.lastName, 
+        email: formData.email, 
+        password: formData.password, 
+        phoneNumber: formData.phoneNumber,
+        userName: formData.userName
+      })
       // Reset form on success
       setFormData(initialFormData)
       setErrors({})
@@ -233,6 +239,23 @@ export const CreateEmployeeAccountDialog = () => {
               />
               {errors.email && (
                 <p className="text-sm text-destructive">{errors.email}</p>
+              )}
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="userName">
+                UserName <span className="text-destructive">*</span> 
+                
+              </Label>
+              <Input
+                id="userName"
+                placeholder="john.doe@example.com"
+                value={formData.userName}
+                onChange={(e) => updateField('userName', e.target.value)}
+                className={errors.email ? 'border-destructive' : ''}
+              />
+              {errors.email && (
+                <p className="text-sm text-destructive">{errors.userName}</p>
               )}
             </div>
 

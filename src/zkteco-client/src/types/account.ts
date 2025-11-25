@@ -6,6 +6,7 @@ export interface Account {
     phoneNumber?: string
     employeeDeviceId: string
     fullName: string
+    userName?: string
 }
 
 export interface CreateEmployeeAccountRequest {
@@ -15,6 +16,7 @@ export interface CreateEmployeeAccountRequest {
   firstName: string
   lastName: string
   phoneNumber?: string
+  userName?: string
 }
 
 export interface UpdateEmployeeAccountRequest {
@@ -23,4 +25,5 @@ export interface UpdateEmployeeAccountRequest {
   lastName: string
   phoneNumber?: string
   password?: string
+  userName?: string
 }

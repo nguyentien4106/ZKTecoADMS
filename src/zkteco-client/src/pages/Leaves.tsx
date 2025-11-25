@@ -46,14 +46,13 @@ const LeavesTabs = () => {
   } = useLeaveContext();
 
   const { isManager } = useAuth();
-  console.log("isManager:", isManager);
   const [activeTab, setActiveTab] = useState<string>("all");
   
   useEffect(() => {
-    if (pendingLeaves.length > 0) {
+    if (pendingLeaves.length > 0 && isManager) {
       setActiveTab("pending");
     }
-  }, [pendingLeaves]);
+  }, [pendingLeaves, isManager]);
 
   return (
     <div className="mt-6">

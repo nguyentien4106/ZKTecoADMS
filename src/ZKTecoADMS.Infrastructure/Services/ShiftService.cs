@@ -17,7 +17,7 @@ public class ShiftService(
     {
         return await repository.GetSingleAsync(
             s => s.Id == id,
-            includeProperties: new[] { nameof(Shift.ApplicationUser) },
+            includeProperties: new[] { nameof(Shift.EmployeeUser) },
             cancellationToken: cancellationToken);
     }
 
@@ -26,7 +26,7 @@ public class ShiftService(
         var shifts = await repository.GetAllAsync(
             filter: s => s.EmployeeUserId == applicationUserId,
             orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: new[] { nameof(Shift.ApplicationUser) },
+            includeProperties: new[] { nameof(Shift.EmployeeUser) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
@@ -35,9 +35,9 @@ public class ShiftService(
     public async Task<List<Shift>> GetShiftsByManagerAsync(Guid managerId, CancellationToken cancellationToken = default)
     {
         var shifts = await repository.GetAllAsync(
-            filter: s => s.ApplicationUser != null && s.ApplicationUser.ManagerId == managerId,
+            filter: s => s.EmployeeUser != null && s.EmployeeUser.ManagerId == managerId,
             orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: new[] { nameof(Shift.ApplicationUser) },
+            includeProperties: new[] { nameof(Shift.EmployeeUser) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
@@ -48,7 +48,7 @@ public class ShiftService(
         var shifts = await repository.GetAllAsync(
             filter: s => s.Status == ShiftStatus.Pending,
             orderBy: query => query.OrderBy(s => s.StartTime),
-            includeProperties: new[] { nameof(Shift.ApplicationUser) },
+            includeProperties: new[] { nameof(Shift.EmployeeUser) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
@@ -59,7 +59,7 @@ public class ShiftService(
         var shifts = await repository.GetAllAsync(
             filter: s => s.Status == status,
             orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: new[] { nameof(Shift.ApplicationUser) },
+            includeProperties: new[] { nameof(Shift.EmployeeUser) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
@@ -70,7 +70,7 @@ public class ShiftService(
         var shifts = await repository.GetAllAsync(
             filter: s => s.StartTime >= startDate && s.EndTime <= endDate,
             orderBy: query => query.OrderBy(s => s.StartTime),
-            includeProperties: new[] { nameof(Shift.ApplicationUser) },
+            includeProperties: new[] { nameof(Shift.EmployeeUser) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();

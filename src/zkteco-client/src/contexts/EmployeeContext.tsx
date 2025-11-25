@@ -13,7 +13,8 @@ import {
 } from '@/hooks/useEmployees'
 import { useDevices } from '@/hooks/useDevices'
 import { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee'
-import { Account } from '@/types/account'
+import { Account, CreateEmployeeAccountRequest } from '@/types/account'
+import { da } from 'date-fns/locale'
 
 interface EmployeeContextValue {
   // State
@@ -42,14 +43,7 @@ interface EmployeeContextValue {
   handleUpdateEmployee: (data: UpdateEmployeeRequest) => Promise<void>
   handleEdit: (user: Employee) => void
   handleCreateAccount: (user: Employee) => void
-  handleCreateAccountSubmit: (
-    userId: string,
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string,
-    phoneNumber?: string
-  ) => Promise<Account | undefined>
+  handleCreateAccountSubmit: (data: CreateEmployeeAccountRequest) => Promise<Account | undefined>
   handleFilterSubmit: (deviceIds: string[]) => void
   handleOpenCreateDialog: () => void
   
@@ -165,14 +159,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     setCreateAccountDialogOpen(true)
   }
 
-  const handleCreateAccountSubmit = async (
-    employeeDeviceId: string,
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string,
-    phoneNumber?: string
-  ) => {
+  const handleCreateAccountSubmit = async (data: CreateEmployeeAccountRequest) => {
     setIsCreatingAccount(true)
     try {
       // Check if the user already has an account
@@ -182,25 +169,19 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
         // Update existing account
         
         updatedEmployeeAccount = await updateEmployeeAccount.mutateAsync({
-          employeeDeviceId,
+          employeeDeviceId: employeeForAccount!.id,
           data: {
-            firstName,
-            lastName,
-            email,
-            phoneNumber,
-            password
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            password: data.password,
+            userName: data.userName
           }
         })
       } else {
         // Create new account
-        updatedEmployeeAccount = await createEmployeeAccount.mutateAsync({
-          employeeDeviceId,
-          firstName,
-          lastName,
-          email,
-          password,
-          phoneNumber
-        })
+        updatedEmployeeAccount = await createEmployeeAccount.mutateAsync(data)
       }
 
       setCreateAccountDialogOpen(false)

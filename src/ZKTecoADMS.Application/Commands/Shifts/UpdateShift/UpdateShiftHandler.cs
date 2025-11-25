@@ -20,7 +20,7 @@ public class UpdateShiftHandler(IRepository<Shift> repository)
 
             var shift = await repository.GetSingleAsync(
                 s => s.Id == request.Id,
-                includeProperties: [nameof(Shift.ApplicationUser)],
+                includeProperties: [nameof(Shift.EmployeeUser)],
                 cancellationToken: cancellationToken);
                 
             if (shift == null)

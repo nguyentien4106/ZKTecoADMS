@@ -25,9 +25,7 @@ public class Shift : AuditableEntity<Guid>
     public string? RejectionReason { get; set; }
     
     // Navigation Properties
-    public virtual ApplicationUser ApplicationUser { get; set; } = null!;
-
-    public virtual Employee Employee { get; set; } = null!;
+    public virtual ApplicationUser EmployeeUser { get; set; } = null!;
 
     public virtual Leave? Leave { get; set; }
 }

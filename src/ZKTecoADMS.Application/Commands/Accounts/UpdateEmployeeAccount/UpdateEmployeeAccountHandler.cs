@@ -39,6 +39,7 @@ public class UpdateEmployeeAccountHandler(
         applicationUser.FirstName = request.FirstName;
         applicationUser.LastName = request.LastName;
         applicationUser.PhoneNumber = request.PhoneNumber;
+        applicationUser.UserName = request.UserName ?? applicationUser.UserName;
 
         var updateResult = await userManager.UpdateAsync(applicationUser);
         if (!updateResult.Succeeded)

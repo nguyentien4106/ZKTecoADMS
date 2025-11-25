@@ -25,4 +25,6 @@ public class AccountDto
     public string FullName => $"{FirstName} {LastName}";
     public string? PhoneNumber { get; set; }
 
+    public string? UserName { get; set; }
+
 }

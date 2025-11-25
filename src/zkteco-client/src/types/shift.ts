@@ -2,7 +2,8 @@ export enum ShiftStatus {
     Pending = 0,
     Approved = 1,
     Rejected = 2,
-    Cancelled = 3
+    Cancelled = 3,
+    ApprovedLeave = 5,
 }
 
 export interface Shift {

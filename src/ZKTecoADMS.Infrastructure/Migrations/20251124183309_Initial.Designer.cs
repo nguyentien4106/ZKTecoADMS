@@ -12,7 +12,7 @@ using ZKTecoADMS.Infrastructure;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     [DbContext(typeof(ZKTecoDbContext))]
-    [Migration("20251124172332_Initial")]
+    [Migration("20251124183309_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -833,9 +833,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("EmployeeUserId")
                         .HasColumnType("uuid");
 
@@ -872,8 +869,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("EmployeeUserId");
 
@@ -1249,21 +1244,13 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .WithMany("ApprovedShifts")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("ZKTecoADMS.Domain.Entities.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "ApplicationUser")
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "EmployeeUser")
                         .WithMany("RequestedShifts")
                         .HasForeignKey("EmployeeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Employee");
+                    b.Navigation("EmployeeUser");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.ShiftTemplate", b =>

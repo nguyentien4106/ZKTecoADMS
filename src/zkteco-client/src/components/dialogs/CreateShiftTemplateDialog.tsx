@@ -14,22 +14,13 @@ export const CreateShiftTemplateDialog = () => {
         handleCreateTemplate,
     } = useShiftManagementContext()
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!template.name || !template.startTime || !template.endTime) {
             return;
         }
         
-        // Convert HH:mm to HH:mm:ss format for TimeSpan
-        const startTime = `${template.startTime}:00`;
-        const endTime = `${template.endTime}:00`;
-        
-        handleCreateTemplate({
-            name: template.name,
-            startTime,
-            endTime,
-        });
-        
+        await handleCreateTemplate(template);
         setTemplate(defaultNewShiftTemplate);
     };
 
@@ -40,6 +31,12 @@ export const CreateShiftTemplateDialog = () => {
         }
     };
 
+    const onChangeTime = (time: string, type: string) => {
+        setTemplate((prev) => ({
+            ...prev,
+            [type]: time.split(':').length === 2 ? `${time}:00` : time,
+        }));
+    }
     return (
         <Dialog open={createTemplateDialogOpen} onOpenChange={handleOpenChangeInternal}>
             <DialogContent className="max-w-[95vw] sm:max-w-[500px]">
@@ -69,7 +66,7 @@ export const CreateShiftTemplateDialog = () => {
                                 id="startTime"
                                 type="time"
                                 value={template.startTime}
-                                onChange={(e) => setTemplate({ ...template, startTime: e.target.value })}
+                                onChange={(e) => onChangeTime(e.target.value, "startTime")}
                                 required
                             />
                         </div>
@@ -80,7 +77,7 @@ export const CreateShiftTemplateDialog = () => {
                                 id="endTime"
                                 type="time"
                                 value={template.endTime}
-                                onChange={(e) => setTemplate({ ...template, endTime: e.target.value })}
+                                onChange={(e) => onChangeTime(e.target.value, "endTime")}
                                 required
                             />
                         </div>

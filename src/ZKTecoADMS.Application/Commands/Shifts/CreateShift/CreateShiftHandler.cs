@@ -25,8 +25,8 @@ public class CreateShiftHandler(IRepository<Shift> shiftRepository)
             // Check for overlapping shifts using optimized repository method
             var overlappingShift = await shiftRepository.GetSingleAsync(
                 s => s.EmployeeUserId == request.EmployeeUserId &&
-                    s.Status != ShiftStatus.Rejected &&
-                    s.Status != ShiftStatus.Cancelled &&
+                    s.Status == ShiftStatus.Approved &&
+                    s.Status == ShiftStatus.Pending &&
                     (
                         // New shift starts during an existing shift
                         (request.StartTime >= s.StartTime && request.StartTime < s.EndTime) ||

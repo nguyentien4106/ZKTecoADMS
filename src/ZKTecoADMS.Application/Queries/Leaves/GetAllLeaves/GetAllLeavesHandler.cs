@@ -12,7 +12,7 @@ public class GetAllLeavesHandler(IRepository<Leave> repository)
                 ? l => l.ManagerId == request.UserId
                 : l => l.EmployeeUserId == request.UserId,
             orderBy: query => query.OrderByDescending(l => l.CreatedAt),
-            includeProperties: [nameof(Leave.ApplicationUser), nameof(Leave.Shift)],
+            includeProperties: [nameof(Leave.EmployeeUser), nameof(Leave.Shift)],
             cancellationToken: cancellationToken);
 
         return AppResponse<List<LeaveDto>>.Success(leaves.Adapt<List<LeaveDto>>());

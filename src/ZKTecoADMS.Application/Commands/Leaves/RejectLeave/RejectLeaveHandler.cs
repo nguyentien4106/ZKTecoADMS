@@ -2,7 +2,9 @@ using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Commands.Leaves.RejectLeave;
 
-public class RejectLeaveHandler(IRepository<Leave> leaveRepository)
+public class RejectLeaveHandler(
+    IRepository<Leave> leaveRepository
+    )
     : ICommandHandler<RejectLeaveCommand, AppResponse<bool>>
 {
     public async Task<AppResponse<bool>> Handle(RejectLeaveCommand request, CancellationToken cancellationToken)
@@ -11,7 +13,7 @@ public class RejectLeaveHandler(IRepository<Leave> leaveRepository)
         {
             var leave = await leaveRepository.GetByIdAsync(
                 request.LeaveId,
-                includeProperties: ["ApplicationUser", "Shift"],
+                includeProperties: [nameof(Leave.EmployeeUser), nameof(Leave.Shift)],
                 cancellationToken: cancellationToken);
 
             if (leave == null)

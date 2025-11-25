@@ -5,6 +5,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { RoleProtectedRoute } from './components/RoleProtectedRoute'
+import { RouteErrorBoundary } from './components/RouteErrorBoundary'
 import { MainLayout } from './layouts/MainLayout'
 import { Login } from './pages/auth/Login'
 import { Dashboard } from './pages/Dashboard'
@@ -27,19 +28,20 @@ import { MonthlyAttendanceSummary } from './pages/MonthlyAttendanceSummary'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/demo-dashboard" element={<EmployeeDashboardDemo />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <MainLayout />
-          </ProtectedRoute>
-        }
-      >
+    <RouteErrorBoundary>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/demo-dashboard" element={<EmployeeDashboardDemo />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
         <Route index element={<Navigate to="/dashboard" replace />} />
         
         {/* Routes accessible by all authenticated users */}
@@ -86,6 +88,7 @@ function App() {
               <ShiftManagement />
             </RoleProtectedRoute>
           }
+          
         />
         <Route
           path="devices"
@@ -123,6 +126,7 @@ function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </RouteErrorBoundary>
   )
 }
 

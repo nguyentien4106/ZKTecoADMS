@@ -11,7 +11,7 @@ public class GetPendingLeavesHandler(IRepository<Leave> repository)
         var leaves = await repository.GetAllAsync(
             filter: l => l.Status == LeaveStatus.Pending && (request.IsManager ? l.ManagerId == request.UserId : l.EmployeeUserId == request.UserId),
             orderBy: query => query.OrderBy(l => l.CreatedAt),
-            includeProperties: [nameof(Leave.ApplicationUser), nameof(Leave.Shift)],
+            includeProperties: [nameof(Leave.EmployeeUser), nameof(Leave.Shift)],
             cancellationToken: cancellationToken);
 
         return AppResponse<List<LeaveDto>>.Success(leaves.Adapt<List<LeaveDto>>());

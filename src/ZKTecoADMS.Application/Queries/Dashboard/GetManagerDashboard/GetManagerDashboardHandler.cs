@@ -106,8 +106,8 @@ public class GetManagerDashboardHandler(
             var employeesOnLeave = leavesForToday.Select(l => new EmployeeOnLeaveDto
             {
                 EmployeeUserId = l.EmployeeUserId,
-                FullName = GetFullName(l.ApplicationUser),
-                Email = l.ApplicationUser.Email ?? "",
+                FullName = GetFullName(l.EmployeeUser),
+                Email = l.EmployeeUser.Email ?? "",
                 LeaveId = l.Id,
                 LeaveType = l.Type.ToString(),
                 LeaveStartDate = l.StartDate,
@@ -132,13 +132,13 @@ public class GetManagerDashboardHandler(
                         lateEmployees.Add(new LateEmployeeDto
                         {
                             EmployeeUserId = shift.EmployeeUserId,
-                FullName = GetFullName(shift.ApplicationUser),
-                            Email = shift.ApplicationUser.Email ?? "",
+                FullName = GetFullName(shift.EmployeeUser),
+                            Email = shift.EmployeeUser.Email ?? "",
                             ShiftId = shift.Id,
                             ShiftStartTime = shift.StartTime,
                             ActualCheckInTime = checkIn.AttendanceTime,
                             LateBy = checkIn.AttendanceTime - shift.StartTime,
-                            Department = shift.ApplicationUser.Employee?.Department ?? ""
+                            Department = shift.EmployeeUser.Employee?.Department ?? ""
                         });
                     }
                 }
@@ -152,12 +152,12 @@ public class GetManagerDashboardHandler(
                 .Select(s => new AbsentEmployeeDto
                 {
                     EmployeeUserId = s.EmployeeUserId,
-                    FullName = GetFullName(s.ApplicationUser),
-                    Email = s.ApplicationUser.Email ?? "",
+                    FullName = GetFullName(s.EmployeeUser),
+                    Email = s.EmployeeUser.Email ?? "",
                     ShiftId = s.Id,
                     ShiftStartTime = s.StartTime,
                     ShiftEndTime = s.EndTime,
-                    Department = s.ApplicationUser.Employee?.Department ?? ""
+                    Department = s.EmployeeUser.Employee?.Department ?? ""
                 })
                 .ToList();
 
@@ -190,15 +190,15 @@ public class GetManagerDashboardHandler(
                 return new TodayEmployeeDto
                 {
                     EmployeeUserId = s.EmployeeUserId,
-                    FullName = GetFullName(s.ApplicationUser),
-                    Email = s.ApplicationUser.Email ?? "",
+                    FullName = GetFullName(s.EmployeeUser),
+                    Email = s.EmployeeUser.Email ?? "",
                     ShiftId = s.Id,
                     ShiftStartTime = s.StartTime,
                     ShiftEndTime = s.EndTime,
                     Status = status,
                     CheckInTime = checkInTime,
                     CheckOutTime = checkOutTime,
-                    Department = s.ApplicationUser.Employee?.Department ?? ""
+                    Department = s.EmployeeUser.Employee?.Department ?? ""
                 };
             }).ToList();
 

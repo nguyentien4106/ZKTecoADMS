@@ -16,7 +16,7 @@ public class ShiftConfiguration : IEntityTypeConfiguration<Shift>
         builder.Property(s => s.UpdatedAt).HasDefaultValueSql("NOW()");
         
         // Relationship: ApplicationUser -> RequestedShifts
-        builder.HasOne(s => s.ApplicationUser)
+        builder.HasOne(s => s.EmployeeUser)
             .WithMany(u => u.RequestedShifts)
             .HasForeignKey(s => s.EmployeeUserId)
             .OnDelete(DeleteBehavior.Cascade);

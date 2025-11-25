@@ -13,7 +13,7 @@ const MONTHS = [
 export const EmployeeInfoHeader = () => {
   const { data, selectedMonth, selectedYear } = useMonthlyAttendanceContext()
 
-  if (!data) return null
+  if (!data || !data.dailyRecords) return null
 
   return (
     <Card>
@@ -26,7 +26,7 @@ export const EmployeeInfoHeader = () => {
             </p>
           </div>
           <Badge variant="outline" className="text-sm">
-            {data.dailyRecords.length} Days
+            {data.dailyRecords?.length || 0} Days
           </Badge>
         </div>
       </CardContent>

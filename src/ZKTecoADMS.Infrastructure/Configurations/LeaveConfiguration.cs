@@ -17,7 +17,7 @@ public class LeaveConfiguration : IEntityTypeConfiguration<Leave>
         builder.Property(l => l.UpdatedAt).HasDefaultValueSql("NOW()");
         
         // Relationship: ApplicationUser -> RequestedLeaves
-        builder.HasOne(l => l.ApplicationUser)
+        builder.HasOne(l => l.EmployeeUser)
             .WithMany(u => u.RequestedLeaves)
             .HasForeignKey(l => l.EmployeeUserId)
             .OnDelete(DeleteBehavior.Cascade);

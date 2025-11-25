@@ -38,7 +38,7 @@ public class Leave : AuditableEntity<Guid>
     public string? RejectionReason { get; set; }
     
     // Navigation Properties
-    public virtual ApplicationUser ApplicationUser { get; set; } = null!;
+    public virtual ApplicationUser EmployeeUser { get; set; } = null!;
     public virtual ApplicationUser Manager { get; set; } = null!;
     public virtual Shift Shift { get; set; } = null!;
 }

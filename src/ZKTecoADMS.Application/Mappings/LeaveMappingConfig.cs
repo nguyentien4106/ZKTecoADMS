@@ -11,7 +11,7 @@ public class LeaveMappingConfig : IRegister
         config.NewConfig<Leave, LeaveDto>()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.EmployeeUserId, src => src.EmployeeUserId)
-            .Map(dest => dest.EmployeeName, src => $"{src.ApplicationUser.FirstName} {src.ApplicationUser.LastName}".Trim())
+            .Map(dest => dest.EmployeeName, src => src.EmployeeUser != null ? $"{src.EmployeeUser.FirstName} {src.EmployeeUser.LastName}".Trim() : "")
             .Map(dest => dest.Type, src => src.Type)
             .Map(dest => dest.Shift, src => src.Shift.Adapt<ShiftDto>())
             .Map(dest => dest.IsHalfShift, src => src.IsHalfShift)
