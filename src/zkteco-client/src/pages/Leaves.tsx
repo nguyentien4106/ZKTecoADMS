@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus } from "lucide-react";
 import { LeavesTable } from '@/components/leaves/LeavesTable';
-import { LeaveRequestDialog } from '@/components/leaves/LeaveRequestDialog';
+import { LeaveRequestDialog } from '@/components/dialogs/LeaveRequestDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,14 +22,14 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const LeavesHeader = () => {
-  const { setCreateDialogOpen } = useLeaveContext();
+  const { setDialogMode } = useLeaveContext();
 
   return (
     <PageHeader
       title="Leaves Management"
       description="View and manage leave requests"
       action={
-        <Button onClick={() => setCreateDialogOpen(true)}>
+        <Button onClick={() => setDialogMode('create')}>
           <Plus className="mr-2 h-4 w-4" />
           Request Leave
         </Button>

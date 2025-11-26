@@ -1,4 +1,4 @@
-import { LeaveType } from '@/types/leave';
+import { LeaveDialogState, LeaveStatus, LeaveType } from '@/types/leave';
 import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
 import { CreateEmployeeRequest } from "@/types/employee";
@@ -55,7 +55,7 @@ const tomorrow = new Date(now);
 tomorrow.setDate(tomorrow.getDate() + 1);
 
 export const defaultNewShiftWithEmployeeUserId = {
-    employeeUserId: '',
+    employeeUserId: null,
     startTime: tomorrow,
     endTime: tomorrow,
     description: ''
@@ -67,24 +67,14 @@ export const defaultTemplateShift = {
     description: '',
 }
 
-export interface LeaveDialogState {
-    selectedEmployeeId: string;
-    selectedShiftId: string;
-    type: LeaveType;
-    isHalfShift: boolean;
-    halfShiftType: '' | 'first' | 'second';
-    startDate: Date | undefined;
-    endDate: Date | undefined;
-    reason: string;
-}
-
 export const defaultLeaveDialogState: LeaveDialogState = {
-    selectedEmployeeId: '',
-    selectedShiftId: '',
+    employeeUserId: null,
+    shiftId: '',
     type: LeaveType.PERSONAL,
     isHalfShift: false,
     halfShiftType: '',
     startDate: undefined,
     endDate: undefined,
     reason: '',
+    status: LeaveStatus.APPROVED
 };

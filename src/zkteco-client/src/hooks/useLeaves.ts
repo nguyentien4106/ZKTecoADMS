@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { leaveService } from '@/services/leaveService';
 import { toast } from 'sonner';
-import { CreateLeaveRequest, RejectLeaveRequest } from '@/types/leave';
+import { CreateLeaveRequest, UpdateLeaveRequest, RejectLeaveRequest } from '@/types/leave';
 
 // Query hooks
 export const useMyLeaves = () => {
@@ -37,6 +37,24 @@ export const useCreateLeave = () => {
     },
     onError: (error: any) => {
       toast.error('Failed to submit leave request', {
+        description: error.message || 'An error occurred',
+      });
+    },
+  });
+};
+
+export const useUpdateLeave = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateLeaveRequest }) => 
+      leaveService.updateLeave(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leaves'] });
+      toast.success('Leave request updated successfully');
+    },
+    onError: (error: any) => {
+      toast.error('Failed to update leave request', {
         description: error.message || 'An error occurred',
       });
     },

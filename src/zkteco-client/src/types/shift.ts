@@ -8,7 +8,7 @@ export enum ShiftStatus {
 
 export interface Shift {
     id: string;
-    applicationUserId: string;
+    employeeUserId: string;
     employeeName: string;
     startTime: string;
     endTime: string;
@@ -38,20 +38,6 @@ export interface UpdateShiftRequest {
 
 export interface RejectShiftRequest {
     rejectionReason: string;
-}
-
-export interface ShiftResponse {
-    isSuccess: boolean;
-    data?: Shift;
-    errors: string[];
-    message: string;
-}
-
-export interface ShiftListResponse {
-    isSuccess: boolean;
-    data?: Shift[];
-    errors: string[];
-    message: string;
 }
 
 // Shift Template types

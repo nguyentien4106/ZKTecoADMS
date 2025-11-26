@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Commands.Leaves.CreateLeave;
+using ZKTecoADMS.Application.Commands.Leaves.UpdateLeave;
 using ZKTecoADMS.Application.Commands.Leaves.CancelLeave;
 using ZKTecoADMS.Application.Commands.Leaves.ApproveLeave;
 using ZKTecoADMS.Application.Commands.Leaves.RejectLeave;
@@ -31,11 +32,6 @@ public class LeavesController(IMediator mediator) : AuthenticatedControllerBase
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<AppResponse<LeaveDto>>> CreateLeave([FromBody] CreateLeaveRequest request)
     {
-        if(ManagerId.HasValue == false)
-        {
-            return AppResponse<LeaveDto>.Error("ManagerId is not assigned to the current user.");
-        }
-
         var managerId = request.EmployeeUserId.HasValue ? CurrentUserId : ManagerId.Value;
         var employeeUserId = request.EmployeeUserId ?? CurrentUserId;
 
@@ -58,6 +54,26 @@ public class LeavesController(IMediator mediator) : AuthenticatedControllerBase
     public async Task<ActionResult<AppResponse<bool>>> CancelLeave(Guid id)
     {
         var command = new CancelLeaveCommand(id, CurrentUserId);
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
+    public async Task<ActionResult<AppResponse<LeaveDto>>> UpdateLeave(Guid id, [FromBody] UpdateLeaveRequest request)
+    {
+        var command = new UpdateLeaveCommand(
+            id,
+            CurrentUserId,
+            IsManager,
+            request.ShiftId,
+            request.StartDate,
+            request.EndDate,
+            request.Type,
+            request.IsHalfShift,
+            request.Reason,
+            request.Status);
+        
         var result = await mediator.Send(command);
         return Ok(result);
     }

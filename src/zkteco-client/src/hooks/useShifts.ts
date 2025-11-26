@@ -7,10 +7,10 @@ import { toast } from 'sonner';
 import { CreateShiftRequest, UpdateShiftRequest, RejectShiftRequest, ShiftStatus } from '@/types/shift';
 
 // Query hooks
-export const useMyShifts = (status?: ShiftStatus) => {
+export const useMyShifts = (status?: ShiftStatus, employeeUserId?: string) => {
   return useQuery({
-    queryKey: ['shifts', 'my-shifts', status],
-    queryFn: () => shiftService.getMyShifts(status),
+    queryKey: ['shifts', 'my-shifts', status, employeeUserId],
+    queryFn: () => shiftService.getMyShifts(status, employeeUserId),
   });
 };
 
