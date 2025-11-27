@@ -22,6 +22,8 @@ public class EfRepository<TEntity>(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string[]? includeProperties = null,
+        int? skip = null,
+        int? take = null,
         CancellationToken cancellationToken = default)
     {
         logger.LogDebug("Getting all entities of type {EntityType} with filter: {HasFilter}, orderBy: {HasOrderBy}, includes: {Includes}",
@@ -41,6 +43,16 @@ public class EfRepository<TEntity>(
                 query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
             }
 
+            if (skip.HasValue)
+            {
+                query = query.Skip(skip.Value);
+            }
+
+            if (take.HasValue)
+            {
+                query = query.Take(take.Value);
+            }
+
             IEnumerable<TEntity> result;
             if (orderBy != null)
             {
@@ -50,6 +62,7 @@ public class EfRepository<TEntity>(
             {
                 result = await query.ToListAsync(cancellationToken);
             }
+
 
             return result;
         }

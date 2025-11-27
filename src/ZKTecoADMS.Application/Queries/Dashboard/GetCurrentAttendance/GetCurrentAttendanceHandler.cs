@@ -24,7 +24,7 @@ public class GetCurrentAttendanceHandler(
             return AppResponse<AttendanceInfoDto>.Success(null);
         }
 
-        var today = DateTime.UtcNow.Date;
+        var today = DateTime.Now.Date;
         var attendances = await attendanceRepository.GetAllAsync(cancellationToken: cancellationToken);
         
         var todayAttendances = attendances
@@ -57,7 +57,7 @@ public class GetCurrentAttendanceHandler(
         }
         else if (checkInTime.HasValue)
         {
-            workHours = (DateTime.UtcNow - checkInTime.Value).TotalHours;
+            workHours = (DateTime.Now - checkInTime.Value).TotalHours;
         }
 
         bool isLate = false;

@@ -58,7 +58,7 @@ public class UpdateLeaveHandler(
             leave.Type = request.Type;
             leave.IsHalfShift = request.IsHalfShift;
             leave.Reason = request.Reason;
-            leave.UpdatedAt = DateTime.UtcNow;
+            leave.UpdatedAt = DateTime.Now;
 
             // Managers can update status
             if (request.IsManager && request.Status.HasValue)

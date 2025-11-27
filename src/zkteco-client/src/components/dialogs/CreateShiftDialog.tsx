@@ -10,7 +10,7 @@ import { useShiftTemplates } from '@/hooks/useShiftTemplate';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { format, getDate } from 'date-fns';
+import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { DateTimeFormat } from '@/constants';
 import { useEmployeesByManager } from '@/hooks/useAccount';
@@ -26,6 +26,16 @@ type CreateShiftDialogProps =
     title?: string;
     description?: string;
 };
+
+const TITLES = {
+    'assign': 'Assign Shift to Employee',
+    'request': 'Request New Shift'
+}
+
+const DESCRIPTIONS = {
+    'assign': 'Assign a shift directly to an employee',
+    'request': 'Submit a shift request for manager approval'
+}
 
 const getDateString = (time: string, dateStr: Date) => {
     const [hours, minutes] = time.split(':');
@@ -44,15 +54,13 @@ export const CreateShiftDialog = ({
 }: CreateShiftDialogProps) => {
     const { data: templates = [], isLoading: templatesLoading } = useShiftTemplates();
     const includeEmployee = mode === 'assign';
-    const { data: employees = [], isLoading: employeesLoading } = useEmployeesByManager(includeEmployee);
+    const { data: employees = [], isLoading: employeesLoading } = useEmployeesByManager();
     const [activeTab, setActiveTab] = useState<'manual' | 'template'>('manual');
     const [newShift, setNewShift] = useState(defaultNewShiftWithEmployeeUserId);
     const [templateShift, setTemplateShift] = useState(defaultTemplateShift);
     const hasTemplates = templates.length > 0;
 
     const now = new Date();
-    const maxEndTime = new Date();
-    maxEndTime.setDate(maxEndTime.getDate() + 1);
 
     const handleManualSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -85,7 +93,7 @@ export const CreateShiftDialog = ({
             endTime: getDateString(selectedTemplate.endTime, templateShift.date),
             description: templateShift.description,
         };
-        console.log('Submitting shift from template:', data);
+
         await onSubmit(data);
         setNewShift(defaultNewShiftWithEmployeeUserId);
         setTemplateShift(defaultTemplateShift);
@@ -100,18 +108,13 @@ export const CreateShiftDialog = ({
         }
     };
 
-    const defaultTitle = mode === 'assign' ? 'Assign Shift to Employee' : 'Request New Shift';
-    const defaultDescription = mode === 'assign' 
-        ? 'Assign a shift directly to an employee'
-        : 'Submit a shift request for manager approval';
-
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>{title || defaultTitle}</DialogTitle>
+                    <DialogTitle>{title || TITLES[mode]}</DialogTitle>
                     <DialogDescription>
-                        {dialogDescription || defaultDescription}
+                        {dialogDescription || DESCRIPTIONS[mode]}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -133,7 +136,7 @@ export const CreateShiftDialog = ({
                                             <div className="text-sm text-muted-foreground">Loading employees...</div>
                                         ) : (
                                             <Select
-                                                value={'employeeUserId' in newShift ? newShift.employeeUserId : ''}
+                                                value={'employeeUserId' in newShift ? newShift.employeeUserId ?? '' : ''}
                                                 onValueChange={(value) => setNewShift({ ...newShift, employeeUserId: value })}
                                             >
                                                 <SelectTrigger>
@@ -156,7 +159,6 @@ export const CreateShiftDialog = ({
                                     <DateTimePicker
                                         date={newShift.startTime}
                                         setDate={(date) => setNewShift({ ...newShift, startTime: date || now })}
-                                        minDate={now}
                                     />
                                 </div>
 
@@ -164,9 +166,7 @@ export const CreateShiftDialog = ({
                                     <Label htmlFor="endTime">End Time</Label>
                                     <DateTimePicker
                                         date={newShift.endTime}
-                                        setDate={(date) => setNewShift({ ...newShift, endTime: date || maxEndTime })}
-                                        minDate={newShift.startTime || now}
-                                        maxDate={newShift.startTime ? new Date(newShift.startTime.getTime() + 24 * 60 * 60 * 1000) : maxEndTime}
+                                        setDate={(date) => setNewShift({ ...newShift, endTime: date })}
                                     />
                                 </div>
 
@@ -213,7 +213,7 @@ export const CreateShiftDialog = ({
                                             <div className="text-sm text-muted-foreground">Loading employees...</div>
                                         ) : (
                                             <Select
-                                                value={'employeeUserId' in newShift ? newShift.employeeUserId : ''}
+                                                value={'employeeUserId' in newShift ? newShift.employeeUserId ?? '' : ''}
                                                 onValueChange={(value) => setNewShift({ ...newShift, employeeUserId: value })}
                                             >
                                                 <SelectTrigger>

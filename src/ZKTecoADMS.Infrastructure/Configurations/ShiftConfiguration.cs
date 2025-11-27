@@ -20,6 +20,17 @@ public class ShiftConfiguration : IEntityTypeConfiguration<Shift>
             .WithMany(u => u.RequestedShifts)
             .HasForeignKey(s => s.EmployeeUserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Relationship: Shift -> CheckInAttendance
+        builder.HasOne(s => s.CheckInAttendance)
+            .WithMany()
+            .HasForeignKey(s => s.CheckInAttendanceId)
+            .OnDelete(DeleteBehavior.SetNull);
         
+        // Relationship: Shift -> CheckOutAttendance
+        builder.HasOne(s => s.CheckOutAttendance)
+            .WithMany()
+            .HasForeignKey(s => s.CheckOutAttendanceId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

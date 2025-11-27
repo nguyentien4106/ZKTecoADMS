@@ -12,7 +12,7 @@ public class GetNextShiftHandler(IRepository<Shift> shiftRepository)
         GetNextShiftQuery request,
         CancellationToken cancellationToken)
     {
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
         var shifts = await shiftRepository.GetAllAsync(cancellationToken: cancellationToken);
         
         var nextShift = shifts
@@ -34,7 +34,6 @@ public class GetNextShiftHandler(IRepository<Shift> shiftRepository)
             EndTime = nextShift.EndTime,
             Description = nextShift.Description,
             Status = (int)nextShift.Status,
-            TotalHours = (nextShift.EndTime - nextShift.StartTime).TotalHours,
             IsToday = false
         };
 

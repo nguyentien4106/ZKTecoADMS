@@ -2,7 +2,7 @@ import { LeaveDialogState, LeaveStatus, LeaveType } from '@/types/leave';
 import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
 import { CreateEmployeeRequest } from "@/types/employee";
-import { CreateShiftRequest, CreateShiftTemplateRequest } from "@/types/shift";
+import { CreateShiftRequest, CreateShiftTemplateRequest, CreatShiftDialog } from "@/types/shift";
 import { format, subMonths } from "date-fns";
 import { DateTimeFormat } from ".";
 
@@ -54,7 +54,7 @@ const now = new Date();
 const tomorrow = new Date(now);
 tomorrow.setDate(tomorrow.getDate() + 1);
 
-export const defaultNewShiftWithEmployeeUserId = {
+export const defaultNewShiftWithEmployeeUserId: CreatShiftDialog = {
     employeeUserId: null,
     startTime: tomorrow,
     endTime: tomorrow,

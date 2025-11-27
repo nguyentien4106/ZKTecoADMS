@@ -26,7 +26,6 @@ interface LeaveContextValue {
   rejectDialogOpen: boolean;
   cancelDialogOpen: boolean;
   createDialogOpen: boolean;
-  editDialogOpen: boolean;
   selectedLeave: LeaveRequest | null;
   rejectionReason: string;
   
@@ -35,7 +34,6 @@ interface LeaveContextValue {
   setRejectDialogOpen: (open: boolean) => void;
   setCancelDialogOpen: (open: boolean) => void;
   setCreateDialogOpen: (open: boolean) => void;
-  setEditDialogOpen: (open: boolean) => void;
   setRejectionReason: (reason: string) => void;
   handleApprove: (id: string) => Promise<void>;
   handleReject: (id: string, rejectionReason: string) => Promise<void>;
@@ -73,7 +71,6 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState<LeaveRequest | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
 
@@ -117,7 +114,7 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
 
   const handleUpdate = async (id: string, data: UpdateLeaveRequest) => {
     await updateLeaveMutation.mutateAsync({ id, data });
-    setEditDialogOpen(false);
+    setDialogMode(null);
     setSelectedLeave(null);
   };
 
@@ -139,13 +136,13 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
   const handleEditClick = (leave: LeaveRequest) => {
     setDialogMode('edit');
     setSelectedLeave(leave);
-    setEditDialogOpen(true);
+    setDialogMode('edit');
   };
 
   const handleAddOrUpdate = async (data: CreateLeaveRequest | UpdateLeaveRequest | LeaveDialogState, id?: string) => {
     data.startDate = format(data.startDate as Date, DateTimeFormat);
     data.endDate = format(data.endDate as Date, DateTimeFormat);
-    
+
     if( dialogMode === 'create') {
       await handleCreate(data as CreateLeaveRequest);
     } else if (dialogMode === 'edit' && id) {
@@ -166,7 +163,6 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
     rejectDialogOpen,
     cancelDialogOpen,
     createDialogOpen,
-    editDialogOpen,
     selectedLeave,
     rejectionReason,
     
@@ -175,7 +171,6 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
     setRejectDialogOpen,
     setCancelDialogOpen,
     setCreateDialogOpen,
-    setEditDialogOpen,
     setRejectionReason,
     handleApprove,
     handleReject,

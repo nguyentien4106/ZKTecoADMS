@@ -30,6 +30,13 @@ export interface CreateShiftRequest {
     description?: string;
 }
 
+export interface CreatShiftDialog {
+    employeeUserId: string | null;
+    startTime: Date;
+    endTime: Date;
+    description: string;
+}
+
 export interface UpdateShiftRequest {
     startTime: string;
     endTime: string;

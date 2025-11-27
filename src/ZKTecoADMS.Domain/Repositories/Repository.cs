@@ -8,6 +8,8 @@ public abstract class Repository<TEntity> : IRepository<TEntity>
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string[]? includeProperties = null,
+        int? skip = null,
+        int? take = null,
         CancellationToken cancellationToken = default
     );
 

@@ -113,7 +113,7 @@ public class GetAttendanceStatsHandler(
 
     private static (DateTime startDate, DateTime endDate) GetDateRange(string period)
     {
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
         var endDate = now.Date;
 
         return period.ToLower() switch

@@ -168,7 +168,7 @@ public class ShiftService(
         }
 
         shift.Status = ShiftStatus.Approved;
-        shift.UpdatedAt = DateTime.UtcNow;
+        shift.UpdatedAt = DateTime.Now;
         shift.RejectionReason = null;
 
         await repository.UpdateAsync(shift, cancellationToken);

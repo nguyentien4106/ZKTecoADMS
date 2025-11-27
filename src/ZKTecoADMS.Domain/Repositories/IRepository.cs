@@ -13,10 +13,12 @@ public interface IRepository<TEntity>
     );
 
     Task<IEnumerable<TEntity>> GetAllAsync(
-            Expression<Func<TEntity, bool>>? filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-            string[]? includeProperties = null,
-            CancellationToken cancellationToken = default
+        Expression<Func<TEntity, bool>>? filter = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        string[]? includeProperties = null,
+        int? skip = null,
+        int? take = null,
+        CancellationToken cancellationToken = default
     );
 
     Task<TEntity?> GetByIdAsync(

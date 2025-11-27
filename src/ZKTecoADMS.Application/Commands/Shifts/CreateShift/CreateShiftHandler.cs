@@ -16,12 +16,6 @@ public class CreateShiftHandler(IRepository<Shift> shiftRepository)
                 return AppResponse<ShiftDto>.Error("Start time must be before end time");
             }
 
-            // Validate dates
-            if (request.StartTime < DateTime.Now)
-            {
-                return AppResponse<ShiftDto>.Error("Cannot create shift for past dates");
-            }
-
             // Check for overlapping shifts using optimized repository method
             var overlappingShift = await shiftRepository.GetSingleAsync(
                 s => s.EmployeeUserId == request.EmployeeUserId &&

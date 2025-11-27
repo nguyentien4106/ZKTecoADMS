@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ZKTecoADMS.Application.DTOs.Dashboard;
+using ZKTecoADMS.Application.Extensions;
 using ZKTecoADMS.Application.Models;
 using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
@@ -10,101 +12,112 @@ namespace ZKTecoADMS.Application.Queries.Dashboard.GetEmployeeDashboard;
 public class GetEmployeeDashboardHandler(
     IRepository<Shift> shiftRepository,
     IRepository<Attendance> attendanceRepository,
-    UserManager<ApplicationUser> userRepository
+    UserManager<ApplicationUser> userManager
 ) : IQueryHandler<GetEmployeeDashboardQuery, AppResponse<EmployeeDashboardDto>>
 {
     public async Task<AppResponse<EmployeeDashboardDto>> Handle(
         GetEmployeeDashboardQuery request,
         CancellationToken cancellationToken)
     {
-        var user = await userRepository.FindByIdAsync(request.UserId.ToString());
+        var user = await userManager.Users.Where(u => u.Id == request.UserId).Include(u => u.Employee).FirstOrDefaultAsync(cancellationToken);
         if (user == null)
         {
             return AppResponse<EmployeeDashboardDto>.Fail("User not found");
         }
 
+        var (todayShift, nextShift) = await GetTodayShiftAndNextAsync(request.UserId, cancellationToken);
         var dashboardData = new EmployeeDashboardDto
         {
-            TodayShift = await GetTodayShift(request.UserId, cancellationToken),
-            NextShift = await GetNextShift(request.UserId, cancellationToken),
-            CurrentAttendance = await GetCurrentAttendance(user, cancellationToken),
+            TodayShift = todayShift,
+            NextShift = nextShift,
+            CurrentAttendance = await GetCurrentAttendance(user, todayShift, nextShift, cancellationToken),
             AttendanceStats = await GetAttendanceStats(user, request.Period, cancellationToken)
         };
 
         return AppResponse<EmployeeDashboardDto>.Success(dashboardData);
     }
 
-    private async Task<ShiftInfoDto?> GetTodayShift(Guid userId, CancellationToken cancellationToken)
+    private async Task<(ShiftInfoDto?, ShiftInfoDto?)> GetTodayShiftAndNextAsync(Guid userId, CancellationToken cancellationToken)
     {
-        var today = DateTime.UtcNow.Date;
-        var shifts = await shiftRepository.GetAllAsync(cancellationToken: cancellationToken);
-        
-        var todayShift = shifts
-            .Where(s => s.EmployeeUserId == userId)
-            .Where(s => s.StartTime.Date == today)
-            .Where(s => s.Status == ShiftStatus.Approved)
-            .OrderBy(s => s.StartTime)
-            .FirstOrDefault();
+        var today = DateTime.Now.Date;
+        var nextTwoShifts = await shiftRepository.GetAllAsync(
+            s => s.EmployeeUserId == userId && s.Status == ShiftStatus.Approved && s.StartTime.Date >= today,
+            orderBy: q => q.OrderBy(s => s.StartTime),
+            take: 2,
+            cancellationToken: cancellationToken
+        );
 
-        if (todayShift == null) return null;
+        if( !nextTwoShifts.Any()) return (null, null);
 
-        return new ShiftInfoDto
+        if( nextTwoShifts.Count() == 1)
         {
-            Id = todayShift.Id,
-            StartTime = todayShift.StartTime,
-            EndTime = todayShift.EndTime,
-            Description = todayShift.Description,
-            Status = (int)todayShift.Status,
-            TotalHours = (todayShift.EndTime - todayShift.StartTime).TotalHours,
-            IsToday = true
-        };
-    }
-
-    private async Task<ShiftInfoDto?> GetNextShift(Guid userId, CancellationToken cancellationToken)
-    {
-        var now = DateTime.UtcNow;
-        var shifts = await shiftRepository.GetAllAsync(cancellationToken: cancellationToken);
-        
-        var nextShift = shifts
-            .Where(s => s.EmployeeUserId == userId)
-            .Where(s => s.StartTime > now)
-            .Where(s => s.Status == ShiftStatus.Approved)
-            .OrderBy(s => s.StartTime)
-            .FirstOrDefault();
-
-        if (nextShift == null) return null;
-
-        return new ShiftInfoDto
+            var onlyShift = nextTwoShifts.First();
+            var shiftDto = new ShiftInfoDto
+            {
+                Id = onlyShift.Id,
+                StartTime = onlyShift.StartTime,
+                EndTime = onlyShift.EndTime,
+                Description = onlyShift.Description,
+                Status = (int)onlyShift.Status,
+                IsToday = onlyShift.StartTime.Date == today
+            };
+            return (shiftDto.IsToday ? shiftDto : null, shiftDto.IsToday ? null : shiftDto);
+        }
+        var firstShift = nextTwoShifts.ElementAt(0);
+        if(firstShift.StartTime.Date == today)
         {
-            Id = nextShift.Id,
-            StartTime = nextShift.StartTime,
-            EndTime = nextShift.EndTime,
-            Description = nextShift.Description,
-            Status = (int)nextShift.Status,
-            TotalHours = (nextShift.EndTime - nextShift.StartTime).TotalHours,
+            var secondShift = nextTwoShifts.ElementAt(1);
+
+            return (new ShiftInfoDto
+            {
+                Id = firstShift.Id,
+                StartTime = firstShift.StartTime,
+                EndTime = firstShift.EndTime,
+                Description = firstShift.Description,
+                Status = (int)firstShift.Status,
+                IsToday = true
+            },
+            new ShiftInfoDto
+            {
+                Id = secondShift.Id,
+                StartTime = secondShift.StartTime,
+                EndTime = secondShift.EndTime,
+                Description = secondShift.Description,  
+                Status = (int)secondShift.Status,
+                IsToday = secondShift.StartTime.Date == today
+            });
+        }
+        
+        return (null, new ShiftInfoDto
+        {
+            Id = firstShift.Id,
+            StartTime = firstShift.StartTime,
+            EndTime = firstShift.EndTime,
+            Description = firstShift.Description,
+            Status = (int)firstShift.Status,
             IsToday = false
-        };
+        });
     }
 
     private async Task<AttendanceInfoDto?> GetCurrentAttendance(
         ApplicationUser user,
+        ShiftInfoDto? todayShift,
+        ShiftInfoDto? nextShift,
         CancellationToken cancellationToken)
     {
         if (user.Employee == null) return null;
 
-        var today = DateTime.UtcNow.Date;
-        var attendances = await attendanceRepository.GetAllAsync(cancellationToken: cancellationToken);
+        var today = DateTime.Now.Date;
+        var todayAttendances = await attendanceRepository.GetAllAsync(
+            a => a.EmployeeId == user.Employee.Id && a.AttendanceTime.Date == today,
+            orderBy: q => q.OrderBy(a => a.AttendanceTime),
+            cancellationToken: cancellationToken
+        );
         
-        var todayAttendances = attendances
-            .Where(a => a.PIN == user.Employee.Pin)
-            .Where(a => a.AttendanceTime.Date == today)
-            .OrderBy(a => a.AttendanceTime)
-            .ToList();
-
         if (!todayAttendances.Any()) return null;
 
-        var checkIn = todayAttendances.FirstOrDefault(a => a.AttendanceState == AttendanceStates.CheckIn);
-        var checkOut = todayAttendances.LastOrDefault(a => a.AttendanceState == AttendanceStates.CheckOut);
+        var checkIn = todayAttendances.FirstOrDefault();
+        var checkOut = todayAttendances.LastOrDefault(a => a.AttendanceTime <= (nextShift == null || !nextShift.IsToday ? DateTime.Today.EndOfDay() : nextShift.StartTime));
 
         var checkInTime = checkIn?.AttendanceTime;
         var checkOutTime = checkOut?.AttendanceTime;
@@ -124,7 +137,7 @@ public class GetEmployeeDashboardHandler(
         }
         else if (checkInTime.HasValue)
         {
-            workHours = (DateTime.UtcNow - checkInTime.Value).TotalHours;
+            workHours = (DateTime.Now - checkInTime.Value).TotalHours;
         }
 
         // Check for late/early
@@ -134,7 +147,6 @@ public class GetEmployeeDashboardHandler(
         int? earlyOutMinutes = null;
 
         // Get today's shift to compare
-        var todayShift = await GetTodayShift(user.Id, cancellationToken);
         if (todayShift != null && checkInTime.HasValue)
         {
             var expectedStartTime = todayShift.StartTime;
@@ -274,7 +286,7 @@ public class GetEmployeeDashboardHandler(
 
     private static (DateTime startDate, DateTime endDate) GetDateRange(string period)
     {
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
         var endDate = now.Date;
 
         return period.ToLower() switch
