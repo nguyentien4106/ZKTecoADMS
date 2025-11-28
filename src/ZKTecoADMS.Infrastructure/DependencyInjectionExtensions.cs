@@ -136,6 +136,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IAttendanceService, AttendanceService>();
         services.AddScoped<IDeviceCmdService, DeviceCmdService>();
         services.AddScoped<IEmployeeOperationService, EmployeeOperationService>();
+        services.AddScoped<IAttendanceOperationService, AttendanceOperationService>();
         services.AddScoped<IShiftService, ShiftService>();
         services.AddScoped<IShiftTemplateService, ShiftTemplateService>();
         

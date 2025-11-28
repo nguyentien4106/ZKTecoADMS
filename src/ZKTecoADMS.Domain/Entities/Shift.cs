@@ -23,6 +23,14 @@ public class Shift : AuditableEntity<Guid>
     
     [MaxLength(500)]
     public string? RejectionReason { get; set; }
+
+    // public Guid? CheckInAttendanceId { get; set; }
+
+    // public Guid? CheckOutAttendanceId { get; set; }
+
+    // public virtual Attendance? CheckInAttendance { get; set; }
+
+    // public virtual Attendance? CheckOutAttendance { get; set; }
     
     // Navigation Properties
     public virtual ApplicationUser EmployeeUser { get; set; } = null!;

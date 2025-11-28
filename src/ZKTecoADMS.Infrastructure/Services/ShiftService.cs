@@ -17,19 +17,8 @@ public class ShiftService(
     {
         return await repository.GetSingleAsync(
             s => s.Id == id,
-            includeProperties: new[] { nameof(Shift.EmployeeUser) },
+            includeProperties: [nameof(Shift.EmployeeUser)],
             cancellationToken: cancellationToken);
-    }
-
-    public async Task<List<Shift>> GetShiftsByApplicationUserIdAsync(Guid applicationUserId, CancellationToken cancellationToken = default)
-    {
-        var shifts = await repository.GetAllAsync(
-            filter: s => s.EmployeeUserId == applicationUserId,
-            orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: new[] { nameof(Shift.EmployeeUser) },
-            cancellationToken: cancellationToken);
-
-        return shifts.ToList();
     }
 
     public async Task<List<Shift>> GetShiftsByManagerAsync(Guid managerId, CancellationToken cancellationToken = default)
@@ -52,99 +41,6 @@ public class ShiftService(
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
-    }
-
-    public async Task<List<Shift>> GetShiftsByStatusAsync(ShiftStatus status, CancellationToken cancellationToken = default)
-    {
-        var shifts = await repository.GetAllAsync(
-            filter: s => s.Status == status,
-            orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: new[] { nameof(Shift.EmployeeUser) },
-            cancellationToken: cancellationToken);
-
-        return shifts.ToList();
-    }
-
-    public async Task<List<Shift>> GetShiftsByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
-    {
-        var shifts = await repository.GetAllAsync(
-            filter: s => s.StartTime >= startDate && s.EndTime <= endDate,
-            orderBy: query => query.OrderBy(s => s.StartTime),
-            includeProperties: new[] { nameof(Shift.EmployeeUser) },
-            cancellationToken: cancellationToken);
-
-        return shifts.ToList();
-    }
-
-    public async Task<Shift> CreateShiftAsync(Shift shift, CancellationToken cancellationToken = default)
-    {
-        ValidateShift(shift);
-
-        // Validate dates
-        if (shift.StartTime < DateTime.Now)
-        {
-            throw new InvalidOperationException("Cannot create shift for past dates");
-        }
-
-        shift.Status = ShiftStatus.Pending;
-        var createdShift = await repository.AddAsync(shift, cancellationToken);
-        
-        logger.LogInformation(
-            "Created shift for user {UserId} from {StartTime} to {EndTime}",
-            shift.EmployeeUserId,
-            shift.StartTime,
-            shift.EndTime);
-
-        return createdShift;
-    }
-
-    public async Task<Shift> UpdateShiftAsync(Shift shift, CancellationToken cancellationToken = default)
-    {
-        ValidateShift(shift);
-
-        var existingShift = await GetShiftByIdAsync(shift.Id, cancellationToken);
-        if (existingShift == null)
-        {
-            throw new InvalidOperationException($"Shift with ID {shift.Id} not found");
-        }
-
-        // Only allow updates to pending shifts
-        if (existingShift.Status != ShiftStatus.Pending)
-        {
-            throw new InvalidOperationException($"Cannot update shift with status {existingShift.Status}");
-        }
-
-        existingShift.StartTime = shift.StartTime;
-        existingShift.EndTime = shift.EndTime;
-        existingShift.Description = shift.Description;
-
-        await repository.UpdateAsync(existingShift, cancellationToken);
-        
-        logger.LogInformation("Updated shift: {ShiftId}", shift.Id);
-
-        return existingShift;
-    }
-
-    public async Task<bool> DeleteShiftAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        var shift = await GetShiftByIdAsync(id, cancellationToken);
-        if (shift == null)
-        {
-            logger.LogWarning("Attempted to delete non-existent shift: {ShiftId}", id);
-            return false;
-        }
-
-        // Only allow deletion of pending shifts
-        if (shift.Status != ShiftStatus.Pending)
-        {
-            throw new InvalidOperationException($"Cannot delete shift with status {shift.Status}");
-        }
-
-        await repository.DeleteAsync(shift, cancellationToken);
-        
-        logger.LogInformation("Deleted shift: {ShiftId}", id);
-
-        return true;
     }
 
     public async Task<Shift> ApproveShiftAsync(Guid shiftId, Guid approvedByUserId, CancellationToken cancellationToken = default)
@@ -221,11 +117,34 @@ public class ShiftService(
         return shift;
     }
 
-    private void ValidateShift(Shift shift)
+    public async Task<(Shift? CurrentShift, Shift? NextShift)> GetCurrentShiftAndNextShiftAsync(Guid employeeId, DateTime currentTime, CancellationToken cancellationToken = default)
     {
-        if (shift.StartTime >= shift.EndTime)
+        var currentShift = await repository.GetSingleAsync(
+            s => s.EmployeeUserId == employeeId &&
+                 s.StartTime <= currentTime &&
+                 s.EndTime >= currentTime &&
+                 s.Status == ShiftStatus.Approved,
+            cancellationToken: cancellationToken);
+
+        var nextShift = await repository.GetSingleAsync(
+            s => s.EmployeeUserId == employeeId &&
+                 s.StartTime > currentTime &&
+                 s.Status == ShiftStatus.Approved,
+            cancellationToken: cancellationToken);
+
+        return (currentShift, nextShift);
+    }
+
+    public async Task UpdateShiftAttendancesAsync(IEnumerable<Attendance> attendances, CancellationToken cancellationToken = default)
+    {
+        var attendanceDates = attendances.Select(a => a.AttendanceTime.Date).Distinct().ToList();
+        foreach (var date in attendanceDates)
         {
-            throw new ArgumentException("Start time must be before end time");
+            var shiftsByDate = await repository.GetAllAsync(
+                filter: s => s.StartTime.Date <= date && s.EndTime.Date >= date,
+                cancellationToken: cancellationToken);
+            
+            
         }
     }
 }

@@ -8,7 +8,9 @@ namespace ZKTecoADMS.Infrastructure.Services;
 
 
 public class AttendanceService(
-    IRepository<Attendance> attendanceRepository)
+    IRepository<Attendance> attendanceRepository,
+    IShiftService shiftService
+)
     : IAttendanceService
 {
     public async Task<IEnumerable<Attendance>> GetAttendanceByDeviceAsync(
@@ -34,5 +36,16 @@ public class AttendanceService(
             a.DeviceId == deviceId && 
             a.PIN == pin && 
             a.AttendanceTime == attendanceTime);
+    }
+
+    public async Task CreateAttendancesAsync(IEnumerable<Attendance> attendances)
+    {
+        await attendanceRepository.AddRangeAsync(attendances);
+
+        await UpdateShiftAttendancesAsync(attendances);
+    }
+
+    public async Task<bool> UpdateShiftAttendancesAsync(IEnumerable<Attendance> attendances)
+    {
     }
 }
