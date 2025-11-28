@@ -49,6 +49,8 @@ export const ShiftList = ({
                         <TableHead>Start Time</TableHead>
                         <TableHead>End Time</TableHead>
                         <TableHead>Total Hours</TableHead>
+                        <TableHead>Max Late (min)</TableHead>
+                        <TableHead>Max Early Leave (min)</TableHead>
                         <TableHead>Description</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Submitted</TableHead>

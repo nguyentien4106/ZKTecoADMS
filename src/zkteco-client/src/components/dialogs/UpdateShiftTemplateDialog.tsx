@@ -31,6 +31,8 @@ export const UpdateShiftTemplateDialog = () => {
         name: '',
         startTime: '09:00',
         endTime: '17:00',
+        maximumAllowedLateMinutes: 30,
+        maximumAllowedEarlyLeaveMinutes: 30,
         isActive: true,
     });
 
@@ -40,6 +42,8 @@ export const UpdateShiftTemplateDialog = () => {
                 name: selectedTemplate.name,
                 startTime: extractTime(selectedTemplate.startTime),
                 endTime: extractTime(selectedTemplate.endTime),
+                maximumAllowedLateMinutes: selectedTemplate.maximumAllowedLateMinutes ?? 30,
+                maximumAllowedEarlyLeaveMinutes: selectedTemplate.maximumAllowedEarlyLeaveMinutes ?? 30,
                 isActive: selectedTemplate.isActive,
             });
         }
@@ -59,6 +63,8 @@ export const UpdateShiftTemplateDialog = () => {
             name: formData.name,
             startTime,
             endTime,
+            maximumAllowedLateMinutes: formData.maximumAllowedLateMinutes,
+            maximumAllowedEarlyLeaveMinutes: formData.maximumAllowedEarlyLeaveMinutes,
             isActive: formData.isActive,
         });
     };
@@ -108,6 +114,31 @@ export const UpdateShiftTemplateDialog = () => {
                                 onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                                 required
                             />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="maxLate">Max Late (minutes)</Label>
+                                <Input
+                                    id="maxLate"
+                                    type="number"
+                                    min="0"
+                                    value={formData.maximumAllowedLateMinutes}
+                                    onChange={(e) => setFormData({ ...formData, maximumAllowedLateMinutes: parseInt(e.target.value) || 30 })}
+                                    placeholder="30"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="maxEarlyLeave">Max Early Leave (minutes)</Label>
+                                <Input
+                                    id="maxEarlyLeave"
+                                    type="number"
+                                    min="0"
+                                    value={formData.maximumAllowedEarlyLeaveMinutes}
+                                    onChange={(e) => setFormData({ ...formData, maximumAllowedEarlyLeaveMinutes: parseInt(e.target.value) || 30 })}
+                                    placeholder="30"
+                                />
+                            </div>
                         </div>
 
                         <div className="space-y-2">

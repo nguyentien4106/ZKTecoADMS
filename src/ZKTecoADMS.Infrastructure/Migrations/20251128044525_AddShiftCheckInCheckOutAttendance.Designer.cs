@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZKTecoADMS.Infrastructure;
@@ -11,9 +12,11 @@ using ZKTecoADMS.Infrastructure;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     [DbContext(typeof(ZKTecoDbContext))]
-    partial class ZKTecoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251128044525_AddShiftCheckInCheckOutAttendance")]
+    partial class AddShiftCheckInCheckOutAttendance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -851,12 +854,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<int>("MaximumAllowedEarlyLeaveMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MaximumAllowedLateMinutes")
-                        .HasColumnType("integer");
-
                     b.Property<string>("RejectionReason")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -908,12 +905,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.Property<Guid>("ManagerId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("MaximumAllowedEarlyLeaveMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MaximumAllowedLateMinutes")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()

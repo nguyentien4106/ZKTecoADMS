@@ -226,6 +226,7 @@ public class EfRepository<TEntity>(
 
         try
         {
+            entity.UpdatedAt = DateTime.Now;
             dbSet.Update(entity);
             var result = await context.SaveChangesAsync(cancellationToken) > 0;
             

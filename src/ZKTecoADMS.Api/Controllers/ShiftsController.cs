@@ -39,6 +39,8 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
             request.EmployeeUserId ?? CurrentUserId,
             request.StartTime,
             request.EndTime,
+            request.MaximumAllowedLateMinutes,
+            request.MaximumAllowedEarlyLeaveMinutes,
             request.Description,
             IsManager);
         
@@ -59,6 +61,8 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
             id,
             request.StartTime,
             request.EndTime,
+            request.MaximumAllowedLateMinutes,
+            request.MaximumAllowedEarlyLeaveMinutes,
             request.Description);
         
         var result = await mediator.Send(command);

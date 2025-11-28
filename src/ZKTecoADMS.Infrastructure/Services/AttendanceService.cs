@@ -42,10 +42,19 @@ public class AttendanceService(
     {
         await attendanceRepository.AddRangeAsync(attendances);
 
-        await UpdateShiftAttendancesAsync(attendances);
+        // Reload attendances with Employee navigation property for shift mapping
+        var attendanceIds = attendances.Select(a => a.Id).ToList();
+        var attendancesWithEmployee = await attendanceRepository.GetAllAsync(
+            filter: a => attendanceIds.Contains(a.Id),
+            includeProperties: new[] { nameof(Attendance.Employee) }
+        );
+
+        await UpdateShiftAttendancesAsync(attendancesWithEmployee);
     }
 
     public async Task<bool> UpdateShiftAttendancesAsync(IEnumerable<Attendance> attendances)
     {
+        await shiftService.UpdateShiftAttendancesAsync(attendances);
+        return true;
     }
 }

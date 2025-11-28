@@ -12,6 +12,13 @@ namespace ZKTecoADMS.Domain.Entities
         public string Name { get; set; } = null!;
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
+        
+        [Required]
+        public int MaximumAllowedLateMinutes { get; set; } = 30;
+        
+        [Required]
+        public int MaximumAllowedEarlyLeaveMinutes { get; set; } = 30;
+        
         public bool IsActive { get; set; }
     }
 }

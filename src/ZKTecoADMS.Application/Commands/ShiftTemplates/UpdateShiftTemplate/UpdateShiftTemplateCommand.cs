@@ -7,4 +7,6 @@ public record UpdateShiftTemplateCommand(
     string Name,
     TimeSpan StartTime,
     TimeSpan EndTime,
+    int MaximumAllowedLateMinutes,
+    int MaximumAllowedEarlyLeaveMinutes,
     bool IsActive) : ICommand<AppResponse<ShiftTemplateDto>>;

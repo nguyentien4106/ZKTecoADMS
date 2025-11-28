@@ -81,6 +81,31 @@ export const CreateShiftTemplateDialog = () => {
                                 required
                             />
                         </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="maxLate">Max Late (minutes)</Label>
+                                <Input
+                                    id="maxLate"
+                                    type="number"
+                                    min="0"
+                                    value={template.maximumAllowedLateMinutes ?? 30}
+                                    onChange={(e) => setTemplate({ ...template, maximumAllowedLateMinutes: parseInt(e.target.value) || 30 })}
+                                    placeholder="30"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="maxEarlyLeave">Max Early Leave (minutes)</Label>
+                                <Input
+                                    id="maxEarlyLeave"
+                                    type="number"
+                                    min="0"
+                                    value={template.maximumAllowedEarlyLeaveMinutes ?? 30}
+                                    onChange={(e) => setTemplate({ ...template, maximumAllowedEarlyLeaveMinutes: parseInt(e.target.value) || 30 })}
+                                    placeholder="30"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     <DialogFooter className="flex-col sm:flex-row gap-2">

@@ -2,8 +2,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ShiftList } from '@/components/shifts/ShiftList';
-import { CreateShiftDialog } from '@/components/dialogs/CreateShiftDialog';
-import { UpdateShiftDialog } from '@/components/dialogs/UpdateShiftDialog';
+import { ShiftRequestDialog } from '@/components/dialogs/ShiftRequestDialog';
 import { ShiftProvider, useShiftContext } from '@/contexts/ShiftContext';
 
 
@@ -11,10 +10,7 @@ const MyShiftsContent = () => {
     const { 
         shifts, 
         isLoading, 
-        selectedShift, 
-        createDialogOpen,
-        setCreateDialogOpen,
-        handleCreate,
+        setDialogMode,
         handleEdit,
         handleDelete,
     } = useShiftContext();
@@ -25,7 +21,7 @@ const MyShiftsContent = () => {
                 title="My Shifts"
                 description="Manage your shift schedules"
                 action={
-                    <Button onClick={() => setCreateDialogOpen(true)}>
+                    <Button onClick={() => setDialogMode('create')}>
                         <Plus className="w-4 h-4 mr-2" />
                         Request Shift
                     </Button>
@@ -40,16 +36,8 @@ const MyShiftsContent = () => {
                     onDelete={handleDelete}
                 />
             </div>
-            <CreateShiftDialog 
-                open={createDialogOpen}
-                onOpenChange={setCreateDialogOpen}
-                onSubmit={handleCreate}
-                mode="request"
-            />
-
-            {selectedShift && (
-                <UpdateShiftDialog />
-            )}
+            
+            <ShiftRequestDialog />
         </div>
     );
 };

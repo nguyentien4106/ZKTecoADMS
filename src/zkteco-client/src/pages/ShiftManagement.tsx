@@ -9,7 +9,7 @@ import { ApproveShiftDialog } from '@/components/dialogs/ApproveShiftDialog';
 import { RejectShiftDialog } from '@/components/dialogs/RejectShiftDialog';
 import { CreateShiftTemplateDialog } from '@/components/dialogs/CreateShiftTemplateDialog';
 import { UpdateShiftTemplateDialog } from '@/components/dialogs/UpdateShiftTemplateDialog';
-import { CreateShiftDialog } from '@/components/dialogs/CreateShiftDialog';
+import { AssignShiftDialog } from '@/components/dialogs/AssignShiftDialog';
 import { ShiftManagementProvider, useShiftManagementContext } from '@/contexts/ShiftManagementContext';
 import { useEffect, useState } from "react";
 
@@ -147,11 +147,10 @@ const ShiftManagementDialogs = () => {
             )}
             <CreateShiftTemplateDialog />
             <UpdateShiftTemplateDialog />
-            <CreateShiftDialog 
+            <AssignShiftDialog 
                 open={assignShiftDialogOpen}
                 onOpenChange={setAssignShiftDialogOpen}
                 onSubmit={handleCreateShift}
-                mode="assign"
             />
         </>
     );

@@ -48,6 +48,8 @@ export const defaultNewShiftTemplate: CreateShiftTemplateRequest = {
     name: '',
     startTime: '09:00:00',
     endTime: '17:00:00',
+    maximumAllowedLateMinutes: 30,
+    maximumAllowedEarlyLeaveMinutes: 30,
 }
 
 const now = new Date();
@@ -58,6 +60,8 @@ export const defaultNewShiftWithEmployeeUserId: CreatShiftDialog = {
     employeeUserId: null,
     startTime: tomorrow,
     endTime: tomorrow,
+    maximumAllowedLateMinutes: 30,
+    maximumAllowedEarlyLeaveMinutes: 30,
     description: ''
 }
 
