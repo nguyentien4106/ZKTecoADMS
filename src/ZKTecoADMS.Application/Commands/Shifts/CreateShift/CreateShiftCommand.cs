@@ -1,11 +1,12 @@
+using FluentValidation;
+using ZKTecoADMS.Application.DTOs;
 using ZKTecoADMS.Application.DTOs.Shifts;
 
 namespace ZKTecoADMS.Application.Commands.Shifts.CreateShift;
 
 public record CreateShiftCommand(
     Guid EmployeeUserId,
-    DateTime StartTime,
-    DateTime EndTime,
+    List<WorkingDay> WorkingDays,
     int MaximumAllowedLateMinutes = 30,
     int MaximumAllowedEarlyLeaveMinutes = 30,
     string? Description = null,

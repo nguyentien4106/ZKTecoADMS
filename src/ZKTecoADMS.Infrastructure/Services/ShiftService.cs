@@ -64,7 +64,6 @@ public class ShiftService(
         }
 
         shift.Status = ShiftStatus.Approved;
-        shift.UpdatedAt = DateTime.Now;
         shift.RejectionReason = null;
 
         await repository.UpdateAsync(shift, cancellationToken);
@@ -103,7 +102,6 @@ public class ShiftService(
         }
 
         shift.Status = ShiftStatus.Rejected;
-        shift.UpdatedAt = DateTime.Now;
         shift.RejectionReason = rejectionReason;
 
         await repository.UpdateAsync(shift, cancellationToken);
@@ -186,9 +184,9 @@ public class ShiftService(
             var checkInWindowStart = shift.StartTime.AddMinutes(-shift.MaximumAllowedLateMinutes);
             var checkInWindowEnd = shift.StartTime.AddMinutes(shift.MaximumAllowedLateMinutes);
             
-            // Allow check-out from MaximumAllowedEarlyLeaveMinutes before shift end and up to 2 hours after
+            // Allow check-out from MaximumAllowedEarlyLeaveMinutes before shift end and up to 1 hour after
             var checkOutWindowStart = shift.EndTime.AddMinutes(-shift.MaximumAllowedEarlyLeaveMinutes);
-            var checkOutWindowEnd = shift.EndTime.AddHours(2);
+            var checkOutWindowEnd = shift.EndTime.AddHours(1); // 1 hour after shift end
 
             // Find check-in: First attendance within check-in window
             var checkInAttendance = attendances

@@ -21,7 +21,8 @@ interface ShiftContextValue {
   selectedShift: Shift | null;
   
   // Actions
-  handleCreateOrUpdate: (data: CreateShiftRequest | UpdateShiftRequest, id?: string) => Promise<void>;
+  handleCreate: (data: CreateShiftRequest) => Promise<void>;
+  handleUpdate: (id: string, data: UpdateShiftRequest) => Promise<void>;
   handleDelete: (id: string) => Promise<void>;
   handleEdit: (shift: Shift) => void;
 }
@@ -51,15 +52,16 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
   const updateShiftMutation = useUpdateShift();
   const deleteShiftMutation = useDeleteShift();
 
-  const handleCreateOrUpdate = async (data: CreateShiftRequest | UpdateShiftRequest, id?: string) => {
-    if (dialogMode === 'edit' && id) {
-      await updateShiftMutation.mutateAsync({ id, data: data as UpdateShiftRequest });
-      setSelectedShift(null);
-    } else {
-      await createShiftMutation.mutateAsync(data as CreateShiftRequest);
-    }
+  const handleCreate = async (data: CreateShiftRequest) => {
+    await createShiftMutation.mutateAsync(data);
     setDialogMode(null);
   };
+
+  const handleUpdate = async (id: string, data: UpdateShiftRequest) => {
+    await updateShiftMutation.mutateAsync({ id, data });
+    setSelectedShift(null);
+    setDialogMode(null);
+  };  
 
   const handleDelete = async (id: string) => {
     await deleteShiftMutation.mutateAsync(id);
@@ -81,7 +83,8 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
     selectedShift,
     
     // Actions
-    handleCreateOrUpdate,
+    handleCreate,
+    handleUpdate,
     handleDelete,
     handleEdit,
   };

@@ -8,7 +8,7 @@ public class ShiftInfoDto
     public string? Description { get; set; }
     public int Status { get; set; }
     public double TotalHours => (EndTime - StartTime).TotalHours;
-    public bool IsToday { get; set; }
+    public bool IsToday => StartTime.Date == DateTime.Now.Date;
 }
 
 public class AttendanceInfoDto

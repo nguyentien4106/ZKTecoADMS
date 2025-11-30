@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,18 +11,18 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { CalendarIcon, Clock } from 'lucide-react';
 import { DateTimeFormat } from '@/constants';
-import { CreateShiftRequest, UpdateShiftRequest } from '@/types/shift';
+import { CreateShiftRequest } from '@/types/shift';
 import { useShiftContext } from '@/contexts/ShiftContext';
 
 interface ShiftDialogState {
     templateId: string;
-    date: Date;
+    dates: Date[];
     description: string;
 }
 
 const defaultDialogState: ShiftDialogState = {
     templateId: '',
-    date: new Date(),
+    dates: [],
     description: '',
 };
 
@@ -40,16 +40,13 @@ export const ShiftRequestDialog = () => {
     const {
         dialogMode,
         setDialogMode,
-        selectedShift,
-        handleCreateOrUpdate,
+        handleCreate,
     } = useShiftContext();
 
     const { data: templates = [], isLoading: templatesLoading } = useShiftTemplates();
     const hasTemplates = templates.length > 0;
 
-    const isEditMode = dialogMode === 'edit' && selectedShift !== null;
-
-    const { templateId, date, description } = dialogState;
+    const { templateId, dates, description } = dialogState;
 
     // Get selected template
     const selectedTemplate = templates.find(t => t.id === templateId);
@@ -60,64 +57,30 @@ export const ShiftRequestDialog = () => {
         setDialogState({ ...defaultDialogState });
     };
 
-    // Initialize dialog state when editing
-    useEffect(() => {
-        if (isEditMode && selectedShift) {
-            // In edit mode, we don't use template, just show the shift details
-            setDialogState({
-                templateId: '',
-                date: new Date(selectedShift.startTime),
-                description: selectedShift.description || '',
-            });
-        } else if (!isEditMode) {
-            setDialogState({ ...defaultDialogState });
-        }
-    }, [isEditMode, selectedShift]);
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSubmitting(true);
 
-        if (isEditMode && selectedShift) {
-            // Update mode - just update description for now
-            const updateData: UpdateShiftRequest = {
-                startTime: selectedShift.startTime,
-                endTime: selectedShift.endTime,
-                maximumAllowedLateMinutes: selectedShift.maximumAllowedLateMinutes,
-                maximumAllowedEarlyLeaveMinutes: selectedShift.maximumAllowedEarlyLeaveMinutes,
-                description: description,
-            };
+        // Create mode - use template and create shifts for each selected date
+        if (!templateId || !dates.length || !selectedTemplate) return;
 
-            setIsSubmitting(true);
-            try {
-                await handleCreateOrUpdate(updateData, selectedShift.id);
-                handleClose();
-            } catch (error) {
-                console.error('Failed to update shift:', error);
-            } finally {
-                setIsSubmitting(false);
-            }
-        } else {
-            // Create mode - use template
-            if (!templateId || !date || !selectedTemplate) return;
+        // Create a shift for each selected date
+        const workingDays = dates.map(date => ({
+            startTime: getDateString(selectedTemplate.startTime, date),
+            endTime: getDateString(selectedTemplate.endTime, date),
+        }));
 
-            const createData: CreateShiftRequest = {
-                startTime: getDateString(selectedTemplate.startTime, date),
-                endTime: getDateString(selectedTemplate.endTime, date),
-                maximumAllowedLateMinutes: selectedTemplate.maximumAllowedLateMinutes,
-                maximumAllowedEarlyLeaveMinutes: selectedTemplate.maximumAllowedEarlyLeaveMinutes,
-                description: description,
-            };
+        const createData: CreateShiftRequest = {
+            workingDays,
+            maximumAllowedLateMinutes: selectedTemplate.maximumAllowedLateMinutes,
+            maximumAllowedEarlyLeaveMinutes: selectedTemplate.maximumAllowedEarlyLeaveMinutes,
+            description: description,
+        };
+        await handleCreate(createData);
+        
+        handleClose();
+        setIsSubmitting(false);
 
-            setIsSubmitting(true);
-            try {
-                await handleCreateOrUpdate(createData);
-                handleClose();
-            } catch (error) {
-                console.error('Failed to create shift:', error);
-            } finally {
-                setIsSubmitting(false);
-            }
-        }
     };
 
     const updateDialogState = (updates: Partial<ShiftDialogState>) => {
@@ -130,19 +93,15 @@ export const ShiftRequestDialog = () => {
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-xl">
                         <Clock className="h-5 w-5" />
-                        {isEditMode ? 'Edit Shift Request' : 'Request New Shift'}
+                        Request New Shift
                     </DialogTitle>
                     <DialogDescription>
-                        {isEditMode 
-                            ? "Update your shift request details."
-                            : "Submit a shift request using a template."}
+                        Submit a shift request using a template.
                     </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-                    {!isEditMode && (
-                        <>
-                            {/* Template Selection */}
+                    {/* Template Selection */}
                             <div className="space-y-2">
                                 <Label htmlFor="template">Select Shift Template</Label>
                                 {templatesLoading ? (
@@ -172,26 +131,30 @@ export const ShiftRequestDialog = () => {
 
                             {/* Date Selection */}
                             <div className="space-y-2">
-                                <Label htmlFor="date">Shift Date</Label>
+                                <Label htmlFor="dates">Shift Dates</Label>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
                                             className={cn(
                                                 "w-full justify-start text-left font-normal",
-                                                !date && "text-muted-foreground"
+                                                !dates?.length && "text-muted-foreground"
                                             )}
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {date ? format(date, "PPP") : <span>Pick a date</span>}
+                                            {dates && dates.length > 0 ? (
+                                                `${dates.length} date${dates.length > 1 ? 's' : ''} selected`
+                                            ) : (
+                                                <span>Pick dates</span>
+                                            )}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0">
                                         <Calendar
-                                            mode="single"
+                                            mode="multiple"
                                             style={{ minWidth: "250px" }}
-                                            selected={date}
-                                            onSelect={(selectedDate) => updateDialogState({ date: selectedDate || new Date() })}
+                                            selected={dates}
+                                            onSelect={(selectedDates) => updateDialogState({ dates: selectedDates || [] })}
                                             disabled={(dateToCheck) => dateToCheck < new Date(new Date().setHours(0, 0, 0, 0))}
                                             initialFocus
                                         />
@@ -227,37 +190,37 @@ export const ShiftRequestDialog = () => {
                                     </div>
                                 </div>
                             )}
-                        </>
-                    )}
 
-                    {/* Show shift details in edit mode */}
-                    {isEditMode && selectedShift && (
-                        <div className="rounded-lg border p-4 space-y-2 bg-muted/50">
-                            <div className="font-medium text-sm">Shift Details</div>
-                            <div className="grid grid-cols-2 gap-2 text-sm">
-                                <div>
-                                    <span className="text-muted-foreground">Start:</span>{' '}
-                                    {format(new Date(selectedShift.startTime), 'PPp')}
+                            {/* Selected Dates Display */}
+                            {dates.length > 0 && (
+                                <div className="rounded-lg border p-4 space-y-2 bg-muted/50">
+                                    <div className="font-medium text-sm">
+                                        Selected Dates ({dates.length} {dates.length === 1 ? 'day' : 'days'})
+                                    </div>
+                                    <div className="max-h-40 overflow-y-auto space-y-1">
+                                        {dates
+                                            .sort((a, b) => a.getTime() - b.getTime())
+                                            .map((date, index) => (
+                                                <div key={index} className="text-sm flex items-center gap-2">
+                                                    <CalendarIcon className="h-3 w-3 text-muted-foreground" />
+                                                    <span>{format(date, 'EEEE, MMMM d, yyyy')}</span>
+                                                    {selectedTemplate && (
+                                                        <span className="text-muted-foreground text-xs ml-auto">
+                                                            {selectedTemplate.startTime.substring(0, 5)} - {selectedTemplate.endTime.substring(0, 5)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                    </div>
+                                    {selectedTemplate && (
+                                        <div className="pt-2 border-t text-sm">
+                                            <span className="text-muted-foreground">Total Hours:</span>{' '}
+                                            <span className="font-medium">{(dates.length * selectedTemplate.totalHours).toFixed(1)}h</span>
+                                        </div>
+                                    )}
                                 </div>
-                                <div>
-                                    <span className="text-muted-foreground">End:</span>{' '}
-                                    {format(new Date(selectedShift.endTime), 'PPp')}
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">Max Late:</span>{' '}
-                                    {selectedShift.maximumAllowedLateMinutes} min
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">Max Early:</span>{' '}
-                                    {selectedShift.maximumAllowedEarlyLeaveMinutes} min
-                                </div>
-                                <div className="col-span-2">
-                                    <span className="text-muted-foreground">Total Hours:</span>{' '}
-                                    {selectedShift.totalHours}h
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                            )}
+
 
                     {/* Description */}
                     <div className="space-y-2">
@@ -280,11 +243,11 @@ export const ShiftRequestDialog = () => {
                             type="submit" 
                             disabled={
                                 isSubmitting || 
-                                (!isEditMode && (!templateId || !hasTemplates))
+                                (!templateId || !dates.length || !hasTemplates)
                             }
                             className="min-w-[140px]"
                         >
-                            {isSubmitting ? 'Submitting...' : isEditMode ? 'Update Shift' : 'Submit Request'}
+                            {isSubmitting ? 'Submitting...' : dates.length > 1 ? `Submit ${dates.length} Requests` : 'Submit Request'}
                         </Button>
                     </DialogFooter>
                 </form>

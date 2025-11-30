@@ -27,6 +27,8 @@ export const ShiftRow = ({
 
     return (
         <TableRow>
+            <TableCell className="whitespace-nowrap">{shift.id.substring(30)}</TableCell>
+        
             {showEmployeeInfo && (
                 <TableCell className="font-medium whitespace-nowrap">
                     {shift.employeeName}

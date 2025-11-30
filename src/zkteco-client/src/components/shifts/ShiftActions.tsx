@@ -54,16 +54,6 @@ export const ShiftActions = ({
                     </Button>
                 </>
             )}
-            {isPending && onEdit && (
-                <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onEdit(shift)}
-                >
-                    <Edit className="w-4 h-4 mr-1" />
-                    Edit
-                </Button>
-            )}
             {isPending && onDelete && (
                 <AlertDialog>
                     <AlertDialogTrigger asChild>

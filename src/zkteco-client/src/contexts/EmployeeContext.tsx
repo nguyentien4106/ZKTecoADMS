@@ -14,7 +14,6 @@ import {
 import { useDevices } from '@/hooks/useDevices'
 import { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee'
 import { Account, CreateEmployeeAccountRequest } from '@/types/account'
-import { da } from 'date-fns/locale'
 
 interface EmployeeContextValue {
   // State

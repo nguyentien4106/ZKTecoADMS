@@ -32,7 +32,7 @@ public class PostAttendancesStrategy(IServiceProvider serviceProvider) : IPostSt
 
         _logger.LogInformation("Successfully saved {Count} attendance records from device {DeviceId}", attendances.Count, device.Id);
 
-        await _shiftService.GetCurrentShiftAndNextShiftAsync(Guid.Empty, DateTime.UtcNow);
-        return ClockResponses.Ok;
+        await _shiftService.GetCurrentShiftAndNextShiftAsync(Guid.Empty, DateTime.Now);
+        return ClockResponses.Ok; 
     }
 }

@@ -27,8 +27,10 @@ export interface Shift {
 
 export interface CreateShiftRequest {
     employeeUserId?: string | null;
-    startTime: string;
-    endTime: string;
+    workingDays: {
+        startTime: string;
+        endTime: string;
+    }[];
     maximumAllowedLateMinutes?: number;
     maximumAllowedEarlyLeaveMinutes?: number;
     description?: string;

@@ -34,7 +34,6 @@ public class GetTodayShiftHandler(IRepository<Shift> shiftRepository)
             EndTime = todayShift.EndTime,
             Description = todayShift.Description,
             Status = (int)todayShift.Status,
-            IsToday = true
         };
 
         return AppResponse<ShiftInfoDto>.Success(dto);

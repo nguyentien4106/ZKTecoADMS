@@ -17,14 +17,11 @@ const MONTHS = [
 
 export const AttendanceFilterBar = () => {
   const {
-    devices,
     employeeOptions,
     selectedYear,
     selectedMonth,
     selectedEmployeeIds,
     selectedDeviceIds,
-    devicesLoading,
-    employeesLoading,
     deviceOptions,
     setSelectedYear,
     setSelectedMonth,

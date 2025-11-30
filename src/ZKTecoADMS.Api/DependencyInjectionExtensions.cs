@@ -23,6 +23,7 @@ public static class DependencyInjectionExtensions
         services.AddHealthChecks();
         services.AddSwaggerGen(config =>
         {
+            config.CustomSchemaIds(x => x.FullName);
             config.SwaggerDoc("v1", new OpenApiInfo { Title = "ZKTecoADMS API", Version = "v1" });
             
             config.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

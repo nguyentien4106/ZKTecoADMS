@@ -37,37 +37,37 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
     {
         var command = new CreateShiftCommand(
             request.EmployeeUserId ?? CurrentUserId,
-            request.StartTime,
-            request.EndTime,
+            request.WorkingDays,
             request.MaximumAllowedLateMinutes,
             request.MaximumAllowedEarlyLeaveMinutes,
             request.Description,
-            IsManager);
+            IsManager
+        );
         
         var result = await mediator.Send(command);
         return Ok(result);
     }
 
-    [HttpPut("{id}")]
-    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
-    public async Task<ActionResult<AppResponse<ShiftDto>>> UpdateShift(Guid id, [FromBody] UpdateShiftRequest request)
-    {
-        if (request.Status != null && IsEmployee)
-        {
-            return Unauthorized();
-        }
+    // [HttpPut("{id}")]
+    // [Authorize(Policy = PolicyNames.AtLeastEmployee)]
+    // public async Task<ActionResult<AppResponse<ShiftDto>>> UpdateShift(Guid id, [FromBody] UpdateShiftRequest request)
+    // {
+    //     if (request.Status != null && IsEmployee)
+    //     {
+    //         return Unauthorized();
+    //     }
         
-        var command = new UpdateShiftCommand(
-            id,
-            request.StartTime,
-            request.EndTime,
-            request.MaximumAllowedLateMinutes,
-            request.MaximumAllowedEarlyLeaveMinutes,
-            request.Description);
+    //     var command = new UpdateShiftCommand(
+    //         id,
+    //         request.StartTime,
+    //         request.EndTime,
+    //         request.MaximumAllowedLateMinutes,
+    //         request.MaximumAllowedEarlyLeaveMinutes,
+    //         request.Description);
         
-        var result = await mediator.Send(command);
-        return Ok(result);
-    }
+    //     var result = await mediator.Send(command);
+    //     return Ok(result);
+    // }
 
     [HttpDelete("{id}")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
