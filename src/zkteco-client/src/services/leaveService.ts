@@ -1,7 +1,8 @@
 import { apiService } from './api';
 import type { 
     LeaveRequest, 
-    CreateLeaveRequest, 
+    CreateLeaveRequest,
+    UpdateLeaveRequest,
     RejectLeaveRequest 
 } from '@/types/leave';
 
@@ -13,6 +14,10 @@ export const leaveService = {
 
     createLeave: async (data: CreateLeaveRequest) => {
         return await apiService.post<LeaveRequest>('/api/leaves', data);
+    },
+
+    updateLeave: async (id: string, data: UpdateLeaveRequest) => {
+        return await apiService.put<LeaveRequest>(`/api/leaves/${id}`, data);
     },
 
     cancelLeave: async (id: string) => {

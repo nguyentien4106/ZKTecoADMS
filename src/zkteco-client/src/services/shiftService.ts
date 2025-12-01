@@ -1,4 +1,4 @@
-import { apiService } from './api';
+import { apiService, buildQueryParams } from './api';
 import type { 
     CreateShiftRequest, 
     UpdateShiftRequest, 
@@ -9,8 +9,9 @@ import type {
 
 export const shiftService = {
     // Employee endpoints
-    getMyShifts: async (status?: ShiftStatus) => {
-        return await apiService.get<Shift[]>('/api/shifts/my-shifts' + (status ? `?status=${status}` : ''));
+    getMyShifts: async (status?: ShiftStatus, employeeUserId?: string) => {
+        const queryString = buildQueryParams({ status, employeeUserId });
+        return await apiService.get<Shift[]>('/api/shifts/my-shifts' + (queryString ? `?${queryString}` : ''));
     },
 
     createShift: async (data: CreateShiftRequest) => {

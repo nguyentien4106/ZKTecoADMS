@@ -27,6 +27,8 @@ export const ShiftRow = ({
 
     return (
         <TableRow>
+            <TableCell className="whitespace-nowrap">{shift.id.substring(30)}</TableCell>
+        
             {showEmployeeInfo && (
                 <TableCell className="font-medium whitespace-nowrap">
                     {shift.employeeName}
@@ -35,6 +37,8 @@ export const ShiftRow = ({
             <TableCell className="whitespace-nowrap">{formatDateTime(shift.startTime)}</TableCell>
             <TableCell className="whitespace-nowrap">{formatDateTime(shift.endTime)}</TableCell>
             <TableCell className="whitespace-nowrap">{totalHours.toFixed(2)}h</TableCell>
+            <TableCell className="text-center">{shift.maximumAllowedLateMinutes}</TableCell>
+            <TableCell className="text-center">{shift.maximumAllowedEarlyLeaveMinutes}</TableCell>
             <TableCell>{shift.description || '-'}</TableCell>
             <TableCell>
                 <StatusBadge status={shift.status} rejectionReason={shift.rejectionReason} />

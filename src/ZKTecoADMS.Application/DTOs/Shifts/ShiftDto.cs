@@ -10,6 +10,8 @@ public class ShiftDto
     public string EmployeeName { get; set; } = string.Empty;
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
+    public int MaximumAllowedLateMinutes { get; set; } = 30;
+    public int MaximumAllowedEarlyLeaveMinutes { get; set; } = 30;
     public string? Description { get; set; }
     public ShiftStatus Status { get; set; }
     public DateTime? ApprovedAt { get; set; }

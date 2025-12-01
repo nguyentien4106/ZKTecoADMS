@@ -16,7 +16,6 @@ interface LeavesTableProps {
 }
 
 export const LeavesTable = ({ leaves, isLoading, showActions = true }: LeavesTableProps) => {
-  console.log("LeavesTable - leaves:", leaves);
   if (isLoading) {
     return <LoadingSpinner />;
   }

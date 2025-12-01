@@ -8,13 +8,11 @@ import { XCircle } from 'lucide-react';
 interface RejectLeaveDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (reason: string) => Promise<void>;
 }
 
 export const RejectLeaveDialog = ({
   open,
   onOpenChange,
-  onSubmit
 }: RejectLeaveDialogProps) => {
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,7 +23,6 @@ export const RejectLeaveDialog = ({
 
     setIsSubmitting(true);
     try {
-      await onSubmit(reason);
       setReason('');
     } catch (error) {
       console.error(error);

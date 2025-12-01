@@ -45,10 +45,13 @@ export const ShiftList = ({
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Id</TableHead>
                         {showEmployeeInfo && <TableHead>Employee</TableHead>}
                         <TableHead>Start Time</TableHead>
                         <TableHead>End Time</TableHead>
                         <TableHead>Total Hours</TableHead>
+                        <TableHead>Max Late (min)</TableHead>
+                        <TableHead>Max Early Leave (min)</TableHead>
                         <TableHead>Description</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Submitted</TableHead>

@@ -1,9 +1,7 @@
-import { useState } from 'react';
 import { PageHeader } from '@/components/PageHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAllLeaves, usePendingLeaves, useApproveLeave, useRejectLeave } from '@/hooks/useLeaves';
+import { useAllLeaves, usePendingLeaves } from '@/hooks/useLeaves';
 import { LeavesTable } from '@/components/leaves/LeavesTable';
-import { RejectLeaveDialog } from '@/components/leaves/RejectLeaveDialog';
 import { Card } from '@/components/ui/card';
 import { CheckCircle, XCircle, Clock } from 'lucide-react';
 import { LeaveStatus } from '@/types/leave';
@@ -11,28 +9,7 @@ import { LeaveStatus } from '@/types/leave';
 export const LeaveManagement = () => {
   const { data: allLeaves = [], isLoading: allLoading } = useAllLeaves();
   const { data: pendingLeaves = [], isLoading: pendingLoading } = usePendingLeaves();
-  const approveLeave = useApproveLeave();
-  const rejectLeave = useRejectLeave();
   
-  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
-  const [selectedLeaveId, setSelectedLeaveId] = useState<string>('');
-
-  const handleApprove = async (id: string) => {
-    if (window.confirm('Are you sure you want to approve this leave request?')) {
-      await approveLeave.mutateAsync(id);
-    }
-  };
-
-  const handleRejectClick = (id: string) => {
-    setSelectedLeaveId(id);
-    setRejectDialogOpen(true);
-  };
-
-  const handleRejectSubmit = async (reason: string) => {
-    await rejectLeave.mutateAsync({ id: selectedLeaveId, data: { reason } });
-    setRejectDialogOpen(false);
-  };
-
   const approvedLeaves = allLeaves.filter(l => l.status === LeaveStatus.APPROVED);
   const rejectedLeaves = allLeaves.filter(l => l.status === LeaveStatus.REJECTED);
 
@@ -96,8 +73,6 @@ export const LeaveManagement = () => {
           <LeavesTable
             leaves={pendingLeaves}
             isLoading={pendingLoading}
-            onApprove={handleApprove}
-            onReject={handleRejectClick}
             showActions
           />
         </TabsContent>
@@ -116,12 +91,6 @@ export const LeaveManagement = () => {
           />
         </TabsContent>
       </Tabs>
-
-      <RejectLeaveDialog
-        open={rejectDialogOpen}
-        onOpenChange={setRejectDialogOpen}
-        onSubmit={handleRejectSubmit}
-      />
     </div>
   );
 };

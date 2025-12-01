@@ -2,13 +2,12 @@
 // src/contexts/ShiftManagementContext.tsx
 // ==========================================
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { CreateShiftRequest, Shift, ShiftTemplate } from '@/types/shift';
+import { CreateShiftRequest, Shift, ShiftTemplate, UpdateShiftTemplateRequest, CreateShiftTemplateRequest } from '@/types/shift';
 import { 
   usePendingShifts, 
   useManagedShifts, 
   useApproveShift, 
   useRejectShift,
-  useAssignShift,
   useCreateShift,
 } from '@/hooks/useShifts';
 import {
@@ -45,8 +44,8 @@ interface ShiftManagementContextValue {
   // Template actions
   setCreateTemplateDialogOpen: (open: boolean) => void;
   setUpdateTemplateDialogOpen: (open: boolean) => void;
-  handleCreateTemplate: (data: { name: string; startTime: string; endTime: string }) => Promise<void>;
-  handleUpdateTemplate: (id: string, data: { name: string; startTime: string; endTime: string; isActive: boolean }) => Promise<void>;
+  handleCreateTemplate: (data: CreateShiftTemplateRequest) => Promise<void>;
+  handleUpdateTemplate: (id: string, data: UpdateShiftTemplateRequest) => Promise<void>;
   handleDeleteTemplate: (id: string) => Promise<void>;
   handleEditTemplateClick: (template: ShiftTemplate) => void;
   

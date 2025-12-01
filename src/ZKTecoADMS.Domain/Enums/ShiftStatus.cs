@@ -7,5 +7,6 @@ public enum ShiftStatus
     Rejected = 2,
     Cancelled = 3,
     OnPendingLeave = 4,
-    ApprovedLeave = 5
+    ApprovedLeave = 5,
+    Absent = 6
 }

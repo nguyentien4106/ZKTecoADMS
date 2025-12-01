@@ -22,13 +22,11 @@ namespace ZKTecoADMS.Api.Controllers;
 [Route("api/[controller]")]
 public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
 {
-    // Employee endpoints - can manage their own shifts
     [HttpGet("my-shifts")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
-    public async Task<ActionResult<AppResponse<List<ShiftDto>>>> GetMyShifts([FromQuery]ShiftStatus? status)
+    public async Task<ActionResult<AppResponse<List<ShiftDto>>>> GetMyShifts([FromQuery]ShiftStatus? status, [FromQuery]Guid? employeeUserId)
     {
-        // Assuming CurrentUserId links to an Employee
-        var query = new GetShiftsByEmployeeQuery(CurrentUserId, status);
+        var query = new GetShiftsByEmployeeQuery(employeeUserId ?? CurrentUserId, status);
         var result = await mediator.Send(query);
         return Ok(result);
     }
@@ -39,28 +37,37 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
     {
         var command = new CreateShiftCommand(
             request.EmployeeUserId ?? CurrentUserId,
-            request.StartTime,
-            request.EndTime,
+            request.WorkingDays,
+            request.MaximumAllowedLateMinutes,
+            request.MaximumAllowedEarlyLeaveMinutes,
             request.Description,
-            IsManager);
+            IsManager
+        );
         
         var result = await mediator.Send(command);
         return Ok(result);
     }
 
-    [HttpPut("{id}")]
-    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
-    public async Task<ActionResult<AppResponse<ShiftDto>>> UpdateShift(Guid id, [FromBody] UpdateShiftRequest request)
-    {
-        var command = new UpdateShiftCommand(
-            id,
-            request.StartTime,
-            request.EndTime,
-            request.Description);
+    // [HttpPut("{id}")]
+    // [Authorize(Policy = PolicyNames.AtLeastEmployee)]
+    // public async Task<ActionResult<AppResponse<ShiftDto>>> UpdateShift(Guid id, [FromBody] UpdateShiftRequest request)
+    // {
+    //     if (request.Status != null && IsEmployee)
+    //     {
+    //         return Unauthorized();
+    //     }
         
-        var result = await mediator.Send(command);
-        return Ok(result);
-    }
+    //     var command = new UpdateShiftCommand(
+    //         id,
+    //         request.StartTime,
+    //         request.EndTime,
+    //         request.MaximumAllowedLateMinutes,
+    //         request.MaximumAllowedEarlyLeaveMinutes,
+    //         request.Description);
+        
+    //     var result = await mediator.Send(command);
+    //     return Ok(result);
+    // }
 
     [HttpDelete("{id}")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]

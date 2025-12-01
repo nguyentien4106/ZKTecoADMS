@@ -23,6 +23,8 @@ public class CreateShiftTemplateHandler(IRepository<ShiftTemplate> repository)
                 Name = request.Name,
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
+                MaximumAllowedLateMinutes = request.MaximumAllowedLateMinutes,
+                MaximumAllowedEarlyLeaveMinutes = request.MaximumAllowedEarlyLeaveMinutes,
                 IsActive = true
             };
 
@@ -42,6 +44,8 @@ public class CreateShiftTemplateHandler(IRepository<ShiftTemplate> repository)
                 Name = templateWithManager.Name,
                 StartTime = templateWithManager.StartTime,
                 EndTime = templateWithManager.EndTime,
+                MaximumAllowedLateMinutes = templateWithManager.MaximumAllowedLateMinutes,
+                MaximumAllowedEarlyLeaveMinutes = templateWithManager.MaximumAllowedEarlyLeaveMinutes,
                 IsActive = templateWithManager.IsActive,
                 CreatedAt = templateWithManager.CreatedAt,
                 UpdatedAt = templateWithManager.UpdatedAt

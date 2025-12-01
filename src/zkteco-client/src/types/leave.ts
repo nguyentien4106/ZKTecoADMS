@@ -1,3 +1,5 @@
+import { Shift } from "./shift";
+
 export enum LeaveType {
   SICK = 0,
   VACATION = 1,
@@ -44,11 +46,28 @@ export const getLeaveStatusLabel = (status: LeaveStatus): string => {
   }
 };
 
+export interface LeaveDialogState {
+  employeeUserId: string | null;
+  shiftId: string;
+  type: LeaveType;
+  isHalfShift: boolean;
+  halfShiftType: '' | 'first' | 'second';
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  reason: string;
+  status?: LeaveStatus;
+  leaveId?: string;
+}
+
+
 export interface LeaveRequest {
   id: string;
+  employeeUserId: string;
   employeeId: string;
   employeeName: string;
   type: LeaveType;
+  shiftId: string;
+  shift?: Shift;
   startDate: Date;
   endDate: Date;
   isHalfShift: boolean;
@@ -66,6 +85,16 @@ export interface CreateLeaveRequest {
   endDate: string;
   shiftId: string;
   employeeUserId?: string | null;
+}
+
+export interface UpdateLeaveRequest {
+  type: LeaveType;
+  isHalfShift: boolean;
+  reason: string;
+  startDate: string;
+  endDate: string;
+  shiftId: string;
+  status?: LeaveStatus
 }
 
 export interface RejectLeaveRequest {

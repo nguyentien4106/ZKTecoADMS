@@ -812,6 +812,12 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<Guid?>("ApplicationUserId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CheckInAttendanceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CheckOutAttendanceId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
@@ -845,6 +851,12 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
+                    b.Property<int>("MaximumAllowedEarlyLeaveMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaximumAllowedLateMinutes")
+                        .HasColumnType("integer");
+
                     b.Property<string>("RejectionReason")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -866,6 +878,10 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("CheckInAttendanceId");
+
+                    b.HasIndex("CheckOutAttendanceId");
 
                     b.HasIndex("EmployeeUserId");
 
@@ -892,6 +908,12 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.Property<Guid>("ManagerId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("MaximumAllowedEarlyLeaveMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaximumAllowedLateMinutes")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1210,7 +1232,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .WithMany("ApprovedLeaves")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "ApplicationUser")
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "EmployeeUser")
                         .WithMany("RequestedLeaves")
                         .HasForeignKey("EmployeeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1228,7 +1250,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
+                    b.Navigation("EmployeeUser");
 
                     b.Navigation("Manager");
 
@@ -1241,11 +1263,25 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .WithMany("ApprovedShifts")
                         .HasForeignKey("ApplicationUserId");
 
+                    b.HasOne("ZKTecoADMS.Domain.Entities.Attendance", "CheckInAttendance")
+                        .WithMany()
+                        .HasForeignKey("CheckInAttendanceId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ZKTecoADMS.Domain.Entities.Attendance", "CheckOutAttendance")
+                        .WithMany()
+                        .HasForeignKey("CheckOutAttendanceId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "EmployeeUser")
                         .WithMany("RequestedShifts")
                         .HasForeignKey("EmployeeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CheckInAttendance");
+
+                    b.Navigation("CheckOutAttendance");
 
                     b.Navigation("EmployeeUser");
                 });

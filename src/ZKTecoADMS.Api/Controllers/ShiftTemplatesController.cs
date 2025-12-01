@@ -22,7 +22,9 @@ public class ShiftTemplatesController(IMediator mediator) : AuthenticatedControl
             CurrentUserId,
             request.Name,
             request.StartTime,
-            request.EndTime);   
+            request.EndTime,
+            request.MaximumAllowedLateMinutes,
+            request.MaximumAllowedEarlyLeaveMinutes);   
         var result = await mediator.Send(command);
         return Ok(result);
     }
@@ -45,6 +47,8 @@ public class ShiftTemplatesController(IMediator mediator) : AuthenticatedControl
             request.Name,
             request.StartTime,
             request.EndTime,
+            request.MaximumAllowedLateMinutes,
+            request.MaximumAllowedEarlyLeaveMinutes,
             request.IsActive);
         var result = await mediator.Send(command);
         return Ok(result);

@@ -1,5 +1,5 @@
 // ==========================================
-// src/components/dialogs/CreateemployeeAccountDialog.tsx
+// src/components/dialogs/EmployeeAccountRequestDialog.tsx
 // ==========================================
 import { useState, useEffect } from 'react'
 import {
@@ -46,7 +46,7 @@ const initialFormData: FormData = {
   userName: '',
 }
 
-export const CreateEmployeeAccountDialog = () => {
+export const EmployeeAccountRequestDialog = () => {
   const {
     createAccountDialogOpen,
     employeeForAccount,

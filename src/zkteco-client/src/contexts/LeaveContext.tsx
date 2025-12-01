@@ -2,15 +2,18 @@
 // src/contexts/LeaveContext.tsx
 // ==========================================
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { LeaveRequest, CreateLeaveRequest } from '@/types/leave';
+import { LeaveRequest, CreateLeaveRequest, UpdateLeaveRequest, LeaveDialogState } from '@/types/leave';
 import { 
   usePendingLeaves, 
   useAllLeaves, 
   useApproveLeave, 
   useRejectLeave,
   useCreateLeave,
+  useUpdateLeave,
   useCancelLeave,
 } from '@/hooks/useLeaves';
+import { format } from 'date-fns';
+import { DateTimeFormat } from '@/constants';
 
 interface LeaveContextValue {
   // State
@@ -36,9 +39,16 @@ interface LeaveContextValue {
   handleReject: (id: string, rejectionReason: string) => Promise<void>;
   handleCancel: (id: string) => Promise<void>;
   handleCreate: (data: CreateLeaveRequest) => Promise<void>;
+  handleUpdate: (id: string, data: UpdateLeaveRequest) => Promise<void>;
   handleApproveClick: (leave: LeaveRequest) => void;
   handleRejectClick: (leave: LeaveRequest) => void;
   handleCancelClick: (leave: LeaveRequest) => void;
+  handleEditClick: (leave: LeaveRequest) => void;
+
+  handleAddOrUpdate: (data: CreateLeaveRequest | UpdateLeaveRequest | LeaveDialogState, id?: string) => Promise<void>;
+
+  dialogMode: 'create' | 'edit' | null;
+  setDialogMode: (mode: 'create' | 'edit' | null) => void;
 }
 
 const LeaveContext = createContext<LeaveContextValue | undefined>(undefined);
@@ -64,6 +74,8 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
   const [selectedLeave, setSelectedLeave] = useState<LeaveRequest | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
 
+  const [dialogMode, setDialogMode] = useState<'create' | 'edit' | null>(null);
+
   // Hooks
   const { data: pendingLeaves = [], isLoading: isPendingLoading } = usePendingLeaves();
   const { data: allLeaves = [], isLoading: isAllLoading } = useAllLeaves();
@@ -72,6 +84,7 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
   const rejectLeaveMutation = useRejectLeave();
   const cancelLeaveMutation = useCancelLeave();
   const createLeaveMutation = useCreateLeave();
+  const updateLeaveMutation = useUpdateLeave();
   
   const isLoading = isPendingLoading || isAllLoading;
 
@@ -99,6 +112,12 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
     setCreateDialogOpen(false);
   };
 
+  const handleUpdate = async (id: string, data: UpdateLeaveRequest) => {
+    await updateLeaveMutation.mutateAsync({ id, data });
+    setDialogMode(null);
+    setSelectedLeave(null);
+  };
+
   const handleApproveClick = (leave: LeaveRequest) => {
     setSelectedLeave(leave);
     setApproveDialogOpen(true);
@@ -114,12 +133,31 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
     setCancelDialogOpen(true);
   };
 
+  const handleEditClick = (leave: LeaveRequest) => {
+    setDialogMode('edit');
+    setSelectedLeave(leave);
+    setDialogMode('edit');
+  };
+
+  const handleAddOrUpdate = async (data: CreateLeaveRequest | UpdateLeaveRequest | LeaveDialogState, id?: string) => {
+    data.startDate = format(data.startDate as Date, DateTimeFormat);
+    data.endDate = format(data.endDate as Date, DateTimeFormat);
+
+    if( dialogMode === 'create') {
+      await handleCreate(data as CreateLeaveRequest);
+    } else if (dialogMode === 'edit' && id) {
+      await handleUpdate(id, data as UpdateLeaveRequest);
+    }
+  }
+
   const value: LeaveContextValue = {
     // State
     pendingLeaves,
     allLeaves,
     isLoading,
-    
+    dialogMode,
+    setDialogMode,
+
     // Dialog states
     approveDialogOpen,
     rejectDialogOpen,
@@ -138,9 +176,12 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
     handleReject,
     handleCancel,
     handleCreate,
+    handleUpdate,
     handleApproveClick,
     handleRejectClick,
     handleCancelClick,
+    handleEditClick,
+    handleAddOrUpdate
   };
 
   return (

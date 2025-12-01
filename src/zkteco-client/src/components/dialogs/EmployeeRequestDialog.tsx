@@ -64,7 +64,7 @@ export const CreateUserDialog = () => {
     employeeToEdit,
     setCreateDialogOpen,
     handleAddEmployee,
-    handleUpdateEmployee: handleUpdateUser
+    handleUpdateEmployee
   } = useEmployeeContext()
   const { data: devices } = useDevices();
 
@@ -103,7 +103,7 @@ export const CreateUserDialog = () => {
       updateParams.deviceId = employeeToEdit.deviceId;
       updateParams.userId = employeeToEdit.id ?? "";
 
-      handleUpdateUser && (await handleUpdateUser(updateParams));
+      handleUpdateEmployee && (await handleUpdateEmployee(updateParams));
     } else {
       handleAddEmployee &&
         (await handleAddEmployee(data as unknown as CreateEmployeeRequest));

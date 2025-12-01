@@ -12,7 +12,7 @@ public class GetTodayShiftHandler(IRepository<Shift> shiftRepository)
         GetTodayShiftQuery request,
         CancellationToken cancellationToken)
     {
-        var today = DateTime.UtcNow.Date;
+        var today = DateTime.Now.Date;
         var shifts = await shiftRepository.GetAllAsync(cancellationToken: cancellationToken);
         
         var todayShift = shifts
@@ -34,8 +34,6 @@ public class GetTodayShiftHandler(IRepository<Shift> shiftRepository)
             EndTime = todayShift.EndTime,
             Description = todayShift.Description,
             Status = (int)todayShift.Status,
-            TotalHours = (todayShift.EndTime - todayShift.StartTime).TotalHours,
-            IsToday = true
         };
 
         return AppResponse<ShiftInfoDto>.Success(dto);

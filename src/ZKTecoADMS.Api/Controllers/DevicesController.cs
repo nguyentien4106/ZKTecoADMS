@@ -62,7 +62,7 @@ public class DevicesController(
         return Ok(await bus.Send(cmd));
     }
 
-    [Authorize(Policy = PolicyNames.AdminOnly)]
+    [Authorize(Policy = PolicyNames.AtLeastManager)]
     [HttpPut("{id}/toggle-active")]
     public async Task<ActionResult<AppResponse<DeviceDto>>> ActiveDevice(Guid id)
     {

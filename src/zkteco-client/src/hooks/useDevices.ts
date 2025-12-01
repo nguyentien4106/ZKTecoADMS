@@ -4,7 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { deviceService } from '@/services/deviceService';
 import { toast } from 'sonner';
-import type { CreateDeviceRequest, Device, PaginatedResponse } from '@/types';
+import type { CreateDeviceRequest, Device } from '@/types';
 
 export const useDevices = () => {
   return useQuery({

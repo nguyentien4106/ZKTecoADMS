@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 
 interface DateTimePickerProps {
   date?: Date;
-  setDate: (date: Date | undefined) => void;
+  setDate: (date: Date) => void;
   minDate?: Date;
   maxDate?: Date;
   disabled?: boolean;

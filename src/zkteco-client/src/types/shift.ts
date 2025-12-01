@@ -8,10 +8,12 @@ export enum ShiftStatus {
 
 export interface Shift {
     id: string;
-    applicationUserId: string;
+    employeeUserId: string;
     employeeName: string;
     startTime: string;
     endTime: string;
+    maximumAllowedLateMinutes: number;
+    maximumAllowedEarlyLeaveMinutes: number;
     description?: string;
     status: ShiftStatus;
     approvedByUserId?: string;
@@ -25,33 +27,36 @@ export interface Shift {
 
 export interface CreateShiftRequest {
     employeeUserId?: string | null;
-    startTime: string;
-    endTime: string;
+    workingDays: {
+        startTime: string;
+        endTime: string;
+    }[];
+    maximumAllowedLateMinutes?: number;
+    maximumAllowedEarlyLeaveMinutes?: number;
     description?: string;
+}
+
+
+
+export interface CreatShiftDialog {
+    employeeUserId: string | null;
+    startTime: Date;
+    endTime: Date;
+    maximumAllowedLateMinutes: number;
+    maximumAllowedEarlyLeaveMinutes: number;
+    description: string;
 }
 
 export interface UpdateShiftRequest {
     startTime: string;
     endTime: string;
+    maximumAllowedLateMinutes?: number;
+    maximumAllowedEarlyLeaveMinutes?: number;
     description?: string;
 }
 
 export interface RejectShiftRequest {
     rejectionReason: string;
-}
-
-export interface ShiftResponse {
-    isSuccess: boolean;
-    data?: Shift;
-    errors: string[];
-    message: string;
-}
-
-export interface ShiftListResponse {
-    isSuccess: boolean;
-    data?: Shift[];
-    errors: string[];
-    message: string;
 }
 
 // Shift Template types
@@ -61,22 +66,37 @@ export interface ShiftTemplate {
     name: string;
     startTime: string;
     endTime: string;
+    maximumAllowedLateMinutes: number;
+    maximumAllowedEarlyLeaveMinutes: number;
     totalHours: number;
     isActive: boolean;
     createdAt: string;
     updatedAt?: string;
 }
 
+export interface UpdateShiftTemplateRequest {
+    startTime: string;
+    endTime: string;
+    maximumAllowedLateMinutes?: number;
+    maximumAllowedEarlyLeaveMinutes?: number;
+    name: string,
+    isActive: boolean;
+}
+
 export interface CreateShiftTemplateRequest {
     name: string;
     startTime: string;
     endTime: string;
+    maximumAllowedLateMinutes?: number;
+    maximumAllowedEarlyLeaveMinutes?: number;
 }
 
 export interface UpdateShiftTemplateRequest {
     name: string;
     startTime: string;
     endTime: string;
+    maximumAllowedLateMinutes?: number;
+    maximumAllowedEarlyLeaveMinutes?: number;
     isActive: boolean;
 }
 
