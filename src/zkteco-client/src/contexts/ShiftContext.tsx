@@ -1,7 +1,7 @@
 // ==========================================
 // src/contexts/ShiftContext.tsx
 // ==========================================
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction, useMemo, useCallback } from 'react';
 import { Shift, CreateShiftRequest, UpdateShiftRequest } from '@/types/shift';
 import { 
   useMyShifts, 
@@ -9,12 +9,18 @@ import {
   useUpdateShift, 
   useDeleteShift 
 } from '@/hooks/useShifts';
+import { defaultShiftPaginationRequest } from '@/constants/defaultValue';
+import { PaginatedResponse, PaginationRequest } from '@/types';
 
 interface ShiftContextValue {
   // State
   shifts: Shift[];
   isLoading: boolean;
-  
+  paginatedShifts: PaginatedResponse<Shift>
+
+  paginationRequest: PaginationRequest;
+  setPaginationRequest: Dispatch<SetStateAction<PaginationRequest>>;
+
   // Dialog states
   dialogMode: 'create' | 'edit' | null;
   setDialogMode: (mode: 'create' | 'edit' | null) => void;
@@ -45,38 +51,53 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
   // Dialog states
   const [dialogMode, setDialogMode] = useState<'create' | 'edit' | null>(null);
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
+  const [paginationRequest, setPaginationRequest] = useState(defaultShiftPaginationRequest);
 
   // Hooks
-  const { data: shifts = [], isLoading } = useMyShifts();
+  const { data: paginatedShifts, isLoading } = useMyShifts(paginationRequest);
   const createShiftMutation = useCreateShift();
   const updateShiftMutation = useUpdateShift();
   const deleteShiftMutation = useDeleteShift();
 
-  const handleCreate = async (data: CreateShiftRequest) => {
+  const handleCreate = useCallback(async (data: CreateShiftRequest) => {
     await createShiftMutation.mutateAsync(data);
     setDialogMode(null);
-  };
+  }, [createShiftMutation]);
 
-  const handleUpdate = async (id: string, data: UpdateShiftRequest) => {
+  const handleUpdate = useCallback(async (id: string, data: UpdateShiftRequest) => {
     await updateShiftMutation.mutateAsync({ id, data });
     setSelectedShift(null);
     setDialogMode(null);
-  };  
+  }, [updateShiftMutation]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = useCallback(async (id: string) => {
     await deleteShiftMutation.mutateAsync(id);
-  };
+  }, [deleteShiftMutation]);
 
-  const handleEdit = (shift: Shift) => {
+  const handleEdit = useCallback((shift: Shift) => {
     setSelectedShift(shift);
     setDialogMode('edit');
-  };
+  }, []);
 
-  const value: ShiftContextValue = {
+  // Memoize the default empty paginated response
+  const emptyPaginatedResponse = useMemo<PaginatedResponse<Shift>>(() => ({ 
+    items: [], 
+    totalCount: 0, 
+    pageNumber: 1, 
+    pageSize: 10, 
+    totalPages: 0,
+    hasPreviousPage: false,
+    hasNextPage: false
+  }), []);
+
+  // Memoize the context value
+  const value: ShiftContextValue = useMemo(() => ({
     // State
-    shifts,
+    shifts: paginatedShifts?.items || [],
+    paginatedShifts: paginatedShifts || emptyPaginatedResponse,
     isLoading,
-    
+    paginationRequest,
+    setPaginationRequest,
     // Dialog states
     dialogMode,
     setDialogMode,
@@ -87,7 +108,19 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
     handleUpdate,
     handleDelete,
     handleEdit,
-  };
+  }), [
+    paginatedShifts,
+    isLoading,
+    paginationRequest,
+    setPaginationRequest,
+    dialogMode,
+    selectedShift,
+    emptyPaginatedResponse,
+    handleCreate,
+    handleUpdate,
+    handleDelete,
+    handleEdit,
+  ]);
 
   return (
     <ShiftContext.Provider value={value}>

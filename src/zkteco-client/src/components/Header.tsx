@@ -21,7 +21,6 @@ export const Header = () => {
   const { isDark, toggleDark } = useDarkMode()
   const { user, logout } = useAuth()
   const { toggleSidebar } = useSidebar()
-  console.log(user)
   const navigate = useNavigate()
 
   const handleLogout = async () => {

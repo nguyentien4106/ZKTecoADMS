@@ -9,14 +9,26 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Clock, User } from 'lucide-react';
 import { DateTimeFormat } from '@/constants';
 import { useEmployeesByManager } from '@/hooks/useAccount';
-import { defaultTemplateShift } from '@/constants/defaultValue';
 import { CreateShiftRequest } from '@/types/shift';
 
-type AssignShiftDialogProps =
-{
+interface AssignShiftDialogState {
+    employeeUserId: string;
+    templateId: string;
+    dates: Date[];
+    description: string;
+}
+
+const defaultDialogState: AssignShiftDialogState = {
+    employeeUserId: '',
+    templateId: '',
+    dates: [],
+    description: '',
+};
+
+type AssignShiftDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit: (data: CreateShiftRequest) => Promise<void>;
@@ -27,7 +39,7 @@ const getDateString = (time: string, dateStr: Date) => {
     const date = new Date(dateStr);
     date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
     return format(date, DateTimeFormat);
-}
+};
 
 export const AssignShiftDialog = ({ 
     open, 
@@ -36,157 +48,250 @@ export const AssignShiftDialog = ({
 }: AssignShiftDialogProps) => {
     const { data: templates = [], isLoading: templatesLoading } = useShiftTemplates();
     const { data: employees = [], isLoading: employeesLoading } = useEmployeesByManager();
-    const [employeeUserId, setEmployeeUserId] = useState<string | null>(null);
-    const [templateShift, setTemplateShift] = useState(defaultTemplateShift);
+    const [dialogState, setDialogState] = useState<AssignShiftDialogState>({ ...defaultDialogState });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const hasTemplates = templates.length > 0;
+    const { employeeUserId, templateId, dates, description } = dialogState;
+
+    // Get selected template and employee
+    const selectedTemplate = templates.find(t => t.id === templateId);
+    const selectedEmployee = employees.find(e => e.id === employeeUserId);
+
+    const handleClose = () => {
+        onOpenChange(false);
+        setDialogState({ ...defaultDialogState });
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!templateShift.templateId || !templateShift.date || !employeeUserId) {
+        if (!templateId || !dates.length || !employeeUserId || !selectedTemplate) {
             return;
         }
 
-        const selectedTemplate = templates.find(t => t.id === templateShift.templateId);
-        if (!selectedTemplate) return;
+        setIsSubmitting(true);
+
+        // Create a shift for each selected date
+        const workingDays = dates.map(date => ({
+            startTime: getDateString(selectedTemplate.startTime, date),
+            endTime: getDateString(selectedTemplate.endTime, date),
+        }));
 
         const data: CreateShiftRequest = {
             employeeUserId: employeeUserId,
-            startTime: getDateString(selectedTemplate.startTime, templateShift.date),
-            endTime: getDateString(selectedTemplate.endTime, templateShift.date),
+            workingDays,
             maximumAllowedLateMinutes: selectedTemplate.maximumAllowedLateMinutes,
             maximumAllowedEarlyLeaveMinutes: selectedTemplate.maximumAllowedEarlyLeaveMinutes,
-            description: templateShift.description,
+            description: description,
         };
 
         await onSubmit(data);
-        setEmployeeUserId(null);
-        setTemplateShift(defaultTemplateShift);
+        handleClose();
+        setIsSubmitting(false);
     };
 
-    const handleOpenChange = (open: boolean) => {
-        onOpenChange(open);
-        if (!open) {
-            setEmployeeUserId(null);
-            setTemplateShift(defaultTemplateShift);
-        }
+    const updateDialogState = (updates: Partial<AssignShiftDialogState>) => {
+        setDialogState((prev) => ({ ...prev, ...updates }));
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="max-w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <Dialog open={open} onOpenChange={handleClose}>
+            <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Assign Shift to Employee</DialogTitle>
+                    <DialogTitle className="flex items-center gap-2 text-xl">
+                        <Clock className="h-5 w-5" />
+                        Assign Shift to Employee
+                    </DialogTitle>
                     <DialogDescription>
-                        Assign a shift directly to an employee
+                        Assign shifts to an employee using a template.
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="employee">Employee</Label>
-                            {employeesLoading ? (
-                                <div className="text-sm text-muted-foreground">Loading employees...</div>
-                            ) : (
-                                <Select
-                                    value={employeeUserId ?? ''}
-                                    onValueChange={(value) => setEmployeeUserId(value)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select an employee..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {employees.map((employee) => (
-                                            <SelectItem key={employee.id} value={employee.id}>
-                                                {employee.fullName}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="template">Select Shift Template</Label>
-                            {templatesLoading ? (
-                                <div className="text-sm text-muted-foreground">Loading templates...</div>
-                            ) : !hasTemplates ? (
-                                <div className="text-sm text-muted-foreground">No templates available. Please create a template first.</div>
-                            ) : (
-                                <Select
-                                    value={templateShift.templateId}
-                                    onValueChange={(value) => setTemplateShift({ ...templateShift, templateId: value })}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Choose a template..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {templates.map((template) => (
-                                            <SelectItem key={template.id} value={template.id}>
-                                                {template.name} ({template.startTime.substring(0, 5)} - {template.endTime.substring(0, 5)})
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="date">Shift Date</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal",
-                                            !templateShift.date && "text-muted-foreground"
-                                        )}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {templateShift.date ? format(templateShift.date, "PPP") : <span>Pick a date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar
-                                        mode="single"
-                                        style={{ minWidth: "250px" }}
-                                        selected={templateShift.date}
-                                        onSelect={(date) => setTemplateShift({ ...templateShift, date: date || new Date() })}
-                                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Description (Optional)</Label>
-                            <Textarea
-                                id="description"
-                                value={templateShift.description}
-                                onChange={(e) => setTemplateShift({ ...templateShift, description: e.target.value })}
-                                placeholder="Add any notes about this shift..."
-                                rows={3}
-                                className="resize-none"
-                            />
-                        </div>
+                <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+                    {/* Employee Selection */}
+                    <div className="space-y-2">
+                        <Label htmlFor="employee" className="flex items-center gap-2">
+                            <User className="h-4 w-4" />
+                            Employee
+                        </Label>
+                        {employeesLoading ? (
+                            <div className="text-sm text-muted-foreground">Loading employees...</div>
+                        ) : employees.length === 0 ? (
+                            <div className="text-sm text-muted-foreground">No employees available.</div>
+                        ) : (
+                            <Select
+                                value={employeeUserId}
+                                onValueChange={(value) => updateDialogState({ employeeUserId: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select an employee..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {employees.map((employee) => (
+                                        <SelectItem key={employee.id} value={employee.id}>
+                                            {employee.fullName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
                     </div>
 
-                    <DialogFooter className="flex-col sm:flex-row gap-2">
-                        <Button 
-                            type="button" 
-                            variant="outline" 
-                            onClick={() => handleOpenChange(false)}
-                            className="w-full sm:w-auto"
-                        >
+                    {/* Template Selection */}
+                    <div className="space-y-2">
+                        <Label htmlFor="template">Select Shift Template</Label>
+                        {templatesLoading ? (
+                            <div className="text-sm text-muted-foreground">Loading templates...</div>
+                        ) : !hasTemplates ? (
+                            <div className="text-sm text-muted-foreground">
+                                No templates available. Please create a template first.
+                            </div>
+                        ) : (
+                            <Select
+                                value={templateId}
+                                onValueChange={(value) => updateDialogState({ templateId: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Choose a template..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {templates.map((template) => (
+                                        <SelectItem key={template.id} value={template.id}>
+                                            {template.name} ({template.startTime.substring(0, 5)} - {template.endTime.substring(0, 5)})
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
+                    </div>
+
+                    {/* Date Selection */}
+                    <div className="space-y-2">
+                        <Label htmlFor="dates">Shift Dates</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !dates?.length && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {dates && dates.length > 0 ? (
+                                        `${dates.length} date${dates.length > 1 ? 's' : ''} selected`
+                                    ) : (
+                                        <span>Pick dates</span>
+                                    )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="multiple"
+                                    style={{ minWidth: "250px" }}
+                                    selected={dates}
+                                    onSelect={(selectedDates) => updateDialogState({ dates: selectedDates || [] })}
+                                    disabled={(dateToCheck) => dateToCheck < new Date(new Date().setHours(0, 0, 0, 0))}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+
+                    {/* Template Details Display */}
+                    {selectedTemplate && (
+                        <div className="rounded-lg border p-4 space-y-2 bg-muted/50">
+                            <div className="font-medium text-sm">Template Details</div>
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                <div>
+                                    <span className="text-muted-foreground">Start:</span>{' '}
+                                    {selectedTemplate.startTime.substring(0, 5)}
+                                </div>
+                                <div>
+                                    <span className="text-muted-foreground">End:</span>{' '}
+                                    {selectedTemplate.endTime.substring(0, 5)}
+                                </div>
+                                <div>
+                                    <span className="text-muted-foreground">Max Late:</span>{' '}
+                                    {selectedTemplate.maximumAllowedLateMinutes} min
+                                </div>
+                                <div>
+                                    <span className="text-muted-foreground">Max Early:</span>{' '}
+                                    {selectedTemplate.maximumAllowedEarlyLeaveMinutes} min
+                                </div>
+                                <div className="col-span-2">
+                                    <span className="text-muted-foreground">Total Hours:</span>{' '}
+                                    {selectedTemplate.totalHours}h
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Selected Dates Display */}
+                    {dates.length > 0 && (
+                        <div className="rounded-lg border p-4 space-y-2 bg-muted/50">
+                            <div className="font-medium text-sm flex items-center justify-between">
+                                <span>Selected Dates ({dates.length} {dates.length === 1 ? 'day' : 'days'})</span>
+                                {selectedEmployee && (
+                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                        <User className="h-3 w-3" />
+                                        {selectedEmployee.fullName}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="max-h-40 overflow-y-auto space-y-1">
+                                {dates
+                                    .sort((a, b) => a.getTime() - b.getTime())
+                                    .map((date, index) => (
+                                        <div key={index} className="text-sm flex items-center gap-2">
+                                            <CalendarIcon className="h-3 w-3 text-muted-foreground" />
+                                            <span>{format(date, 'EEEE, MMMM d, yyyy')}</span>
+                                            {selectedTemplate && (
+                                                <span className="text-muted-foreground text-xs ml-auto">
+                                                    {selectedTemplate.startTime.substring(0, 5)} - {selectedTemplate.endTime.substring(0, 5)}
+                                                </span>
+                                            )}
+                                        </div>
+                                    ))}
+                            </div>
+                            {selectedTemplate && (
+                                <div className="pt-2 border-t text-sm">
+                                    <span className="text-muted-foreground">Total Hours:</span>{' '}
+                                    <span className="font-medium">{(dates.length * selectedTemplate.totalHours).toFixed(1)}h</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Description */}
+                    <div className="space-y-2">
+                        <Label htmlFor="description">Description (Optional)</Label>
+                        <Textarea
+                            id="description"
+                            value={description}
+                            onChange={(e) => updateDialogState({ description: e.target.value })}
+                            placeholder="Add any notes about this shift assignment..."
+                            rows={3}
+                            className="resize-none"
+                        />
+                    </div>
+
+                    <DialogFooter className="gap-3 pt-4">
+                        <Button type="button" variant="outline" onClick={handleClose} className="min-w-[100px]">
                             Cancel
                         </Button>
                         <Button 
                             type="submit" 
-                            className="w-full sm:w-auto"
-                            disabled={!employeeUserId || !templateShift.templateId || !hasTemplates}
+                            disabled={
+                                isSubmitting || 
+                                !employeeUserId || 
+                                !templateId || 
+                                !dates.length || 
+                                !hasTemplates
+                            }
+                            className="min-w-[140px]"
                         >
-                            Assign Shift
+                            {isSubmitting ? 'Assigning...' : dates.length > 1 ? `Assign ${dates.length} Shifts` : 'Assign Shift'}
                         </Button>
                     </DialogFooter>
                 </form>

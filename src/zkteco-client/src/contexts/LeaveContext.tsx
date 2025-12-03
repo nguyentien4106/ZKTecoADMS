@@ -1,7 +1,7 @@
 // ==========================================
 // src/contexts/LeaveContext.tsx
 // ==========================================
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from 'react';
 import { LeaveRequest, CreateLeaveRequest, UpdateLeaveRequest, LeaveDialogState } from '@/types/leave';
 import { 
   usePendingLeaves, 
@@ -14,11 +14,13 @@ import {
 } from '@/hooks/useLeaves';
 import { format } from 'date-fns';
 import { DateTimeFormat } from '@/constants';
+import { defaultPaginationRequest } from '@/constants/defaultValue';
+import { PaginatedResponse, PaginationRequest } from '@/types';
 
 interface LeaveContextValue {
   // State
-  pendingLeaves: LeaveRequest[];
-  allLeaves: LeaveRequest[];
+  paginatedPendingLeaves: PaginatedResponse<LeaveRequest> | undefined;
+  paginatedLeaves: PaginatedResponse<LeaveRequest> | undefined;
   isLoading: boolean;
   
   // Dialog states
@@ -29,6 +31,11 @@ interface LeaveContextValue {
   selectedLeave: LeaveRequest | null;
   rejectionReason: string;
   
+  paginationRequest: PaginationRequest
+  setPaginationRequest: Dispatch<SetStateAction<PaginationRequest>>;
+  pendingPaginationRequest: PaginationRequest;
+  setPendingPaginationRequest: Dispatch<SetStateAction<PaginationRequest>>;
+
   // Actions
   setApproveDialogOpen: (open: boolean) => void;
   setRejectDialogOpen: (open: boolean) => void;
@@ -76,10 +83,14 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
 
   const [dialogMode, setDialogMode] = useState<'create' | 'edit' | null>(null);
 
+  const [paginationRequest, setPaginationRequest] = useState(defaultPaginationRequest)
+  const [pendingPaginationRequest, setPendingPaginationRequest] = useState(defaultPaginationRequest);
+  
   // Hooks
-  const { data: pendingLeaves = [], isLoading: isPendingLoading } = usePendingLeaves();
-  const { data: allLeaves = [], isLoading: isAllLoading } = useAllLeaves();
+  const { data: paginatedPendingLeaves, isLoading: isPendingLoading } = usePendingLeaves(pendingPaginationRequest);
+  const { data: paginatedLeaves, isLoading: isAllLoading } = useAllLeaves(paginationRequest);
 
+  console.log('paginatedLeaves in LeaveProvider:', paginatedLeaves);
   const approveLeaveMutation = useApproveLeave();
   const rejectLeaveMutation = useRejectLeave();
   const cancelLeaveMutation = useCancelLeave();
@@ -152,12 +163,16 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
 
   const value: LeaveContextValue = {
     // State
-    pendingLeaves,
-    allLeaves,
+    paginatedPendingLeaves,
+    paginatedLeaves,
     isLoading,
     dialogMode,
     setDialogMode,
 
+    paginationRequest,
+    setPaginationRequest,
+    pendingPaginationRequest,
+    setPendingPaginationRequest,
     // Dialog states
     approveDialogOpen,
     rejectDialogOpen,

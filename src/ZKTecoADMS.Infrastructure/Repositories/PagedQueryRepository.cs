@@ -7,6 +7,7 @@ using ZKTecoADMS.Domain.Repositories;
 using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Application.Models;
 using ZKTecoADMS.Domain.Exceptions;
+using System.Globalization;
 
 namespace ZKTecoADMS.Infrastructure.Repositories;
 
@@ -43,11 +44,12 @@ public class PagedQueryRepository<TEntity>(
             // Apply ordering based on PaginationRequest.SortBy and SortOrder
             if (!string.IsNullOrWhiteSpace(request.SortBy))
             {
-                var prop = typeof(TEntity).GetProperty(request.SortBy!);
+                var sortBy = request.SortBy.Substring(0, 1).ToUpper() + request.SortBy.Substring(1);
+                var prop = typeof(TEntity).GetProperty(sortBy);
                 if(prop == null)
                 {
                     logger.LogWarning("SortBy '{SortBy}' is not a valid property of {EntityType}. Falling back to Created desc.", request.SortBy, typeof(TEntity).Name);
-                    throw new InvalidOperationException($"SortBy '{request.SortBy}' is not a valid property of {typeof(TEntity).Name}");
+                    throw new InvalidOperationException($"SortBy '{sortBy}' is not a valid property of {typeof(TEntity).Name}");
                 }
                 var parameter = Expression.Parameter(typeof(TEntity), "x");
                 var property = Expression.Property(parameter, prop);
@@ -128,12 +130,14 @@ public class PagedQueryRepository<TEntity>(
             // Apply ordering based on PaginationRequest.SortBy and SortOrder
             if (!string.IsNullOrWhiteSpace(request.SortBy))
             {
-                var prop = typeof(TEntity).GetProperty(request.SortBy!);
+                var sortBy = request.SortBy.Substring(0, 1).ToUpper() + request.SortBy.Substring(1);
+
+                var prop = typeof(TEntity).GetProperty(sortBy);
                 if (prop == null)
                 {
                     logger.LogWarning("SortBy '{SortBy}' is not a valid property of {EntityType}. Falling back to Created desc.", 
                         request.SortBy, typeof(TEntity).Name);
-                    throw new InvalidOperationException($"SortBy '{request.SortBy}' is not a valid property of {typeof(TEntity).Name}");
+                    throw new InvalidOperationException($"SortBy '{sortBy}' is not a valid property of {typeof(TEntity).Name}");
                 }
                 
                 var parameter = Expression.Parameter(typeof(TEntity), "x");
@@ -208,12 +212,15 @@ public class PagedQueryRepository<TEntity>(
             // Apply ordering based on PaginationRequest.SortBy and SortOrder
             if (!string.IsNullOrWhiteSpace(request.SortBy))
             {
-                var prop = typeof(TEntity).GetProperty(request.SortBy!);
+                var sortBy = request.SortBy.Substring(0, 1).ToUpper() + request.SortBy.Substring(1);
+    
+                var prop = typeof(TEntity).GetProperty(sortBy);
+
                 if (prop == null)
                 {
                     logger.LogWarning("SortBy '{SortBy}' is not a valid property of {EntityType}. Falling back to Created desc.",
                         request.SortBy, typeof(TEntity).Name);
-                    throw new InvalidOperationException($"SortBy '{request.SortBy}' is not a valid property of {typeof(TEntity).Name}");
+                    throw new InvalidOperationException($"SortBy '{sortBy}' is not a valid property of {typeof(TEntity).Name}");
                 }
 
                 var parameter = Expression.Parameter(typeof(TEntity), "x");

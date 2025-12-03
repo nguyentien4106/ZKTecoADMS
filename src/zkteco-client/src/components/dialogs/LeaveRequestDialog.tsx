@@ -38,6 +38,7 @@ export const LeaveRequestDialog = () => {
     setDialogMode,
     handleAddOrUpdate
   } = useLeaveContext();
+  
   const { 
     isManager
   } = useAuth();
@@ -53,7 +54,13 @@ export const LeaveRequestDialog = () => {
     reason 
   } = dialogState;
 
-  const { data: approvedShifts = [] } = useMyShifts(
+  const { data: pagedApprovedShifts } = useMyShifts(
+    {
+      pageNumber: 1,
+      pageSize: 1000,
+      sortOrder: 'desc',
+      sortBy: 'StartTime',
+    },
     ShiftStatus.Approved, 
     isManager && employeeUserId ? employeeUserId : undefined
   );
@@ -64,7 +71,7 @@ export const LeaveRequestDialog = () => {
   const isEditMode = dialogMode == 'edit' && selectedLeave !== null;
 
   // Determine selected shift based on mode
-  const selectedShift = isEditMode ? selectedLeave?.shift : approvedShifts.find(s => s.id === shiftId);
+  const selectedShift = isEditMode ? selectedLeave?.shift : pagedApprovedShifts?.items.find(s => s.id === shiftId);
 
   // Handler to close dialog
   const handleClose = () => {
@@ -201,7 +208,7 @@ export const LeaveRequestDialog = () => {
           <ShiftSelector
             shiftId={shiftId}
             selectedShift={selectedShift}
-            approvedShifts={approvedShifts}
+            approvedShifts={pagedApprovedShifts?.items || []}
             isEditMode={isEditMode}
             onShiftChange={updateDialogState}
           />

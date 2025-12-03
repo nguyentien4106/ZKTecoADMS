@@ -81,18 +81,18 @@ public class LeavesController(IMediator mediator) : AuthenticatedControllerBase
     // Manager endpoints - can view and approve/reject leaves
     [HttpGet("pending")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
-    public async Task<ActionResult<AppResponse<List<LeaveDto>>>> GetPendingLeaves()
+    public async Task<ActionResult<AppResponse<List<LeaveDto>>>> GetPendingLeaves([FromQuery] PaginationRequest request)
     {
-        var query = new GetPendingLeavesQuery(CurrentUserId, IsManager);
+        var query = new GetPendingLeavesQuery(CurrentUserId, IsManager, request);
         var result = await mediator.Send(query);
         return Ok(result);
     }
 
     [HttpGet]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
-    public async Task<ActionResult<AppResponse<List<LeaveDto>>>> GetAllLeaves()
+    public async Task<ActionResult<AppResponse<PagedResult<LeaveDto>>>> GetAllLeaves([FromQuery] PaginationRequest request)
     {
-        var query = new GetAllLeavesQuery(CurrentUserId, IsManager);
+        var query = new GetAllLeavesQuery(CurrentUserId, IsManager, request);
         var result = await mediator.Send(query);
         return Ok(result);
     }

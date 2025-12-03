@@ -11,7 +11,6 @@ interface CommandHistoryTableProps {
 }
 
 export const CommandHistoryTable = ({ commands }: CommandHistoryTableProps) => {
-    console.log('Rendering CommandHistoryTable with commands:', commands);
   return (
     <div className="rounded-md border">
       <Table>

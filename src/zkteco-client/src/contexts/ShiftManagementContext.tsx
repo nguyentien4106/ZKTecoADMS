@@ -1,7 +1,7 @@
 // ==========================================
 // src/contexts/ShiftManagementContext.tsx
 // ==========================================
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, Dispatch } from 'react';
 import { CreateShiftRequest, Shift, ShiftTemplate, UpdateShiftTemplateRequest, CreateShiftTemplateRequest } from '@/types/shift';
 import { 
   usePendingShifts, 
@@ -16,13 +16,20 @@ import {
   useUpdateShiftTemplate,
   useDeleteShiftTemplate
 } from '@/hooks/useShiftTemplate';
+import { PaginatedResponse, PaginationRequest } from '@/types';
+import { defaultShiftPaginationRequest } from '@/constants/defaultValue';
 
 interface ShiftManagementContextValue {
   // State
-  pendingShifts: Shift[];
-  allShifts: Shift[];
+  pendingPaginationRequest: PaginationRequest;
+  allPaginationRequest: PaginationRequest;
+  pendingPaginatedShifts: PaginatedResponse<Shift> | undefined;
+  allPaginatedShifts: PaginatedResponse<Shift> | undefined;
   templates: ShiftTemplate[];
   isLoading: boolean;
+
+  setPendingPaginationRequest: Dispatch<React.SetStateAction<PaginationRequest>>;
+  setAllPaginationRequest: Dispatch<React.SetStateAction<PaginationRequest>>;
   
   // Dialog states
   approveDialogOpen: boolean;
@@ -77,10 +84,12 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
   const [updateTemplateDialogOpen, setUpdateTemplateDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<ShiftTemplate | null>(null);
   const [assignShiftDialogOpen, setAssignShiftDialogOpen] = useState(false);
+  const [pendingPaginationRequest, setPendingPaginationRequest] = useState(defaultShiftPaginationRequest);
+  const [allPaginationRequest, setAllPaginationRequest] = useState(defaultShiftPaginationRequest);
 
   // Hooks
-  const { data: pendingShifts = [], isLoading: isPendingLoading } = usePendingShifts();
-  const { data: allShifts = [], isLoading: isAllLoading } = useManagedShifts();
+  const { data: pendingPaginatedShifts, isLoading: isPendingLoading } = usePendingShifts(pendingPaginationRequest);
+  const { data: allPaginatedShifts, isLoading: isAllLoading } = useManagedShifts(allPaginationRequest);
   const { data: templates = [], isLoading: isTemplatesLoading } = useShiftTemplates();
 
   const approveShiftMutation = useApproveShift();
@@ -141,10 +150,15 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
 
   const value: ShiftManagementContextValue = {
     // State
-    pendingShifts,
-    allShifts,
+    pendingPaginationRequest,
+    allPaginationRequest,
+    pendingPaginatedShifts,
+    allPaginatedShifts,
     templates,
     isLoading,
+
+    setAllPaginationRequest,
+    setPendingPaginationRequest,
     
     // Dialog states
     approveDialogOpen,

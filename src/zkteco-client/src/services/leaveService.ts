@@ -1,4 +1,5 @@
-import { apiService } from './api';
+import { PaginatedResponse, PaginationRequest } from '@/types';
+import { apiService, buildQueryParams } from './api';
 import type { 
     LeaveRequest, 
     CreateLeaveRequest,
@@ -25,12 +26,14 @@ export const leaveService = {
     },
 
     // Manager endpoints
-    getPendingLeaves: async () => {
-        return await apiService.get<LeaveRequest[]>('/api/leaves/pending');
+    getPendingLeaves: async (paginationRequest: PaginationRequest) => {
+        const queryString = buildQueryParams(paginationRequest);
+        return await apiService.get<PaginatedResponse<LeaveRequest>>('/api/leaves/pending' + (queryString ? `?${queryString}` : ''));
     },
 
-    getAllLeaves: async () => {
-        return await apiService.get<LeaveRequest[]>('/api/leaves');
+    getAllLeaves: async (paginationRequest: PaginationRequest) => {
+        const queryString = buildQueryParams(paginationRequest);
+        return await apiService.get<PaginatedResponse<LeaveRequest>>('/api/leaves' + (queryString ? `?${queryString}` : ''));
     },
 
     approveLeave: async (id: string) => {
