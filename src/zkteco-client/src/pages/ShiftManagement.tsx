@@ -225,7 +225,3 @@ export const ShiftManagement = () => {
     );
 };
 
-function setAllPaginationRequest(arg0: (prev: any) => any) {
-    throw new Error("Function not implemented.");
-}
-

@@ -19,7 +19,6 @@ import { ForgotPassword } from './pages/auth/ForgotPassword'
 import { ResetPassword } from './pages/auth/ResetPassword'
 import { MyShifts } from './pages/MyShifts'
 import { Leaves } from './pages/Leaves'
-import { LeaveManagement } from './pages/LeaveManagement'
 import { ShiftManagement } from './pages/ShiftManagement'
 import { Profile } from './pages/Profile'
 import { UserRole } from './constants/roles'
@@ -73,14 +72,7 @@ function App() {
         />
         
         {/* Manager and Admin only routes */}
-        <Route
-          path="leave-management"
-          element={
-            <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
-              <LeaveManagement />
-            </RoleProtectedRoute>
-          }
-        />
+        
         <Route
           path="shifts"
           element={

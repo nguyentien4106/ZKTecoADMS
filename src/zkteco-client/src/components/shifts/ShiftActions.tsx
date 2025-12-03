@@ -11,7 +11,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { CheckCircle, XCircle, Edit, Trash2 } from 'lucide-react';
+import { CheckCircle, XCircle, Trash2 } from 'lucide-react';
 
 interface ShiftActionsProps {
     shift: Shift;

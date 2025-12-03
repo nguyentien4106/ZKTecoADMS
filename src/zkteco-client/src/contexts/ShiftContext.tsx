@@ -14,7 +14,6 @@ import { PaginatedResponse, PaginationRequest } from '@/types';
 
 interface ShiftContextValue {
   // State
-  shifts: Shift[];
   isLoading: boolean;
   paginatedShifts: PaginatedResponse<Shift>
 
@@ -91,9 +90,8 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
   }), []);
 
   // Memoize the context value
-  const value: ShiftContextValue = useMemo(() => ({
+  const value: ShiftContextValue = {
     // State
-    shifts: paginatedShifts?.items || [],
     paginatedShifts: paginatedShifts || emptyPaginatedResponse,
     isLoading,
     paginationRequest,
@@ -108,19 +106,7 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
     handleUpdate,
     handleDelete,
     handleEdit,
-  }), [
-    paginatedShifts,
-    isLoading,
-    paginationRequest,
-    setPaginationRequest,
-    dialogMode,
-    selectedShift,
-    emptyPaginatedResponse,
-    handleCreate,
-    handleUpdate,
-    handleDelete,
-    handleEdit,
-  ]);
+  }
 
   return (
     <ShiftContext.Provider value={value}>
