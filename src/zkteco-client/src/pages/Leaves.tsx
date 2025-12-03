@@ -18,7 +18,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { LeaveProvider, useLeaveContext } from '@/contexts/LeaveContext';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const LeavesHeader = () => {
@@ -40,19 +40,61 @@ const LeavesHeader = () => {
 
 const LeavesTabs = () => {
   const {
-    pendingLeaves,
-    allLeaves,
+    paginationRequest,
+    pendingPaginationRequest,
+    paginatedPendingLeaves,
+    paginatedLeaves,
     isLoading,
+    setPaginationRequest,
+    setPendingPaginationRequest
   } = useLeaveContext();
 
   const { isManager } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("all");
   
   useEffect(() => {
-    if (pendingLeaves.length > 0 && isManager) {
+    if (paginatedPendingLeaves && paginatedPendingLeaves?.items.length > 0 && isManager) {
       setActiveTab("pending");
     }
-  }, [pendingLeaves, isManager]);
+  }, [paginatedPendingLeaves, isManager]);
+
+  const onPaginationChange = useCallback((pageNumber: number, pageSize: number) => {
+      setPaginationRequest(prev => ({
+          ...prev,
+          pageNumber: pageNumber,
+          pageSize: pageSize
+      }));
+  }, [setPaginationRequest]);
+
+  const onPendingPaginationChange = useCallback((pageNumber: number, pageSize: number) => {
+      setPendingPaginationRequest(prev => ({
+          ...prev,
+          pageNumber: pageNumber,
+          pageSize: pageSize
+      }));
+  }, [setPendingPaginationRequest]);
+
+  const onPendingSortingChange = useCallback((sorting: any) => {
+      setPendingPaginationRequest(prev => ({
+          ...prev,
+          sortBy: sorting.length > 0 ? sorting[0].id : undefined,
+          sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
+          pageNumber: 1, // Reset to first page when sorting changes
+      }));
+  }, [setPendingPaginationRequest]);
+
+  const onAllSortingChange = useCallback((sorting: any) => {
+      setPaginationRequest(prev => ({
+          ...prev,
+          sortBy: sorting.length > 0 ? sorting[0].id : undefined,
+          sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
+          pageNumber: 1, // Reset to first page when sorting changes
+      }));
+  }, [setPaginationRequest]);
+
+  if(!paginatedLeaves) {
+    return null;
+  }
 
   return (
     <div className="mt-6">
@@ -62,8 +104,8 @@ const LeavesTabs = () => {
             isManager && (
               <TabsTrigger value="pending">
                 Pending Leaves
-                {pendingLeaves.length > 0 && (
-                  <Badge className="ml-2 bg-yellow-500 text-white">{pendingLeaves.length}</Badge>
+                {paginatedPendingLeaves && paginatedPendingLeaves.items.length > 0 && (
+                  <Badge className="ml-2 bg-yellow-500 text-white">{paginatedPendingLeaves.items.length}</Badge>
                 )}
               </TabsTrigger>
             ) 
@@ -77,9 +119,13 @@ const LeavesTabs = () => {
           isManager && (
             <TabsContent value="pending" className="mt-6">
               <LeavesTable
-                leaves={pendingLeaves}
+                paginatedLeaves={paginatedPendingLeaves}
                 isLoading={isLoading}
                 showActions={true}
+                onPaginationChange={onPendingPaginationChange}
+                paginationRequest={pendingPaginationRequest}
+                onSortingChange={onPendingSortingChange}
+                
               />
             </TabsContent>
           )
@@ -87,9 +133,12 @@ const LeavesTabs = () => {
 
         <TabsContent value="all" className="mt-6">
           <LeavesTable
-            leaves={allLeaves}
+            paginatedLeaves={paginatedLeaves}
             isLoading={isLoading}
             showActions={true}
+            onPaginationChange={onPaginationChange}
+            paginationRequest={paginationRequest}
+            onSortingChange={onAllSortingChange}
           />
         </TabsContent>
       </Tabs>

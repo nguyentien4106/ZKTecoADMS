@@ -5,26 +5,27 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { shiftService } from '@/services/shiftService';
 import { toast } from 'sonner';
 import { CreateShiftRequest, UpdateShiftRequest, RejectShiftRequest, ShiftStatus } from '@/types/shift';
+import { PaginationRequest } from '@/types';
 
 // Query hooks
-export const useMyShifts = (status?: ShiftStatus, employeeUserId?: string) => {
+export const useMyShifts = (paginationRequest: PaginationRequest, status?: ShiftStatus, employeeUserId?: string) => {
   return useQuery({
-    queryKey: ['shifts', 'my-shifts', status, employeeUserId],
-    queryFn: () => shiftService.getMyShifts(status, employeeUserId),
+    queryKey: ['shifts', 'my-shifts', paginationRequest, status, employeeUserId],
+    queryFn: () => shiftService.getMyShifts(paginationRequest, status, employeeUserId),
   });
 };
 
-export const usePendingShifts = () => {
+export const usePendingShifts = (paginationRequest: PaginationRequest) => {
   return useQuery({
-    queryKey: ['shifts', 'pending'],
-    queryFn: () => shiftService.getPendingShifts(),
+    queryKey: ['shifts', 'pending', paginationRequest],
+    queryFn: () => shiftService.getPendingShifts(paginationRequest),
   });
 };
 
-export const useManagedShifts = () => {
+export const useManagedShifts = (paginationRequest: PaginationRequest) => {
   return useQuery({
-    queryKey: ['shifts', 'managed'],
-    queryFn: () => shiftService.getManagedShifts(),
+    queryKey: ['shifts', 'managed', paginationRequest],
+    queryFn: () => shiftService.getManagedShifts(paginationRequest),
   });
 };
 

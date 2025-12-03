@@ -15,6 +15,14 @@ public class PagedResult<T>
         PageSize = pageSize;
     }
 
+    public PagedResult(IEnumerable<T> items, PagedResult<T> pagedResult)
+    {
+        Items = items;
+        TotalCount = pagedResult.TotalCount;
+        PageNumber = pagedResult.PageNumber;
+        PageSize = pagedResult.PageSize;
+    }
+
     public IEnumerable<T> Items { get; set; }
 
     public int TotalCount { get; set; }

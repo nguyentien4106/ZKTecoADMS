@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { leaveService } from '@/services/leaveService';
 import { toast } from 'sonner';
 import { CreateLeaveRequest, UpdateLeaveRequest, RejectLeaveRequest } from '@/types/leave';
+import { PaginationRequest } from '@/types';
 
 // Query hooks
 export const useMyLeaves = () => {
@@ -11,17 +12,17 @@ export const useMyLeaves = () => {
   });
 };
 
-export const usePendingLeaves = () => {
+export const usePendingLeaves = (paginationRequest: PaginationRequest) => {
   return useQuery({
-    queryKey: ['leaves', 'pending'],
-    queryFn: () => leaveService.getPendingLeaves(),
+    queryKey: ['leaves', 'pending', paginationRequest],
+    queryFn: () => leaveService.getPendingLeaves(paginationRequest),
   });
 };
 
-export const useAllLeaves = () => {
+export const useAllLeaves = (paginationRequest: PaginationRequest) => {
   return useQuery({
-    queryKey: ['leaves', 'all'],
-    queryFn: () => leaveService.getAllLeaves(),
+    queryKey: ['leaves', 'all', paginationRequest],
+    queryFn: () => leaveService.getAllLeaves(paginationRequest),
   });
 };
 

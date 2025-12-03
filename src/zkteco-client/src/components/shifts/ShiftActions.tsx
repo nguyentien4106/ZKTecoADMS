@@ -25,7 +25,6 @@ export const ShiftActions = ({
     shift,
     onApprove,
     onReject,
-    onEdit,
     onDelete
 }: ShiftActionsProps) => {
     const isPending = shift.status === ShiftStatus.Pending;

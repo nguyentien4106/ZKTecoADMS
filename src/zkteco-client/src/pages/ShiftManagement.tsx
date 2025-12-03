@@ -3,14 +3,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, UserPlus } from "lucide-react";
-import { ShiftList } from '@/components/shifts/ShiftList';
-import { ShiftTemplateList } from '@/components/shifts/ShiftTemplateList';
+import { ShiftTable } from '@/components/shifts/ShiftTable';
 import { ApproveShiftDialog } from '@/components/dialogs/ApproveShiftDialog';
 import { RejectShiftDialog } from '@/components/dialogs/RejectShiftDialog';
 import { ShiftTemplateDialog } from '@/components/dialogs/ShiftTemplateDialog';
 import { AssignShiftDialog } from '@/components/dialogs/AssignShiftDialog';
 import { ShiftManagementProvider, useShiftManagementContext } from '@/contexts/ShiftManagementContext';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { ShiftTemplateList } from "@/components/shiftTemplates/ShiftTemplateList";
 
 const ShiftManagementHeader = () => {
     return (
@@ -23,8 +23,10 @@ const ShiftManagementHeader = () => {
 
 const ShiftManagementTabs = () => {
     const {
-        pendingShifts,
-        allShifts,
+        pendingPaginationRequest,
+        allPaginationRequest,
+        pendingPaginatedShifts,
+        allPaginatedShifts,
         templates,
         isLoading,
         handleApproveClick,
@@ -33,15 +35,52 @@ const ShiftManagementTabs = () => {
         handleEditTemplateClick,
         handleDeleteTemplate,
         setAssignShiftDialogOpen,
+        setPendingPaginationRequest,
+        setAllPaginationRequest
     } = useShiftManagementContext();
 
     const [activeTab, setActiveTab] = useState<string>("all");
     
     useEffect(() => {
-        if (pendingShifts.length > 0) {
+        if (pendingPaginatedShifts && pendingPaginatedShifts?.items?.length > 0) {
             setActiveTab("pending");
         }
-    }, [pendingShifts])
+    }, [pendingPaginatedShifts])
+
+    const onAllPaginationChange = (pageNumber: number, pageSize: number) => {
+        setAllPaginationRequest(prev => ({
+            ...prev,
+            pageNumber,
+            pageSize,
+        }));
+    };
+
+    const onPendingPaginationChange = (pageNumber: number, pageSize: number) => {
+        setPendingPaginationRequest(prev => ({
+            ...prev,
+            pageNumber,
+            pageSize,
+        }));
+    };
+
+    const onPendingSortingChange = useCallback((sorting: any) => {
+        setPendingPaginationRequest(prev => ({
+            ...prev,
+            sortBy: sorting.length > 0 ? sorting[0].id : undefined,
+            sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
+            pageNumber: 1, // Reset to first page when sorting changes
+        }));
+    }, [setPendingPaginationRequest]);
+
+    const onAllSortingChange = useCallback((sorting: any) => {
+        setAllPaginationRequest(prev => ({
+            ...prev,
+            sortBy: sorting.length > 0 ? sorting[0].id : undefined,
+            sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
+            pageNumber: 1, // Reset to first page when sorting changes
+        }));
+    }, [setAllPaginationRequest]);
+
     return (
         <div className="mt-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -49,12 +88,12 @@ const ShiftManagementTabs = () => {
                     <TabsTrigger value="pending">
                         Pending
                         {
-                            pendingShifts.length > 0 && (
+                            (pendingPaginatedShifts?.totalCount ?? 0) > 0 && (
                                 <Badge
                                     variant="destructive"
                                     className="ml-2"
                                 >
-                                    {pendingShifts.length}
+                                    {pendingPaginatedShifts?.totalCount}
                                 </Badge>
                             )
                         }
@@ -68,14 +107,21 @@ const ShiftManagementTabs = () => {
                 </TabsList>
 
                 <TabsContent value="pending" className="mt-6">
-                    <ShiftList
-                        shifts={pendingShifts}
-                        isLoading={isLoading}
-                        onApprove={handleApproveClick}
-                        onReject={handleRejectClick}
-                        showEmployeeInfo={true}
-                        showActions={true}
-                    />
+                    {
+                        pendingPaginatedShifts && (
+                            <ShiftTable
+                                paginatedShifts={pendingPaginatedShifts}
+                                paginationRequest={pendingPaginationRequest}
+                                isLoading={isLoading}
+                                onApprove={handleApproveClick}
+                                onReject={handleRejectClick}
+                                showEmployeeInfo={true}
+                                showActions={true}
+                                onPaginationChange={onPendingPaginationChange}
+                                onSortingChange={onPendingSortingChange}
+                            />
+                        )
+                    }
                 </TabsContent>
 
                 <TabsContent value="all" className="mt-6">
@@ -85,12 +131,19 @@ const ShiftManagementTabs = () => {
                             Assign Shift
                         </Button>
                     </div>
-                    <ShiftList
-                        shifts={allShifts}
-                        isLoading={isLoading}
-                        showEmployeeInfo={true}
-                        showActions={false}
-                    />
+                    {
+                        allPaginatedShifts && (
+                            <ShiftTable
+                                paginatedShifts={allPaginatedShifts}
+                                paginationRequest={allPaginationRequest}
+                                isLoading={isLoading}
+                                showEmployeeInfo={true}
+                                showActions={false}
+                                onPaginationChange={onAllPaginationChange}
+                                onSortingChange={onAllSortingChange}
+                            />
+                        )
+                    }
                 </TabsContent>
 
                 <TabsContent value="templates" className="mt-6">
@@ -171,4 +224,8 @@ export const ShiftManagement = () => {
         </ShiftManagementProvider>
     );
 };
+
+function setAllPaginationRequest(arg0: (prev: any) => any) {
+    throw new Error("Function not implemented.");
+}
 

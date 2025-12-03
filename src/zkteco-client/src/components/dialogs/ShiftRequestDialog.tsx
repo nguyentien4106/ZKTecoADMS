@@ -61,6 +61,7 @@ export const ShiftRequestDialog = () => {
         e.preventDefault();
         setIsSubmitting(true);
 
+        
         // Create mode - use template and create shifts for each selected date
         if (!templateId || !dates.length || !selectedTemplate) return;
 
@@ -79,8 +80,6 @@ export const ShiftRequestDialog = () => {
         await handleCreate(createData);
         
         handleClose();
-        setIsSubmitting(false);
-
     };
 
     const updateDialogState = (updates: Partial<ShiftDialogState>) => {
@@ -100,7 +99,10 @@ export const ShiftRequestDialog = () => {
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+                <form onSubmit={e => {
+                    handleSubmit(e);
+                    setIsSubmitting(false);
+                }} className="space-y-6 mt-4">
                     {/* Template Selection */}
                             <div className="space-y-2">
                                 <Label htmlFor="template">Select Shift Template</Label>

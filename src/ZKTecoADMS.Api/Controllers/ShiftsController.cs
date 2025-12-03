@@ -24,9 +24,9 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
 {
     [HttpGet("my-shifts")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
-    public async Task<ActionResult<AppResponse<List<ShiftDto>>>> GetMyShifts([FromQuery]ShiftStatus? status, [FromQuery]Guid? employeeUserId)
+    public async Task<ActionResult<AppResponse<List<ShiftDto>>>> GetMyShifts([FromQuery]ShiftStatus? status, [FromQuery]Guid? employeeUserId, [FromQuery]PaginationRequest request)
     {
-        var query = new GetShiftsByEmployeeQuery(employeeUserId ?? CurrentUserId, status);
+        var query = new GetShiftsByEmployeeQuery(request, employeeUserId ?? CurrentUserId, status);
         var result = await mediator.Send(query);
         return Ok(result);
     }
@@ -48,27 +48,6 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
         return Ok(result);
     }
 
-    // [HttpPut("{id}")]
-    // [Authorize(Policy = PolicyNames.AtLeastEmployee)]
-    // public async Task<ActionResult<AppResponse<ShiftDto>>> UpdateShift(Guid id, [FromBody] UpdateShiftRequest request)
-    // {
-    //     if (request.Status != null && IsEmployee)
-    //     {
-    //         return Unauthorized();
-    //     }
-        
-    //     var command = new UpdateShiftCommand(
-    //         id,
-    //         request.StartTime,
-    //         request.EndTime,
-    //         request.MaximumAllowedLateMinutes,
-    //         request.MaximumAllowedEarlyLeaveMinutes,
-    //         request.Description);
-        
-    //     var result = await mediator.Send(command);
-    //     return Ok(result);
-    // }
-
     [HttpDelete("{id}")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<AppResponse<bool>>> DeleteShift(Guid id)
@@ -81,18 +60,18 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
     // Manager endpoints - can view and approve/reject shifts
     [HttpGet("pending")]
     [Authorize(Policy = PolicyNames.AtLeastManager)]
-    public async Task<ActionResult<AppResponse<List<ShiftDto>>>> GetPendingShifts()
+    public async Task<ActionResult<AppResponse<PagedResult<ShiftDto>>>> GetPendingShifts([FromQuery]PaginationRequest request)
     {
-        var query = new GetPendingShiftsQuery();
+        var query = new GetPendingShiftsQuery(CurrentUserId, request);
         var result = await mediator.Send(query);
         return Ok(result);
     }
 
     [HttpGet("managed")]
     [Authorize(Policy = PolicyNames.AtLeastManager)]
-    public async Task<ActionResult<AppResponse<List<ShiftDto>>>> GetManagedShifts()
+    public async Task<ActionResult<AppResponse<PagedResult<ShiftDto>>>> GetManagedShifts([FromQuery] PaginationRequest request)
     {
-        var query = new GetShiftsByManagerQuery(CurrentUserId);
+        var query = new GetShiftsByManagerQuery(CurrentUserId, request);
         var result = await mediator.Send(query);
         return Ok(result);
     }

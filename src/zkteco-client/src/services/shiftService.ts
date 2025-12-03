@@ -1,3 +1,4 @@
+import { PaginatedResponse, PaginationRequest } from '@/types';
 import { apiService, buildQueryParams } from './api';
 import type { 
     CreateShiftRequest, 
@@ -9,9 +10,9 @@ import type {
 
 export const shiftService = {
     // Employee endpoints
-    getMyShifts: async (status?: ShiftStatus, employeeUserId?: string) => {
-        const queryString = buildQueryParams({ status, employeeUserId });
-        return await apiService.get<Shift[]>('/api/shifts/my-shifts' + (queryString ? `?${queryString}` : ''));
+    getMyShifts: async (paginationRequest: PaginationRequest, status?: ShiftStatus, employeeUserId?: string) => {
+        const queryString = buildQueryParams({ ...paginationRequest, status, employeeUserId });
+        return await apiService.get<PaginatedResponse<Shift>>('/api/shifts/my-shifts' + (queryString ? `?${queryString}` : ''));
     },
 
     createShift: async (data: CreateShiftRequest) => {
@@ -27,12 +28,14 @@ export const shiftService = {
     },
 
     // Manager endpoints
-    getPendingShifts: async () => {
-        return await apiService.get<Shift[]>('/api/shifts/pending');
+    getPendingShifts: async (paginationRequest: PaginationRequest) => {
+        const queryString = buildQueryParams(paginationRequest);
+        return await apiService.get<PaginatedResponse<Shift>>('/api/shifts/pending' + (queryString ? `?${queryString}` : ''));
     },
 
-    getManagedShifts: async () => {
-        return await apiService.get<Shift[]>('/api/shifts/managed');
+    getManagedShifts: async (paginationRequest: PaginationRequest) => {
+        const queryString = buildQueryParams(paginationRequest);
+        return await apiService.get<PaginatedResponse<Shift>>('/api/shifts/managed' + (queryString ? `?${queryString}` : ''));
     },
 
     approveShift: async (id: string) => {

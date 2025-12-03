@@ -1,15 +1,23 @@
+using Microsoft.EntityFrameworkCore;
 using ZKTecoADMS.Application.DTOs.Shifts;
 using ZKTecoADMS.Application.Interfaces;
 
 namespace ZKTecoADMS.Application.Queries.Shifts.GetShiftsByManager;
 
-public class GetShiftsByManagerHandler(IShiftService shiftService) 
-    : IQueryHandler<GetShiftsByManagerQuery, AppResponse<List<ShiftDto>>>
+public class GetShiftsByManagerHandler(
+    IRepositoryPagedQuery<Shift> repository
+    ) : IQueryHandler<GetShiftsByManagerQuery, AppResponse<PagedResult<ShiftDto>>>
 {
-    public async Task<AppResponse<List<ShiftDto>>> Handle(GetShiftsByManagerQuery request, CancellationToken cancellationToken)
+    public async Task<AppResponse<PagedResult<ShiftDto>>> Handle(GetShiftsByManagerQuery request, CancellationToken cancellationToken)
     {
-        var shifts = await shiftService.GetShiftsByManagerAsync(request.ManagerId, cancellationToken);
+        var pagedResult = await repository.GetPagedResultWithIncludesAsync(
+            request.PaginationRequest,
+            filter: s => s.EmployeeUser.ManagerId == request.ManagerId,
+            includes: q => q.Include(s => s.EmployeeUser),
+            cancellationToken);
         
-        return AppResponse<List<ShiftDto>>.Success(shifts.Adapt<List<ShiftDto>>());
+        var response = new PagedResult<ShiftDto>(pagedResult.Items.Adapt<List<ShiftDto>>(), pagedResult.TotalCount, pagedResult.PageNumber, pagedResult.PageSize);
+        
+        return AppResponse<PagedResult<ShiftDto>>.Success(response);
     }
 }

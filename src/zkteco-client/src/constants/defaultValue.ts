@@ -2,7 +2,7 @@ import { LeaveDialogState, LeaveStatus, LeaveType } from '@/types/leave';
 import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
 import { CreateEmployeeRequest } from "@/types/employee";
-import { CreateShiftRequest, CreateShiftTemplateRequest, CreatShiftDialog } from "@/types/shift";
+import { CreateShiftTemplateRequest, CreatShiftDialog } from "@/types/shift";
 import { format, subMonths } from "date-fns";
 import { DateTimeFormat } from ".";
 
@@ -33,15 +33,23 @@ export const defaultAttendanceFilter: AttendancesFilterParams = {
 
 export const defaultAttendancePaginationRequest: PaginationRequest = {
     pageNumber: 1,
-    pageSize: 50,
-    sortBy: 'AttendanceTime',
+    pageSize: 20,
+    sortBy: 'attendanceTime',
     sortOrder: 'desc'
 }
 
-export const defaultNewShift: CreateShiftRequest = {
-    startTime: '',
-    endTime: '',
-    description: ''
+export const defaultShiftPaginationRequest: PaginationRequest = {
+    pageNumber: 1,
+    pageSize: 20,
+    sortBy: 'startTime',
+    sortOrder: 'desc'
+}
+
+export const defaultPaginationRequest: PaginationRequest = {
+    pageNumber: 1,
+    pageSize: 20,
+    sortBy: 'createdAt',
+    sortOrder: 'desc'
 }
 
 export const defaultNewShiftTemplate: CreateShiftTemplateRequest = {
