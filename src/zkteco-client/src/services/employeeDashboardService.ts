@@ -6,7 +6,7 @@ export const employeeDashboardService = {
   getDashboard: (params?: EmployeeDashboardParams) => 
     apiService.get<EmployeeDashboardData>('/api/dashboard/employee', { params }),
 
-  // Get today's shift
+  // Get Current Shift
   getTodayShift: () => 
     apiService.get('/api/dashboard/shifts/today'),
 

@@ -21,7 +21,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.HasOne(u => u.Employee)
             .WithOne(e => e.ApplicationUser)
             .HasForeignKey<Employee>(e => e.ApplicationUserId)
-            .OnDelete(DeleteBehavior.SetNull)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired(false);
         
         // Many-to-One relationship with Manager (ApplicationUser)
@@ -30,7 +30,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.HasOne(e => e.Manager)
             .WithMany(m => m.ManagedEmployees)
             .HasForeignKey(e => e.ManagerId)
-            .OnDelete(DeleteBehavior.SetNull)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired(false);
 
     }

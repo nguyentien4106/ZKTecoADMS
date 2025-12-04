@@ -3,7 +3,7 @@ using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Repositories;
 
-namespace ZKTecoADMS.Core.Services;
+namespace ZKTecoADMS.Core.Services.DeviceOperations;
 
 /// <summary>
 /// Service for parsing and processing employee data from device OPERLOG data.

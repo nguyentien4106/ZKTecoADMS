@@ -67,7 +67,7 @@ import { Dashboard } from '@/pages/Dashboard';
 **File**: `src/components/employee-dashboard/EmployeeDashboard.tsx`
 
 **Features:**
-- Today's shift schedule
+- Current Shift schedule
 - Next upcoming shift
 - Current attendance status
 - Late check-in tracking

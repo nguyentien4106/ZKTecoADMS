@@ -65,19 +65,16 @@ public class GetMonthlyAttendanceSummaryHandler(
             .ToList();
 
         // Get all shifts for the month
-        List<Shift> shifts = new();
-        if (employee.ApplicationUserId.HasValue)
-        {
-            var allShifts = await shiftRepository.GetAllAsync(
-                filter: s => s.EmployeeUserId == employee.ApplicationUserId.Value &&
-                            s.StartTime >= startDate &&
-                            s.StartTime <= endDate.AddDays(1) &&
-                            s.Status == ShiftStatus.Approved,
-                includeProperties: new[] { "Leave" },
-                cancellationToken: cancellationToken);
-            
-            shifts = allShifts.OrderBy(s => s.StartTime).ToList();
-        }
+        List<Shift> shifts = [];
+        var allShifts = await shiftRepository.GetAllAsync(
+            filter: s => s.EmployeeUserId == employee.ApplicationUserId &&
+                        s.StartTime >= startDate &&
+                        s.StartTime <= endDate.AddDays(1) &&
+                        s.Status == ShiftStatus.Approved,
+            includeProperties: new[] { "Leave" },
+            cancellationToken: cancellationToken);
+        
+        shifts = allShifts.OrderBy(s => s.StartTime).ToList();
 
         // Group attendances by date and find check-in/out pairs
         var dailyRecords = new List<DailyAttendanceDto>();
@@ -89,7 +86,7 @@ public class GetMonthlyAttendanceSummaryHandler(
                 .OrderBy(a => a.AttendanceTime)
                 .ToList();
 
-            var dayShift = shifts.FirstOrDefault(s => s.StartTime.Date == date.Date);
+            var dayShift = new List<Shift>().FirstOrDefault(s => s.StartTime.Date == date.Date);
 
             var attendanceRecords = new List<AttendanceRecordDto>();
             
@@ -161,13 +158,5 @@ public class GetMonthlyAttendanceSummaryHandler(
         return result;
     }
 
-    private List<Shift> GetShiftsForEmployeeInMonth(
-        List<Guid> employeeIds,
-        int year,
-        int month,
-        CancellationToken cancellationToken)
-    {
-        // This method can be implemented to fetch shifts if needed
-        return new List<Shift>();
-    }
+
 }

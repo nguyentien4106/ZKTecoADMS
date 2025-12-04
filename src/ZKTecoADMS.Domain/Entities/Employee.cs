@@ -30,8 +30,8 @@ public class Employee : AuditableEntity<Guid>
     public Guid DeviceId { get; set; }
     public virtual Device Device { get; set; } = null!;
     
-    public Guid? ApplicationUserId { get; set; }
-    public virtual ApplicationUser? ApplicationUser { get; set; }
+    public Guid ApplicationUserId { get; set; }
+    public virtual ApplicationUser ApplicationUser { get; set; } = null!;
 
     // Navigation Properties
     public virtual ICollection<FingerprintTemplate> FingerprintTemplates { get; set; } = new List<FingerprintTemplate>();

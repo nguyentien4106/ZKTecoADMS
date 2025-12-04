@@ -9,7 +9,8 @@ namespace ZKTecoADMS.Infrastructure.Services;
 
 public class AttendanceService(
     IRepository<Attendance> attendanceRepository,
-    IShiftService shiftService
+    IShiftService shiftService,
+    IRepository<Employee> employeeRepository
 )
     : IAttendanceService
 {
@@ -41,20 +42,36 @@ public class AttendanceService(
     public async Task CreateAttendancesAsync(IEnumerable<Attendance> attendances)
     {
         await attendanceRepository.AddRangeAsync(attendances);
-
-        // Reload attendances with Employee navigation property for shift mapping
-        var attendanceIds = attendances.Select(a => a.Id).ToList();
-        var attendancesWithEmployee = await attendanceRepository.GetAllAsync(
-            filter: a => attendanceIds.Contains(a.Id),
-            includeProperties: new[] { nameof(Attendance.Employee) }
-        );
-
-        await UpdateShiftAttendancesAsync(attendancesWithEmployee);
     }
 
     public async Task<bool> UpdateShiftAttendancesAsync(IEnumerable<Attendance> attendances)
     {
-        await shiftService.UpdateShiftAttendancesAsync(attendances);
+        foreach (var attendance in attendances)
+        {
+            if(attendance.EmployeeId == null)
+            {
+                continue;
+            }
+            var employeeUser = await employeeRepository.GetByIdAsync(
+                attendance.EmployeeId.Value,
+                includeProperties: [nameof(Employee.ApplicationUser)]
+            );
+            
+            var todayShift = await shiftService.GetShiftByDateAsync(employeeUser.Id, attendance.AttendanceTime.Date);
+            if (todayShift == null)
+            {
+                continue;
+            }
+            if(todayShift.CheckInAttendanceId == null)
+            {
+                todayShift.CheckInAttendanceId = attendance.Id;
+            }
+            else
+            {
+                todayShift.CheckOutAttendanceId = attendance.Id;
+            }
+            await attendanceRepository.UpdateAsync(attendance);
+        }
         return true;
     }
 }

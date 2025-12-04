@@ -22,6 +22,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity>
     public abstract Task<TEntity?> GetSingleAsync(
         Expression<Func<TEntity, bool>> filter,
         string[]? includeProperties = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         CancellationToken cancellationToken = default
     );
 
@@ -45,5 +46,17 @@ public abstract class Repository<TEntity> : IRepository<TEntity>
     public abstract Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> filter,
         CancellationToken cancellationToken = default);
 
-    public abstract Task<TEntity?> GetLastOrDefaultAsync(Expression<Func<TEntity, object>> keySelector, Expression<Func<TEntity, bool>>? filter = null, string[]? includeProperties = null, CancellationToken cancellationToken = default);
+    public abstract Task<TEntity?> GetLastOrDefaultAsync(
+        Expression<Func<TEntity, object>> keySelector, 
+        Expression<Func<TEntity, bool>>? filter = null, 
+        string[]? includeProperties = null, 
+        CancellationToken cancellationToken = default
+    );
+
+    public abstract Task<TEntity?> GetFirstOrDefaultAsync(
+        Expression<Func<TEntity, object>> keySelector, 
+        Expression<Func<TEntity, bool>>? filter = null, 
+        string[]? includeProperties = null, 
+        CancellationToken cancellationToken = default
+    );
 }

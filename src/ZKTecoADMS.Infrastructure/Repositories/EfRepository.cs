@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZKTecoADMS.Domain.Entities.Base;
 using ZKTecoADMS.Domain.Repositories;
-using ZKTecoADMS.Application.Interfaces;
-using ZKTecoADMS.Application.Models;
 using ZKTecoADMS.Domain.Exceptions;
 
 namespace ZKTecoADMS.Infrastructure.Repositories;
@@ -103,7 +101,11 @@ public class EfRepository<TEntity>(
     }
 
 
-    public override async Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> filter, string[]? includeProperties = null, CancellationToken cancellationToken = default)
+    public override async Task<TEntity?> GetSingleAsync(
+        Expression<Func<TEntity, bool>> filter, 
+        string[]? includeProperties = null, 
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -112,6 +114,11 @@ public class EfRepository<TEntity>(
             if (includeProperties != null)
             {
                 query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
             }
 
             var result = await query.FirstOrDefaultAsync(filter, cancellationToken);
@@ -368,7 +375,11 @@ public class EfRepository<TEntity>(
         }
     }
 
-    public override async Task<TEntity?> GetLastOrDefaultAsync(Expression<Func<TEntity, object>> keySelector,Expression<Func<TEntity, bool>>? filter = null, string[]? includeProperties = null, CancellationToken cancellationToken = default)
+    public override async Task<TEntity?> GetLastOrDefaultAsync(
+        Expression<Func<TEntity, object>> keySelector,
+        Expression<Func<TEntity, bool>>? filter = null, 
+        string[]? includeProperties = null, 
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -388,6 +399,38 @@ public class EfRepository<TEntity>(
             }
 
             return await query.OrderByDescending(keySelector).FirstOrDefaultAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving last or default entity of type {EntityType}", typeof(TEntity).Name);
+            throw;
+        }
+    }
+
+    public override async Task<TEntity?> GetFirstOrDefaultAsync(
+        Expression<Func<TEntity, object>> keySelector,
+        Expression<Func<TEntity, bool>>? filter = null, 
+        string[]? includeProperties = null, 
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            IQueryable<TEntity> query = dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            return await query.OrderBy(keySelector).FirstOrDefaultAsync(cancellationToken);
         }
         catch (Exception ex)
         {

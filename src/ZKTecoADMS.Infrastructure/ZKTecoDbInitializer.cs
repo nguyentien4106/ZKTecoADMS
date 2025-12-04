@@ -49,6 +49,7 @@ public class ZKTecoDbInitializer(
         {
             await SeedRolesAsync();
             await SeedUsersAsync();
+            await SeedShiftTemplatesAsync();
 
             await context.SaveChangesAsync();
             logger.LogInformation("Database seeding completed successfully.");
@@ -125,5 +126,75 @@ public class ZKTecoDbInitializer(
             logger.LogError("Failed to create admin user: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
         }
     }
+
+    #region Seed Shift Templates
+
+    private async Task SeedShiftTemplatesAsync()
+    {
+        // Check if shift templates already exist
+        if (await context.ShiftTemplates.AnyAsync())
+        {
+            logger.LogInformation("Shift templates already exist. Skipping seed.");
+            return;
+        }
+
+        // Get the manager user to assign templates to
+        var managerEmail = Roles.Manager.ToString().ToLower() + "@gmail.com";
+        var manager = await userManager.FindByEmailAsync(managerEmail);
+
+        if (manager == null)
+        {
+            logger.LogWarning("Manager user not found. Cannot seed shift templates.");
+            return;
+        }
+
+        var shiftTemplates = new List<ShiftTemplate>
+        {
+            new ShiftTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Morning Shift (8:00 - 17:00)",
+                StartTime = new TimeSpan(8, 0, 0),
+                EndTime = new TimeSpan(17, 0, 0),
+                MaximumAllowedLateMinutes = 30,
+                MaximumAllowedEarlyLeaveMinutes = 30,
+                IsActive = true,
+                ManagerId = manager.Id,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "System"
+            },
+            new ShiftTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Standard Shift (9:00 - 18:00)",
+                StartTime = new TimeSpan(9, 0, 0),
+                EndTime = new TimeSpan(18, 0, 0),
+                MaximumAllowedLateMinutes = 30,
+                MaximumAllowedEarlyLeaveMinutes = 30,
+                IsActive = true,
+                ManagerId = manager.Id,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "System"
+            },
+            new ShiftTemplate
+            {
+                Id = Guid.NewGuid(),
+                Name = "Late Morning Shift (10:00 - 19:00)",
+                StartTime = new TimeSpan(10, 0, 0),
+                EndTime = new TimeSpan(19, 0, 0),
+                MaximumAllowedLateMinutes = 30,
+                MaximumAllowedEarlyLeaveMinutes = 30,
+                IsActive = true,
+                ManagerId = manager.Id,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "System"
+            }
+        };
+
+        await context.ShiftTemplates.AddRangeAsync(shiftTemplates);
+        logger.LogInformation("Created {Count} shift templates", shiftTemplates.Count);
+    }
+
+    #endregion
 
 }

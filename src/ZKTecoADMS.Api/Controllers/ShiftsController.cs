@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Commands.Shifts.CreateShift;
-using ZKTecoADMS.Application.Commands.Shifts.UpdateShift;
 using ZKTecoADMS.Application.Commands.Shifts.DeleteShift;
 using ZKTecoADMS.Application.Commands.Shifts.ApproveShift;
 using ZKTecoADMS.Application.Commands.Shifts.RejectShift;

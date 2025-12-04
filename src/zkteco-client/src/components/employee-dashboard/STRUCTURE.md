@@ -16,7 +16,7 @@ src/
 ├── components/
 │   └── employee-dashboard/
 │       ├── EmployeeDashboard.tsx      # Main component
-│       ├── TodayShiftCard.tsx         # Today's shift
+│       ├── TodayShiftCard.tsx         # Current Shift
 │       ├── NextShiftCard.tsx          # Next shift
 │       ├── CurrentAttendanceCard.tsx  # Attendance status
 │       ├── AttendanceStatsCard.tsx    # Statistics
@@ -106,7 +106,7 @@ User sees Dashboard
 ### Server State (React Query)
 - Dashboard data (auto-refresh every 60s)
 - Current attendance (auto-refresh every 30s)
-- Today's shift
+- Current Shift
 - Next shift
 - Attendance statistics
 

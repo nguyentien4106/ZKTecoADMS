@@ -65,7 +65,7 @@ public class GetCurrentAttendanceHandler(
         bool isEarlyOut = false;
         int? earlyOutMinutes = null;
 
-        // Get today's shift to compare
+        // Get Current Shift to compare
         var todayShiftResult = await mediator.Send(new GetTodayShiftQuery(request.UserId), cancellationToken);
         if (todayShiftResult.IsSuccess && todayShiftResult.Data != null && checkInTime.HasValue)
         {
@@ -94,7 +94,6 @@ public class GetCurrentAttendanceHandler(
             Id = checkIn?.Id ?? Guid.NewGuid(),
             CheckInTime = checkInTime,
             CheckOutTime = checkOutTime,
-            WorkHours = Math.Round(workHours, 2),
             Status = status,
             IsLate = isLate,
             IsEarlyOut = isEarlyOut,

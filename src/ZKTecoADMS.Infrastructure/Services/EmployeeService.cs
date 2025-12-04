@@ -80,13 +80,13 @@ public class EmployeeService(
     {
         foreach (var employee in validEmployees)
         {
-            var name = $"{employee.Name}{employee.Pin}".Replace(" ", "").ToLower();
+            var name = $"{device.SerialNumber}_{employee.Pin}".Replace(" ", "").ToLower();
             var user = new ApplicationUser
             {
                 UserName = name,
                 Email = $"{name}@gmail.com",
                 FirstName = employee.Name,
-                LastName = "Defaiult",
+                LastName = "",
                 EmailConfirmed = true,
                 PhoneNumber = "",
                 PhoneNumberConfirmed = true,

@@ -61,7 +61,7 @@ export function PaginationTable<TData>({
   manualFiltering = true,
   emptyMessage = "No results found.",
   className,
-  containerHeight = "calc(100vh - 250px)",
+  containerHeight = "calc(100vh - 270px)",
 }: PaginationTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>(paginationRequest.sortBy ? [{
     id: paginationRequest.sortBy,

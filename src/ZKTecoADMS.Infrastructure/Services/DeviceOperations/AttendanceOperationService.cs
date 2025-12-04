@@ -4,14 +4,13 @@ using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
 
-namespace ZKTecoADMS.Core.Services;
+namespace ZKTecoADMS.Core.Services.DeviceOperations;
 
 /// <summary>
 /// Service for parsing and processing attendance data from device attendance logs.
 /// </summary>
 public class AttendanceOperationService(
     ILogger<AttendanceOperationService> logger,
-    IShiftService shiftService,
     IAttendanceService attendanceService,
     IEmployeeService employeeService) : IAttendanceOperationService
 {
@@ -32,12 +31,12 @@ public class AttendanceOperationService(
     public async Task<List<Attendance>> ProcessAttendancesFromDeviceAsync(Device device, string body)
     {
         var attendanceLines = ExtractAttendanceLines(body);
-        logger.LogInformation("Processing {Count} attendance records from device {DeviceName}",
-            attendanceLines.Count, device.DeviceName);
+        logger.LogInformation("Device SN-{SN}: processed {Count} attendance lines from device {DeviceName}",
+            device.SerialNumber, attendanceLines.Count, device.DeviceName);
 
         var attendances = await ProcessAttendanceLinesAsync(device, attendanceLines);
-        logger.LogInformation("Successfully processed {Count} attendance records from device {DeviceName}",
-            attendances.Count, device.DeviceName);
+        logger.LogInformation("Device SN-{SN}: parsed {Count} attendance records from device {DeviceName}",
+            device.SerialNumber, attendances.Count, device.DeviceName);
 
         return attendances;
     }

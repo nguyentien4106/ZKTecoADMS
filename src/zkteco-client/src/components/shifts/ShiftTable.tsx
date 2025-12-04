@@ -117,6 +117,7 @@ export const ShiftTable = ({
             onFiltersChange={onFiltersChange}
             manualSorting={true}
             manualFiltering={true}
+            containerHeight={"calc(100vh - 320px)"}
         />
     );
 };

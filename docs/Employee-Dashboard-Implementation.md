@@ -7,7 +7,7 @@
 
 ### Components
 - `src/components/employee-dashboard/EmployeeDashboard.tsx` - Main dashboard component
-- `src/components/employee-dashboard/TodayShiftCard.tsx` - Today's shift display
+- `src/components/employee-dashboard/TodayShiftCard.tsx` - Current Shift display
 - `src/components/employee-dashboard/NextShiftCard.tsx` - Next shift display
 - `src/components/employee-dashboard/CurrentAttendanceCard.tsx` - Real-time attendance
 - `src/components/employee-dashboard/AttendanceStatsCard.tsx` - Statistics card
@@ -24,7 +24,7 @@
 
 ## ✨ Features Implemented
 
-### Today's Shift Card
+### Current Shift Card
 ✅ Shows shift start/end time
 ✅ Displays duration in hours
 ✅ Shows shift description
@@ -74,7 +74,7 @@
 ## 📊 Data Tracking
 
 The dashboard tracks:
-1. **Today's shift schedule** - Start time, end time, duration
+1. **Current Shift schedule** - Start time, end time, duration
 2. **Next shift** - Upcoming shift details
 3. **Current attendance** - Real-time check-in/out status
 4. **Late arrivals** - Count and percentage with minutes late
@@ -200,7 +200,7 @@ Modify grid layouts in `EmployeeDashboard.tsx` to match your design system.
 
 ## ✅ All Requirements Met
 
-✅ Today's shift display
+✅ Current Shift display
 ✅ Next shift display  
 ✅ Current attendance status
 ✅ Late check-in tracking with count
