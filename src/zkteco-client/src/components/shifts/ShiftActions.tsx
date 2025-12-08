@@ -11,7 +11,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { CheckCircle, XCircle, Trash2, Pencil } from 'lucide-react';
 
 interface ShiftActionsProps {
     shift: Shift;
@@ -25,12 +25,25 @@ export const ShiftActions = ({
     shift,
     onApprove,
     onReject,
-    onDelete
+    onDelete,
+    onEdit
 }: ShiftActionsProps) => {
     const isPending = shift.status === ShiftStatus.Pending;
 
     return (
         <div className="flex justify-end gap-2">
+            {/* Edit button - show for all shifts if onEdit callback is provided */}
+            {onEdit && (
+                <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onEdit(shift)}
+                >
+                    <Pencil className="w-4 h-4 mr-1" />
+                    Edit Times
+                </Button>
+            )}
+            
             {isPending && onApprove && onReject && (
                 <>
                     <Button

@@ -19,4 +19,6 @@ public class ShiftDto
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public int TotalHours => EndTime.Subtract(StartTime).Hours;
+    public DateTime? CheckInTime { get; set; }
+    public DateTime? CheckOutTime { get; set; }
 }

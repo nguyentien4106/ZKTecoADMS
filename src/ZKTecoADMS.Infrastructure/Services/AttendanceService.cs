@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Domain.Entities;
@@ -10,7 +9,9 @@ namespace ZKTecoADMS.Infrastructure.Services;
 public class AttendanceService(
     IRepository<Attendance> attendanceRepository,
     IShiftService shiftService,
-    IRepository<Employee> employeeRepository
+    IRepository<Employee> employeeRepository,
+    IRepository<Shift> shiftRepository,
+    ILogger<AttendanceService> logger
 )
     : IAttendanceService
 {
@@ -44,33 +45,46 @@ public class AttendanceService(
         await attendanceRepository.AddRangeAsync(attendances);
     }
 
-    public async Task<bool> UpdateShiftAttendancesAsync(IEnumerable<Attendance> attendances)
+    public async Task<bool> UpdateShiftAttendancesAsync(IEnumerable<Attendance> attendances, Device device)
     {
-        foreach (var attendance in attendances)
+        foreach (var attendance in attendances.OrderBy(a => a.AttendanceTime))
         {
             if(attendance.EmployeeId == null)
             {
+                logger.LogWarning("{DeviceSN}:Attendance with ID {AttendanceId} has no associated EmployeeId.", device.SerialNumber, attendance.Id);
                 continue;
-            }
-            var employeeUser = await employeeRepository.GetByIdAsync(
-                attendance.EmployeeId.Value,
-                includeProperties: [nameof(Employee.ApplicationUser)]
+            }   
+
+            var employeeUser = await employeeRepository.GetSingleAsync(
+                filter: e => e.DeviceId == device.Id && e.Pin == attendance.PIN
             );
-            
-            var todayShift = await shiftService.GetShiftByDateAsync(employeeUser.Id, attendance.AttendanceTime.Date);
-            if (todayShift == null)
+
+            if(employeeUser == null)
             {
+                logger.LogWarning("{DeviceSN}:No employee found for Attendance ID {AttendanceId} with PIN {PIN}.", device.SerialNumber, attendance.Id, attendance.PIN);
                 continue;
             }
-            if(todayShift.CheckInAttendanceId == null)
+            
+            
+            var shift = await shiftService.GetShiftByDateAsync(employeeUser.ApplicationUserId, attendance.AttendanceTime.Date);
+            if (shift == null)
             {
-                todayShift.CheckInAttendanceId = attendance.Id;
+                logger.LogWarning("{DeviceSN}:No shift found for Employee ID {EmployeeId} on {AttendanceDate}.", device.SerialNumber, employeeUser.ApplicationUserId, attendance.AttendanceTime.Date);
+                continue;
+            }
+
+            if(shift.CheckInAttendanceId == null)
+            {
+                logger.LogInformation("{DeviceSN}:Linking Attendance ID {AttendanceId} as Check-In for Shift ID {ShiftId}.", device.SerialNumber, attendance.Id, shift.Id);
+                shift.CheckInAttendanceId = attendance.Id;
             }
             else
             {
-                todayShift.CheckOutAttendanceId = attendance.Id;
+                logger.LogInformation("{DeviceSN}:Linking Attendance ID {AttendanceId} as Check-Out for Shift ID {ShiftId}.", device.SerialNumber, attendance.Id, shift.Id);
+                shift.CheckOutAttendanceId = attendance.Id;
             }
-            await attendanceRepository.UpdateAsync(attendance);
+
+            await shiftRepository.UpdateAsync(shift);
         }
         return true;
     }

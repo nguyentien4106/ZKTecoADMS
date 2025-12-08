@@ -25,7 +25,13 @@ import { UserPrivileges } from "@/constants";
 import { defaultNewEmployee } from "@/constants/defaultValue";
 import { Button } from "../ui/button";
 import { useDevices } from "@/hooks/useDevices";
-import { MultiSelect } from "../multi-select";
+import {
+  MultiSelect,
+  MultiSelectTrigger,
+  MultiSelectValue,
+  MultiSelectContent,
+  MultiSelectItem,
+} from "@/components/ui/multi-select";
 import {
   Form,
   FormField,
@@ -142,18 +148,23 @@ export const CreateUserDialog = () => {
                         </Select>
                       ) : (
                         <MultiSelect
-                          options={
-                            devices
-                              ? devices.map((device) => ({
-                                  value: device.id,
-                                  label: device.deviceName,
-                                }))
-                              : []
-                          }
-                          value={Array.isArray(field.value) ? field.value : []}
-                          onValueChange={field.onChange}
-                          placeholder="Choose devices..."
-                        />
+                          values={Array.isArray(field.value) ? field.value : []}
+                          onValuesChange={field.onChange}
+                        >
+                          <MultiSelectTrigger>
+                            <MultiSelectValue placeholder="Choose devices..." />
+                          </MultiSelectTrigger>
+                          <MultiSelectContent>
+                            {devices?.map((device) => (
+                              <MultiSelectItem
+                                key={device.id}
+                                value={device.id}
+                              >
+                                {device.deviceName}
+                              </MultiSelectItem>
+                            ))}
+                          </MultiSelectContent>
+                        </MultiSelect>
                       )}
                     </FormControl>
                     <FormMessage className="absolute left-0 mt-1 text-destructive" />

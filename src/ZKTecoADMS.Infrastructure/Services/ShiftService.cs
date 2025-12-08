@@ -12,6 +12,7 @@ public class ShiftService(
     IRepository<Shift> repository,
     UserManager<ApplicationUser> userManager,
     IRepository<Employee> employeeRepository,
+    IRepository<Attendance> attendanceRepository,
     ILogger<ShiftService> logger) : IShiftService
 {
     public async Task<Shift?> GetShiftByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -116,6 +117,101 @@ public class ShiftService(
         return shift;
     }
 
+    public async Task<Shift> UpdateShiftAsync(Guid shiftId, Guid updatedByUserId, DateTime? checkInTime, DateTime? checkOutTime, CancellationToken cancellationToken = default)
+    {
+        var shift = await repository.GetSingleAsync(
+            s => s.Id == shiftId,
+            includeProperties: [nameof(Shift.EmployeeUser), nameof(Shift.CheckInAttendance), nameof(Shift.CheckOutAttendance)],
+            cancellationToken: cancellationToken);
+            
+        if (shift == null)
+        {
+            throw new InvalidOperationException($"Shift with ID {shiftId} not found");
+        }
+        
+
+        // Validate that check-out is after check-in
+        if (checkInTime.HasValue && checkOutTime.HasValue && checkOutTime.Value <= checkInTime.Value)
+        {
+            throw new InvalidOperationException("Check-out time must be after check-in time");
+        }
+
+        // Get employee to find PIN
+        var employee = await employeeRepository.GetSingleAsync(
+            e => e.ApplicationUserId == shift.EmployeeUserId,
+            cancellationToken: cancellationToken);
+
+        if (employee == null)
+        {
+            throw new InvalidOperationException($"Employee not found for user {shift.EmployeeUserId}");
+        }
+
+        // Update or create check-in attendance
+        if (checkInTime.HasValue)
+        {
+            if (shift.CheckInAttendance != null)
+            {
+                // Update existing check-in
+                shift.CheckInAttendance.AttendanceTime = checkInTime.Value;
+                await attendanceRepository.UpdateAsync(shift.CheckInAttendance, cancellationToken);
+            }
+            else
+            {
+                // Create new check-in attendance
+                var checkInAttendance = new Attendance
+                {
+                    Id = Guid.NewGuid(),
+                    EmployeeId = employee.Id,
+                    PIN = employee.Pin,
+                    AttendanceTime = checkInTime.Value,
+                    DeviceId = employee.DeviceId,
+                    VerifyMode = VerifyModes.Password, // Manual entry by manager
+                    AttendanceState = AttendanceStates.CheckIn
+                };
+                await attendanceRepository.AddAsync(checkInAttendance, cancellationToken);
+                shift.CheckInAttendanceId = checkInAttendance.Id;
+            }
+        }
+
+        // Update or create check-out attendance
+        if (checkOutTime.HasValue)
+        {
+            if (shift.CheckOutAttendance != null)
+            {
+                // Update existing check-out
+                shift.CheckOutAttendance.AttendanceTime = checkOutTime.Value;
+                await attendanceRepository.UpdateAsync(shift.CheckOutAttendance, cancellationToken);
+            }
+            else
+            {
+                // Create new check-out attendance
+                var checkOutAttendance = new Attendance
+                {
+                    Id = Guid.NewGuid(),
+                    EmployeeId = employee.Id,
+                    PIN = employee.Pin,
+                    AttendanceTime = checkOutTime.Value,
+                    DeviceId = employee.DeviceId,
+                    VerifyMode = VerifyModes.Password, // Manual entry by manager
+                    AttendanceState = AttendanceStates.CheckOut
+                };
+                await attendanceRepository.AddAsync(checkOutAttendance, cancellationToken);
+                shift.CheckOutAttendanceId = checkOutAttendance.Id;
+            }
+        }
+
+        await repository.UpdateAsync(shift, cancellationToken);
+        
+        logger.LogInformation(
+            "Shift {ShiftId} times updated by user {UpdatedByUserId}. CheckIn: {CheckInTime}, CheckOut: {CheckOutTime}",
+            shiftId,
+            updatedByUserId,
+            checkInTime,
+            checkOutTime);
+
+        return shift;
+    }
+
     public async Task<(Shift? CurrentShift, Shift? NextShift)> GetTodayShiftAndNextShiftAsync(Guid employeeId, CancellationToken cancellationToken = default)
     {
         var currentShift = await repository.GetSingleAsync(
@@ -135,26 +231,11 @@ public class ShiftService(
 
         return (currentShift, nextShift);
     }
-    public async Task<Shift?> GetShiftByDateAsync(Guid? employeeId, DateTime date, CancellationToken cancellationToken = default)
+
+    public async Task<Shift?> GetShiftByDateAsync(Guid employeeUserId, DateTime date, CancellationToken cancellationToken = default)
     {
-        if(employeeId == null)
-        {
-            logger.LogWarning("GetShiftByDateAsync called with null employeeId");
-            return null;
-        }
-
-        var employeeUser = await employeeRepository.GetByIdAsync(
-            employeeId.Value,
-            includeProperties: [nameof(Employee.ApplicationUser)]
-        );
-
-        if(employeeUser == null)
-        {
-            return null;
-        }
-
         return await repository.GetSingleAsync(
-            s => s.EmployeeUserId == employeeUser.ApplicationUser.Id &&
+            s => s.EmployeeUserId == employeeUserId &&
                  s.StartTime.Date == date.Date &&
                  s.Status == ShiftStatus.Approved,
             cancellationToken: cancellationToken);

@@ -32,7 +32,7 @@ public class PostAttendancesStrategy(IServiceProvider serviceProvider) : IPostSt
 
         _logger.LogInformation("Device-SN-{SN}: successfully saved {Count} attendance records from device {DeviceId}", device.SerialNumber, attendances.Count, device.Id);
 
-        await _attendanceService.UpdateShiftAttendancesAsync(attendances);
+        await _attendanceService.UpdateShiftAttendancesAsync(attendances, device);
         
         return ClockResponses.Ok; 
     }

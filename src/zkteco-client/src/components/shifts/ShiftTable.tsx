@@ -40,11 +40,6 @@ export const ShiftTable = ({
     onFiltersChange
 }: ShiftTableProps) => {
     const columns : ColumnDef<Shift>[] = [
-        { 
-            accessorKey: 'id', 
-            cell: ({ row }) => (row.getValue('id') as string).slice(0, 4),
-            enableSorting: true,
-        },
         ...(showEmployeeInfo ? [
             { 
                 accessorKey: 'employeeName', 
@@ -63,6 +58,24 @@ export const ShiftTable = ({
             header: ({ column }) => <SortingHeader column={column} title="End Time" />,
             cell: ({ row }) => format(new Date(row.getValue('endTime')), ShowingDateTimeFormat),
             enableSorting: true,
+        },
+        {
+            accessorKey: 'checkInTime',
+            header: 'Check-In',
+            cell: ({ row }) => {
+                const checkInTime = row.getValue('checkInTime') as string | undefined;
+                return checkInTime ? format(new Date(checkInTime), ShowingDateTimeFormat) : '-';
+            },
+            enableSorting: true,
+        },
+        {
+            accessorKey: 'checkOutTime',
+            header: "Check-Out",
+            cell: ({ row }) => {
+                const checkOutTime = row.getValue('checkOutTime') as string | undefined;
+                return checkOutTime ? format(new Date(checkOutTime), ShowingDateTimeFormat) : '-    ';
+            },
+            enableSorting: true,    
         },
         { 
             accessorKey: 'totalHours', 
