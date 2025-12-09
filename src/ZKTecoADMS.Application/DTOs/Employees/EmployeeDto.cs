@@ -1,5 +1,17 @@
 namespace ZKTecoADMS.Application.DTOs.Employees;
 
+public class CurrentSalaryProfileDto
+{
+    public Guid Id { get; set; }
+    public Guid SalaryProfileId { get; set; }
+    public string ProfileName { get; set; } = string.Empty;
+    public decimal Rate { get; set; }
+    public string Currency { get; set; } = string.Empty;
+    public string RateTypeName { get; set; } = string.Empty;
+    public DateTime EffectiveDate { get; set; }
+    public bool IsActive { get; set; }
+}
+
 public class EmployeeDto
 {
     public Guid Id { get; set; }
@@ -14,6 +26,7 @@ public class EmployeeDto
     public string? DeviceName { get; set; }
 
     public AccountDto? ApplicationUser { get; set; }
+    public CurrentSalaryProfileDto? CurrentSalaryProfile { get; set; }
 }
 
 public class AccountDto

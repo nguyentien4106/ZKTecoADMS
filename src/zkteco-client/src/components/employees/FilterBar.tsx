@@ -2,7 +2,13 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { MultiSelect } from "@/components/multi-select";
+import {
+  MultiSelect,
+  MultiSelectTrigger,
+  MultiSelectValue,
+  MultiSelectContent,
+  MultiSelectItem,
+} from "@/components/ui/multi-select";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -55,12 +61,24 @@ export default function FilterBar({ devices, handleSubmit, selectedDeviceIds }: 
               <FormLabel aria-required>Devices * </FormLabel>
               <FormControl>
                 <MultiSelect
-                  options={devices ? devices.map(device => ({ value: device.id, label: device.deviceName })) : []}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  placeholder="Choose devices..."
-                  defaultValue={selectedDeviceIds}
-                />
+                  values={field.value}
+                  onValuesChange={field.onChange}
+                  defaultValues={selectedDeviceIds}
+                >
+                  <MultiSelectTrigger>
+                    <MultiSelectValue placeholder="Choose devices..." />
+                  </MultiSelectTrigger>
+                  <MultiSelectContent>
+                    {devices?.map((device) => (
+                      <MultiSelectItem
+                        key={device.id}
+                        value={device.id}
+                      >
+                        {device.deviceName}
+                      </MultiSelectItem>
+                    ))}
+                  </MultiSelectContent>
+                </MultiSelect>
               </FormControl>
             <FormMessage />
 

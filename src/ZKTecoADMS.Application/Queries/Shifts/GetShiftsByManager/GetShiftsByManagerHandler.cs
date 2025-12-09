@@ -13,7 +13,7 @@ public class GetShiftsByManagerHandler(
         var pagedResult = await repository.GetPagedResultWithIncludesAsync(
             request.PaginationRequest,
             filter: s => s.EmployeeUser.ManagerId == request.ManagerId,
-            includes: q => q.Include(s => s.EmployeeUser),
+            includes: q => q.Include(s => s.EmployeeUser).Include(s => s.CheckInAttendance).Include(s => s.CheckOutAttendance),
             cancellationToken);
         
         var response = new PagedResult<ShiftDto>(pagedResult.Items.Adapt<List<ShiftDto>>(), pagedResult.TotalCount, pagedResult.PageNumber, pagedResult.PageSize);

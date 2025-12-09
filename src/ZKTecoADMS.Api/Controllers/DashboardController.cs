@@ -80,7 +80,7 @@ public class DashboardController(
     }
 
     /// <summary>
-    /// Get today's shift information
+    /// Get Current Shift information
     /// </summary>
     [HttpGet("shifts/today")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
@@ -96,8 +96,8 @@ public class DashboardController(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error retrieving today's shift");
-            return StatusCode(500, AppResponse<ShiftInfoDto>.Fail("An error occurred while retrieving today's shift"));
+            logger.LogError(ex, "Error retrieving Current Shift");
+            return StatusCode(500, AppResponse<ShiftInfoDto>.Fail("An error occurred while retrieving Current Shift"));
         }
     }
 

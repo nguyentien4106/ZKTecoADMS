@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, UserPlus } from "lucide-react";
 import { ShiftTable } from '@/components/shifts/ShiftTable';
+import { ShiftFilterBar } from '@/components/shifts/ShiftFilterBar';
 import { ApproveShiftDialog } from '@/components/dialogs/ApproveShiftDialog';
 import { RejectShiftDialog } from '@/components/dialogs/RejectShiftDialog';
+import { EditShiftDialog } from '@/components/dialogs/EditShiftDialog';
 import { ShiftTemplateDialog } from '@/components/dialogs/ShiftTemplateDialog';
 import { AssignShiftDialog } from '@/components/dialogs/AssignShiftDialog';
 import { ShiftManagementProvider, useShiftManagementContext } from '@/contexts/ShiftManagementContext';
@@ -29,14 +31,16 @@ const ShiftManagementTabs = () => {
         allPaginatedShifts,
         templates,
         isLoading,
+        employees,
         handleApproveClick,
         handleRejectClick,
+        handleEditShiftClick,
         setCreateTemplateDialogOpen,
         handleEditTemplateClick,
         handleDeleteTemplate,
         setAssignShiftDialogOpen,
         setPendingPaginationRequest,
-        setAllPaginationRequest
+        setAllPaginationRequest,
     } = useShiftManagementContext();
 
     const [activeTab, setActiveTab] = useState<string>("all");
@@ -125,12 +129,20 @@ const ShiftManagementTabs = () => {
                 </TabsContent>
 
                 <TabsContent value="all" className="mt-6">
-                    <div className="mb-4 flex justify-end">
-                        <Button onClick={() => setAssignShiftDialogOpen(true)}>
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Assign Shift
-                        </Button>
+                    <div className="mb-6 space-y-4">
+                        <ShiftFilterBar
+                            employees={employees}
+                            isLoading={isLoading}
+                        />
+                        
+                        <div className="flex justify-end">
+                            <Button onClick={() => setAssignShiftDialogOpen(true)} className="w-full sm:w-auto">
+                                <UserPlus className="h-4 w-4 mr-2" />
+                                Assign Shift
+                            </Button>
+                        </div>
                     </div>
+                    
                     {
                         allPaginatedShifts && (
                             <ShiftTable
@@ -138,7 +150,8 @@ const ShiftManagementTabs = () => {
                                 paginationRequest={allPaginationRequest}
                                 isLoading={isLoading}
                                 showEmployeeInfo={true}
-                                showActions={false}
+                                showActions={true}
+                                onEdit={handleEditShiftClick}
                                 onPaginationChange={onAllPaginationChange}
                                 onSortingChange={onAllSortingChange}
                             />
@@ -177,6 +190,8 @@ const ShiftManagementDialogs = () => {
         assignShiftDialogOpen,
         setAssignShiftDialogOpen,
         handleCreateShift,
+        editShiftDialogOpen,
+        setEditShiftDialogOpen,
     } = useShiftManagementContext();
 
     return (
@@ -194,6 +209,11 @@ const ShiftManagementDialogs = () => {
                         onOpenChange={setRejectDialogOpen}
                         shift={selectedShift}
                         onSubmit={(reason: string) => handleReject(selectedShift.id, reason)}
+                    />
+                    <EditShiftDialog
+                        open={editShiftDialogOpen}
+                        onOpenChange={setEditShiftDialogOpen}
+                        shift={selectedShift}
                     />
                 </>
             )}
@@ -224,8 +244,4 @@ export const ShiftManagement = () => {
         </ShiftManagementProvider>
     );
 };
-
-function setAllPaginationRequest(arg0: (prev: any) => any) {
-    throw new Error("Function not implemented.");
-}
 

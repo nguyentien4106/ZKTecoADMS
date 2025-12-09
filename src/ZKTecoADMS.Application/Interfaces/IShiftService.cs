@@ -6,10 +6,9 @@ namespace ZKTecoADMS.Application.Interfaces;
 public interface IShiftService
 {
     Task<Shift?> GetShiftByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<List<Shift>> GetShiftsByManagerAsync(Guid managerId, CancellationToken cancellationToken = default);
-    Task<List<Shift>> GetPendingShiftsAsync(CancellationToken cancellationToken = default);
     Task<Shift> ApproveShiftAsync(Guid shiftId, Guid approvedByUserId, CancellationToken cancellationToken = default);
     Task<Shift> RejectShiftAsync(Guid shiftId, Guid rejectedByUserId, string rejectionReason, CancellationToken cancellationToken = default);
-    Task<(Shift? CurrentShift, Shift? NextShift)> GetCurrentShiftAndNextShiftAsync(Guid employeeId, DateTime currentTime, CancellationToken cancellationToken = default);   
-    Task UpdateShiftAttendancesAsync(IEnumerable<Attendance> attendances, CancellationToken cancellationToken = default);
+    Task<Shift> UpdateShiftAsync(Guid shiftId, Guid updatedByUserId, DateTime? checkInTime, DateTime? checkOutTime, CancellationToken cancellationToken = default);
+    Task<(Shift? CurrentShift, Shift? NextShift)> GetTodayShiftAndNextShiftAsync(Guid employeeId, CancellationToken cancellationToken = default);   
+    Task<Shift?> GetShiftByDateAsync(Guid employeeUserId, DateTime date, CancellationToken cancellationToken = default);
 }

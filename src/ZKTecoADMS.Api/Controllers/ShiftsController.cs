@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Commands.Shifts.CreateShift;
-using ZKTecoADMS.Application.Commands.Shifts.UpdateShift;
 using ZKTecoADMS.Application.Commands.Shifts.DeleteShift;
 using ZKTecoADMS.Application.Commands.Shifts.ApproveShift;
 using ZKTecoADMS.Application.Commands.Shifts.RejectShift;
+using ZKTecoADMS.Application.Commands.Shifts.UpdateShift;
 using ZKTecoADMS.Application.Queries.Shifts.GetShiftsByEmployee;
 using ZKTecoADMS.Application.Queries.Shifts.GetPendingShifts;
 using ZKTecoADMS.Application.Queries.Shifts.GetShiftsByManager;
@@ -93,4 +93,19 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
         var result = await mediator.Send(command);
         return Ok(result);
     }
+
+    [HttpPut("{id}/times")]
+    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    public async Task<ActionResult<AppResponse<ShiftDto>>> UpdateShiftTimes(Guid id, [FromBody] UpdateShiftTimesRequest request)
+    {
+        var command = new UpdateShiftCommand(id, CurrentUserId, request.CheckInTime, request.CheckOutTime);
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+}
+
+public class FilterParameters
+{
+    // Define filter parameters here
+
 }

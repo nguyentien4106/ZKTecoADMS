@@ -25,8 +25,8 @@ public class RefreshCommandHandler(
 
         var userRefreshToken = await refreshTokenRepository.GetSingleAsync(
             urt => urt.RefreshToken == command.RefreshToken,
-            ["ApplicationUser"],
-            cancellationToken
+            includeProperties: [nameof(UserRefreshToken.ApplicationUser)],
+            cancellationToken: cancellationToken
         );
 
         if (userRefreshToken == null)

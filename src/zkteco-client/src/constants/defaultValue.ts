@@ -2,8 +2,8 @@ import { LeaveDialogState, LeaveStatus, LeaveType } from '@/types/leave';
 import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
 import { CreateEmployeeRequest } from "@/types/employee";
-import { CreateShiftTemplateRequest, CreatShiftDialog } from "@/types/shift";
-import { format, subMonths } from "date-fns";
+import { CreateShiftTemplateRequest, CreatShiftDialog, ShiftManagementFilter } from "@/types/shift";
+import { format, startOfMonth, subMonths } from "date-fns";
 import { DateTimeFormat } from ".";
 
 export const defaultNewEmployee: CreateEmployeeRequest = {
@@ -59,6 +59,14 @@ export const defaultNewShiftTemplate: CreateShiftTemplateRequest = {
     maximumAllowedLateMinutes: 30,
     maximumAllowedEarlyLeaveMinutes: 30,
 }
+
+export const defaultShiftManagementFilter: ShiftManagementFilter = {
+    employeeIds: [],
+    dateRange: {
+        from: startOfMonth(new Date()),
+        to: today,
+    },
+};
 
 const now = new Date();
 const tomorrow = new Date(now);

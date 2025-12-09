@@ -1,3 +1,5 @@
+import { DateRange } from "react-day-picker";
+
 export enum ShiftStatus {
     Pending = 0,
     Approved = 1,
@@ -23,6 +25,8 @@ export interface Shift {
     createdAt: string;
     updatedAt?: string;
     totalHours: number;
+    checkInTime?: string;
+    checkOutTime?: string;
 }
 
 export interface CreateShiftRequest {
@@ -53,6 +57,11 @@ export interface UpdateShiftRequest {
     maximumAllowedLateMinutes?: number;
     maximumAllowedEarlyLeaveMinutes?: number;
     description?: string;
+}
+
+export interface UpdateShiftTimesRequest {
+    checkInTime?: string;
+    checkOutTime?: string;
 }
 
 export interface RejectShiftRequest {
@@ -112,4 +121,9 @@ export interface ShiftTemplateListResponse {
     data?: ShiftTemplate[];
     errors: string[];
     message: string;
+}
+
+export interface ShiftManagementFilter {
+    dateRange?: DateRange;
+    employeeIds: string[];
 }

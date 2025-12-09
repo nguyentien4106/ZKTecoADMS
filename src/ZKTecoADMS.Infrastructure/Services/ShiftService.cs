@@ -11,6 +11,8 @@ namespace ZKTecoADMS.Infrastructure.Services;
 public class ShiftService(
     IRepository<Shift> repository,
     UserManager<ApplicationUser> userManager,
+    IRepository<Employee> employeeRepository,
+    IRepository<Attendance> attendanceRepository,
     ILogger<ShiftService> logger) : IShiftService
 {
     public async Task<Shift?> GetShiftByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -115,129 +117,127 @@ public class ShiftService(
         return shift;
     }
 
-    public async Task<(Shift? CurrentShift, Shift? NextShift)> GetCurrentShiftAndNextShiftAsync(Guid employeeId, DateTime currentTime, CancellationToken cancellationToken = default)
+    public async Task<Shift> UpdateShiftAsync(Guid shiftId, Guid updatedByUserId, DateTime? checkInTime, DateTime? checkOutTime, CancellationToken cancellationToken = default)
+    {
+        var shift = await repository.GetSingleAsync(
+            s => s.Id == shiftId,
+            includeProperties: [nameof(Shift.EmployeeUser), nameof(Shift.CheckInAttendance), nameof(Shift.CheckOutAttendance)],
+            cancellationToken: cancellationToken);
+            
+        if (shift == null)
+        {
+            throw new InvalidOperationException($"Shift with ID {shiftId} not found");
+        }
+        
+
+        // Validate that check-out is after check-in
+        if (checkInTime.HasValue && checkOutTime.HasValue && checkOutTime.Value <= checkInTime.Value)
+        {
+            throw new InvalidOperationException("Check-out time must be after check-in time");
+        }
+
+        // Get employee to find PIN
+        var employee = await employeeRepository.GetSingleAsync(
+            e => e.ApplicationUserId == shift.EmployeeUserId,
+            cancellationToken: cancellationToken);
+
+        if (employee == null)
+        {
+            throw new InvalidOperationException($"Employee not found for user {shift.EmployeeUserId}");
+        }
+
+        // Update or create check-in attendance
+        if (checkInTime.HasValue)
+        {
+            if (shift.CheckInAttendance != null)
+            {
+                // Update existing check-in
+                shift.CheckInAttendance.AttendanceTime = checkInTime.Value;
+                await attendanceRepository.UpdateAsync(shift.CheckInAttendance, cancellationToken);
+            }
+            else
+            {
+                // Create new check-in attendance
+                var checkInAttendance = new Attendance
+                {
+                    Id = Guid.NewGuid(),
+                    EmployeeId = employee.Id,
+                    PIN = employee.Pin,
+                    AttendanceTime = checkInTime.Value,
+                    DeviceId = employee.DeviceId,
+                    VerifyMode = VerifyModes.Password, // Manual entry by manager
+                    AttendanceState = AttendanceStates.CheckIn
+                };
+                await attendanceRepository.AddAsync(checkInAttendance, cancellationToken);
+                shift.CheckInAttendanceId = checkInAttendance.Id;
+            }
+        }
+
+        // Update or create check-out attendance
+        if (checkOutTime.HasValue)
+        {
+            if (shift.CheckOutAttendance != null)
+            {
+                // Update existing check-out
+                shift.CheckOutAttendance.AttendanceTime = checkOutTime.Value;
+                await attendanceRepository.UpdateAsync(shift.CheckOutAttendance, cancellationToken);
+            }
+            else
+            {
+                // Create new check-out attendance
+                var checkOutAttendance = new Attendance
+                {
+                    Id = Guid.NewGuid(),
+                    EmployeeId = employee.Id,
+                    PIN = employee.Pin,
+                    AttendanceTime = checkOutTime.Value,
+                    DeviceId = employee.DeviceId,
+                    VerifyMode = VerifyModes.Password, // Manual entry by manager
+                    AttendanceState = AttendanceStates.CheckOut
+                };
+                await attendanceRepository.AddAsync(checkOutAttendance, cancellationToken);
+                shift.CheckOutAttendanceId = checkOutAttendance.Id;
+            }
+        }
+
+        await repository.UpdateAsync(shift, cancellationToken);
+        
+        logger.LogInformation(
+            "Shift {ShiftId} times updated by user {UpdatedByUserId}. CheckIn: {CheckInTime}, CheckOut: {CheckOutTime}",
+            shiftId,
+            updatedByUserId,
+            checkInTime,
+            checkOutTime);
+
+        return shift;
+    }
+
+    public async Task<(Shift? CurrentShift, Shift? NextShift)> GetTodayShiftAndNextShiftAsync(Guid employeeId, CancellationToken cancellationToken = default)
     {
         var currentShift = await repository.GetSingleAsync(
             s => s.EmployeeUserId == employeeId &&
-                 s.StartTime <= currentTime &&
-                 s.EndTime >= currentTime &&
+                 s.StartTime.Date == DateTime.Now.Date &&
                  s.Status == ShiftStatus.Approved,
+            includeProperties: [nameof(Shift.CheckInAttendance), nameof(Shift.CheckOutAttendance)],
             cancellationToken: cancellationToken);
 
-        var nextShift = await repository.GetSingleAsync(
-            s => s.EmployeeUserId == employeeId &&
-                 s.StartTime > currentTime &&
+        var nextShift = await repository.GetFirstOrDefaultAsync(
+            s => s.StartTime,
+            filter: s => s.EmployeeUserId == employeeId &&
+                 s.StartTime > DateTime.Now &&
                  s.Status == ShiftStatus.Approved,
+            includeProperties: [nameof(Shift.CheckInAttendance), nameof(Shift.CheckOutAttendance)],
             cancellationToken: cancellationToken);
 
         return (currentShift, nextShift);
     }
 
-    public async Task UpdateShiftAttendancesAsync(IEnumerable<Attendance> attendances, CancellationToken cancellationToken = default)
+    public async Task<Shift?> GetShiftByDateAsync(Guid employeeUserId, DateTime date, CancellationToken cancellationToken = default)
     {
-        // Group attendances by employee and date for efficient processing
-        var attendancesByEmployee = attendances
-            .Where(a => a.Employee?.ApplicationUserId != null)
-            .GroupBy(a => new { EmployeeUserId = a.Employee!.ApplicationUserId!.Value, Date = a.AttendanceTime.Date })
-            .ToList();
-
-        foreach (var employeeGroup in attendancesByEmployee)
-        {
-            var employeeUserId = employeeGroup.Key.EmployeeUserId;
-            var date = employeeGroup.Key.Date;
-
-            // Get all approved shifts for this employee on this date
-            var shifts = await repository.GetAllAsync(
-                filter: s => s.EmployeeUserId == employeeUserId &&
-                           s.Status == ShiftStatus.Approved &&
-                           s.StartTime.Date <= date &&
-                           s.EndTime.Date >= date,
-                orderBy: query => query.OrderBy(s => s.StartTime),
-                cancellationToken: cancellationToken);
-
-            if (!shifts.Any())
-            {
-                logger.LogWarning(
-                    "No approved shifts found for employee {EmployeeUserId} on {Date}",
-                    employeeUserId,
-                    date);
-                continue;
-            }
-
-            // Sort attendances by time for this employee/date
-            var sortedAttendances = employeeGroup.OrderBy(a => a.AttendanceTime).ToList();
-
-            // Map attendances to shifts
-            await MapAttendancesToShifts(shifts.ToList(), sortedAttendances, cancellationToken);
-        }
-    }
-
-    private async Task MapAttendancesToShifts(
-        List<Shift> shifts,
-        List<Attendance> attendances,
-        CancellationToken cancellationToken)
-    {
-        foreach (var shift in shifts)
-        {
-            // Define a time window for check-in and check-out using shift configuration
-            // Allow check-in up to MaximumAllowedLateMinutes before and after shift start
-            var checkInWindowStart = shift.StartTime.AddMinutes(-shift.MaximumAllowedLateMinutes);
-            var checkInWindowEnd = shift.StartTime.AddMinutes(shift.MaximumAllowedLateMinutes);
-            
-            // Allow check-out from MaximumAllowedEarlyLeaveMinutes before shift end and up to 1 hour after
-            var checkOutWindowStart = shift.EndTime.AddMinutes(-shift.MaximumAllowedEarlyLeaveMinutes);
-            var checkOutWindowEnd = shift.EndTime.AddHours(1); // 1 hour after shift end
-
-            // Find check-in: First attendance within check-in window
-            var checkInAttendance = attendances
-                .Where(a => a.AttendanceTime >= checkInWindowStart && a.AttendanceTime <= checkInWindowEnd)
-                .OrderBy(a => a.AttendanceTime)
-                .FirstOrDefault();
-
-            // Find check-out: Last attendance within check-out window
-            var checkOutAttendance = attendances
-                .Where(a => a.AttendanceTime >= checkOutWindowStart && a.AttendanceTime <= checkOutWindowEnd)
-                .OrderByDescending(a => a.AttendanceTime)
-                .FirstOrDefault();
-
-            bool shiftUpdated = false;
-
-            // Update check-in if found and not already set
-            if (checkInAttendance != null && shift.CheckInAttendanceId != checkInAttendance.Id)
-            {
-                shift.CheckInAttendanceId = checkInAttendance.Id;
-                shiftUpdated = true;
-                
-                logger.LogInformation(
-                    "Mapped check-in attendance {AttendanceId} at {AttendanceTime} to shift {ShiftId} (start: {ShiftStart})",
-                    checkInAttendance.Id,
-                    checkInAttendance.AttendanceTime,
-                    shift.Id,
-                    shift.StartTime);
-            }
-
-            // Update check-out if found and not already set
-            // Ensure check-out is different from check-in
-            if (checkOutAttendance != null && 
-                shift.CheckOutAttendanceId != checkOutAttendance.Id &&
-                checkOutAttendance.Id != checkInAttendance?.Id)
-            {
-                shift.CheckOutAttendanceId = checkOutAttendance.Id;
-                shiftUpdated = true;
-                
-                logger.LogInformation(
-                    "Mapped check-out attendance {AttendanceId} at {AttendanceTime} to shift {ShiftId} (end: {ShiftEnd})",
-                    checkOutAttendance.Id,
-                    checkOutAttendance.AttendanceTime,
-                    shift.Id,
-                    shift.EndTime);
-            }
-
-            // Save shift if updated
-            if (shiftUpdated)
-            {
-                await repository.UpdateAsync(shift, cancellationToken);
-            }
-        }
+        return await repository.GetSingleAsync(
+            s => s.EmployeeUserId == employeeUserId &&
+                 s.StartTime.Date == date.Date &&
+                 s.Status == ShiftStatus.Approved,
+            cancellationToken: cancellationToken);
     }
 }

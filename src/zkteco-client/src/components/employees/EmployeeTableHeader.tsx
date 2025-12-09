@@ -10,6 +10,7 @@ export const EmployeeTableHeader = () => {
         <TableHead>Privilege</TableHead>
         <TableHead>Department</TableHead>
         <TableHead>Card Number</TableHead>
+        <TableHead>Salary Profile</TableHead>
         <TableHead className="text-right">Actions</TableHead>
       </TableRow>
     </TableHeader>

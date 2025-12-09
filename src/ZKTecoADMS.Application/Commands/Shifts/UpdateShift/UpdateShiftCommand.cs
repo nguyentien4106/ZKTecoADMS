@@ -4,8 +4,6 @@ namespace ZKTecoADMS.Application.Commands.Shifts.UpdateShift;
 
 public record UpdateShiftCommand(
     Guid Id,
-    DateTime StartTime,
-    DateTime EndTime,
-    int MaximumAllowedLateMinutes,
-    int MaximumAllowedEarlyLeaveMinutes,
-    string? Description) : ICommand<AppResponse<ShiftDto>>;
+    Guid UpdatedByUserId,
+    DateTime? CheckInTime,
+    DateTime? CheckOutTime) : ICommand<AppResponse<ShiftDto>>;

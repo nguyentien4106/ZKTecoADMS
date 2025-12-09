@@ -36,7 +36,8 @@ export const ROLE_PERMISSIONS = {
     '/reports',
     '/settings',
     '/leaves',
-    '/leave-management'
+    '/leave-management',
+    '/salary-profiles'
   ],
   [UserRole.EMPLOYEE]: [
     '/dashboard',

@@ -12,6 +12,13 @@ public interface IRepository<TEntity>
         CancellationToken cancellationToken = default
     );
 
+    Task<TEntity?> GetFirstOrDefaultAsync(
+        Expression<Func<TEntity, object>> keySelector,
+        Expression<Func<TEntity, bool>>? filter = null,
+        string[]? includeProperties = null,
+        CancellationToken cancellationToken = default
+    );
+
     Task<IEnumerable<TEntity>> GetAllAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
@@ -30,6 +37,7 @@ public interface IRepository<TEntity>
     Task<TEntity?> GetSingleAsync(
         Expression<Func<TEntity, bool>> filter,
         string[]? includeProperties = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         CancellationToken cancellationToken = default
     );
 

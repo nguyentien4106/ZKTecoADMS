@@ -19,7 +19,9 @@ using Microsoft.AspNetCore.Authorization;
 using ZKTecoADMS.Core.Services;
 using ZKTecoADMS.Infrastructure.Services;
 using ZKTecoADMS.Application.Constants;
+using ZKTecoADMS.Core.Services.DeviceOperations;
 using ZKTecoADMS.Domain.Enums;
+using ZKTecoADMS.Infrastructure.Services.DeviceOperations;
 
 namespace ZKTecoADMS.Infrastructure;
 
@@ -39,7 +41,7 @@ public static class DependencyInjectionExtensions
         {
             var auditableInterceptor = sp.GetRequiredService<AuditableEntityInterceptor>();
             
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
+            options.UseNpgsql(connectionString,
                 builder => builder.MigrationsAssembly(typeof(ZKTecoDbContext).Assembly.GetName().Name))
                 .AddInterceptors(auditableInterceptor);
         });
@@ -138,12 +140,15 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEmployeeOperationService, EmployeeOperationService>();
         services.AddScoped<IAttendanceOperationService, AttendanceOperationService>();
         services.AddScoped<IShiftService, ShiftService>();
-        services.AddScoped<IShiftTemplateService, ShiftTemplateService>();
         
         // Repository registration
         services.AddScoped(typeof(IRepositoryPagedQuery<>), typeof(PagedQueryRepository<>));
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped(typeof(Repository<>), typeof(EfRepository<>));
+        
+        // Salary profile repositories
+        services.AddScoped<ISalaryProfileRepository, SalaryProfileRepository>();
+        services.AddScoped<IEmployeeSalaryProfileRepository, EmployeeSalaryProfileRepository>();
         
         return services;
     }

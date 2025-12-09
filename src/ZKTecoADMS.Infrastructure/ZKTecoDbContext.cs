@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace ZKTecoADMS.Infrastructure;
 
-public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options), IHealthyDbContext
+public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<UserRefreshToken> UserRefreshTokens => Set<UserRefreshToken>();
     public DbSet<Employee> Employees => Set<Employee>();
@@ -23,6 +23,8 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
     public DbSet<Shift> Shifts => Set<Shift>();
     public DbSet<ShiftTemplate> ShiftTemplates => Set<ShiftTemplate>();
     public DbSet<Leave> Leaves => Set<Leave>();
+    public DbSet<SalaryProfile> SalaryProfiles => Set<SalaryProfile>();
+    public DbSet<EmployeeSalaryProfile> EmployeeSalaryProfiles => Set<EmployeeSalaryProfile>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

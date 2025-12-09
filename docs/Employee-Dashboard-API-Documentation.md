@@ -72,7 +72,7 @@ Get all dashboard data in a single request.
 }
 ```
 
-### 2. Get Today's Shift
+### 2. Get Current Shift
 Get shift information for the current day.
 
 **Endpoint:** `GET /api/dashboard/shifts/today`

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ZKTecoADMS.Application.DTOs.Dashboard;
 using ZKTecoADMS.Application.Extensions;
+using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Application.Models;
 using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
@@ -12,7 +13,8 @@ namespace ZKTecoADMS.Application.Queries.Dashboard.GetEmployeeDashboard;
 public class GetEmployeeDashboardHandler(
     IRepository<Shift> shiftRepository,
     IRepository<Attendance> attendanceRepository,
-    UserManager<ApplicationUser> userManager
+    UserManager<ApplicationUser> userManager,
+    IShiftService shiftService
 ) : IQueryHandler<GetEmployeeDashboardQuery, AppResponse<EmployeeDashboardDto>>
 {
     public async Task<AppResponse<EmployeeDashboardDto>> Handle(
@@ -24,13 +26,21 @@ public class GetEmployeeDashboardHandler(
         {
             return AppResponse<EmployeeDashboardDto>.Fail("User not found");
         }
+        var (todayShift, nextShift) = await shiftService.GetTodayShiftAndNextShiftAsync(request.UserId, cancellationToken);
 
-        var (todayShift, nextShift) = await GetCurrentShiftAndNextShiftAsync(request.UserId, cancellationToken);
+        var currentAttendance = new AttendanceInfoDto
+        {
+            CheckInTime = todayShift?.CheckInAttendance?.AttendanceTime ?? null,
+            CheckOutTime = todayShift?.CheckOutAttendance?.AttendanceTime ?? null,
+            Status = todayShift == null ? "no-shift" :
+                     todayShift.CheckInAttendanceId == null ? "not-started" :
+                     todayShift.CheckOutAttendanceId == null ? "checked-in" : "checked-out",
+        };
         var dashboardData = new EmployeeDashboardDto
         {
-            TodayShift = todayShift,
-            NextShift = nextShift,
-            CurrentAttendance = await GetCurrentAttendance(user, todayShift, nextShift, cancellationToken),
+            TodayShift = todayShift.Adapt<ShiftInfoDto>(),
+            NextShift = nextShift.Adapt<ShiftInfoDto>(),
+            CurrentAttendance = currentAttendance,
             AttendanceStats = await GetAttendanceStats(user, request.Period, cancellationToken)
         };
 
@@ -110,7 +120,7 @@ public class GetEmployeeDashboardHandler(
         bool isEarlyOut = false;
         int? earlyOutMinutes = null;
 
-        // Get today's shift to compare
+        // Get Current Shift to compare
         if (todayShift != null && checkInTime.HasValue)
         {
             var expectedStartTime = todayShift.StartTime;
@@ -136,7 +146,6 @@ public class GetEmployeeDashboardHandler(
             Id = checkIn?.Id ?? Guid.NewGuid(),
             CheckInTime = checkInTime,
             CheckOutTime = checkOutTime,
-            WorkHours = Math.Round(workHours, 2),
             Status = status,
             IsLate = isLate,
             IsEarlyOut = isEarlyOut,

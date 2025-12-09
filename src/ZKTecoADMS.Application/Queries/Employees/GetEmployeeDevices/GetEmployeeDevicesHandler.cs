@@ -8,10 +8,37 @@ public class GetEmployeeDevicesHandler(IRepository<Employee> userRepository) : I
     {
         var users = await userRepository.GetAllAsync(
             i => request.DeviceIds.Contains(i.DeviceId),
-            includeProperties: ["Device", "ApplicationUser"],
+            includeProperties: ["Device", "ApplicationUser", "SalaryProfiles.SalaryProfile"],
             orderBy: query => query.OrderByDescending(i => i.DeviceId).ThenBy(i => i.Pin),
             cancellationToken: cancellationToken);
 
-        return AppResponse<IEnumerable<EmployeeDto>>.Success(users.Adapt<IEnumerable<EmployeeDto>>());
+        var employeeDtos = users.Select(emp => {
+            var dto = emp.Adapt<EmployeeDto>();
+            
+            // Get the active salary profile for this employee
+            var activeSalaryProfile = emp.SalaryProfiles
+                .Where(sp => sp.IsActive)
+                .OrderByDescending(sp => sp.EffectiveDate)
+                .FirstOrDefault();
+            
+            if (activeSalaryProfile != null && activeSalaryProfile.SalaryProfile != null)
+            {
+                dto.CurrentSalaryProfile = new CurrentSalaryProfileDto
+                {
+                    Id = activeSalaryProfile.Id,
+                    SalaryProfileId = activeSalaryProfile.SalaryProfileId,
+                    ProfileName = activeSalaryProfile.SalaryProfile.Name,
+                    Rate = activeSalaryProfile.SalaryProfile.Rate,
+                    Currency = activeSalaryProfile.SalaryProfile.Currency,
+                    RateTypeName = activeSalaryProfile.SalaryProfile.RateType.ToString(),
+                    EffectiveDate = activeSalaryProfile.EffectiveDate,
+                    IsActive = activeSalaryProfile.IsActive
+                };
+            }
+            
+            return dto;
+        });
+
+        return AppResponse<IEnumerable<EmployeeDto>>.Success(employeeDtos);
     }
 }

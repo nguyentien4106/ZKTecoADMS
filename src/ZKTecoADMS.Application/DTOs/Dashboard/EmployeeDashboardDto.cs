@@ -16,7 +16,7 @@ public class AttendanceInfoDto
     public Guid Id { get; set; }
     public DateTime? CheckInTime { get; set; }
     public DateTime? CheckOutTime { get; set; }
-    public double WorkHours { get; set; }
+    public double WorkHours => CheckInTime == null ? 0 : (CheckOutTime == null ? (DateTime.Now - CheckInTime.Value).TotalHours : (CheckOutTime.Value - CheckInTime.Value).TotalHours);
     public string Status { get; set; } = "not-started"; // checked-in, checked-out, not-started
     public bool IsLate { get; set; }
     public bool IsEarlyOut { get; set; }

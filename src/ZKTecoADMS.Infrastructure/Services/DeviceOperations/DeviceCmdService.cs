@@ -4,7 +4,7 @@ using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
 using ZKTecoADMS.Domain.Repositories;
 
-namespace ZKTecoADMS.Infrastructure.Services;
+namespace ZKTecoADMS.Infrastructure.Services.DeviceOperations;
 
 public class DeviceCmdService(IRepository<DeviceCommand> deviceCmdRepository) : IDeviceCmdService
 {

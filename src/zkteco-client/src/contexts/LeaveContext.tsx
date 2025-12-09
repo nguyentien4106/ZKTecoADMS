@@ -1,7 +1,7 @@
 // ==========================================
 // src/contexts/LeaveContext.tsx
 // ==========================================
-import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from 'react';
+import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction, useMemo } from 'react';
 import { LeaveRequest, CreateLeaveRequest, UpdateLeaveRequest, LeaveDialogState } from '@/types/leave';
 import { 
   usePendingLeaves, 
@@ -19,8 +19,8 @@ import { PaginatedResponse, PaginationRequest } from '@/types';
 
 interface LeaveContextValue {
   // State
-  paginatedPendingLeaves: PaginatedResponse<LeaveRequest> | undefined;
-  paginatedLeaves: PaginatedResponse<LeaveRequest> | undefined;
+  paginatedPendingLeaves: PaginatedResponse<LeaveRequest>;
+  paginatedLeaves: PaginatedResponse<LeaveRequest>;
   isLoading: boolean;
   
   // Dialog states
@@ -90,7 +90,6 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
   const { data: paginatedPendingLeaves, isLoading: isPendingLoading } = usePendingLeaves(pendingPaginationRequest);
   const { data: paginatedLeaves, isLoading: isAllLoading } = useAllLeaves(paginationRequest);
 
-  console.log('paginatedLeaves in LeaveProvider:', paginatedLeaves);
   const approveLeaveMutation = useApproveLeave();
   const rejectLeaveMutation = useRejectLeave();
   const cancelLeaveMutation = useCancelLeave();
@@ -99,6 +98,17 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
   
   const isLoading = isPendingLoading || isAllLoading;
 
+    // Memoize the default empty paginated response
+  const emptyPaginatedResponse = useMemo<PaginatedResponse<LeaveRequest>>(() => ({ 
+    items: [], 
+    totalCount: 0, 
+    pageNumber: 1, 
+    pageSize: 10, 
+    totalPages: 0,
+    hasPreviousPage: false,
+    hasNextPage: false
+  }), []);
+  
   const handleApprove = async (id: string) => {
     await approveLeaveMutation.mutateAsync(id);
     setApproveDialogOpen(false);
@@ -163,8 +173,8 @@ export const LeaveProvider = ({ children }: LeaveProviderProps) => {
 
   const value: LeaveContextValue = {
     // State
-    paginatedPendingLeaves,
-    paginatedLeaves,
+    paginatedPendingLeaves: paginatedPendingLeaves || emptyPaginatedResponse,
+    paginatedLeaves: paginatedLeaves || emptyPaginatedResponse,
     isLoading,
     dialogMode,
     setDialogMode,

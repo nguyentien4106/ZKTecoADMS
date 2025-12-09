@@ -19,12 +19,12 @@ import { ForgotPassword } from './pages/auth/ForgotPassword'
 import { ResetPassword } from './pages/auth/ResetPassword'
 import { MyShifts } from './pages/MyShifts'
 import { Leaves } from './pages/Leaves'
-import { LeaveManagement } from './pages/LeaveManagement'
 import { ShiftManagement } from './pages/ShiftManagement'
 import { Profile } from './pages/Profile'
 import { UserRole } from './constants/roles'
 import EmployeeDashboardDemo from './pages/EmployeeDashboardDemo'
 import { MonthlyAttendanceSummary } from './pages/MonthlyAttendanceSummary'
+import { SalaryProfiles } from './pages/SalaryProfiles'
 
 function App() {
   return (
@@ -73,14 +73,7 @@ function App() {
         />
         
         {/* Manager and Admin only routes */}
-        <Route
-          path="leave-management"
-          element={
-            <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
-              <LeaveManagement />
-            </RoleProtectedRoute>
-          }
-        />
+        
         <Route
           path="shifts"
           element={
@@ -109,7 +102,7 @@ function App() {
         <Route
           path="employees"
           element={
-            <RoleProtectedRoute requiredRole={UserRole.EMPLOYEE}>
+            <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
               <Employees />
             </RoleProtectedRoute>
           }
@@ -119,6 +112,14 @@ function App() {
           element={
             <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
               <Reports />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="salary-profiles"
+          element={
+            <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
+              <SalaryProfiles />
             </RoleProtectedRoute>
           }
         />

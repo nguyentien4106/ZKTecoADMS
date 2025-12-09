@@ -21,7 +21,7 @@ public class AttendanceConfiguration : IEntityTypeConfiguration<Attendance>
         builder.HasOne(e => e.Employee)
             .WithMany(u => u.AttendanceLogs)
             .HasForeignKey(e => e.EmployeeId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
 }

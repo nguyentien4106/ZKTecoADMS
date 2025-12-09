@@ -11,8 +11,6 @@ public interface IDeviceService
     Task<IEnumerable<DeviceCommand>> GetPendingCommandsAsync(Guid deviceId);
     Task<DeviceCommand> CreateCommandAsync(DeviceCommand command);
     Task<AppResponse<bool>> IsValidEmployeeAsync(Employee employee);
-    
     Task<IEnumerable<Device>> GetAllDevicesByEmployeeAsync(Guid employeeId);
     
-    Task<IEnumerable<Device>> GetAllDevicesAsync();
 }

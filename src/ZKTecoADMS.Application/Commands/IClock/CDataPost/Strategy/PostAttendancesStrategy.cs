@@ -23,16 +23,17 @@ public class PostAttendancesStrategy(IServiceProvider serviceProvider) : IPostSt
 
         if (attendances.Count == 0)
         {
-            _logger.LogWarning("No valid attendance records to save from device {DeviceId}", device.Id);
+            _logger.LogWarning("Device-SN-{SN}: no valid attendance records to save from device {DeviceId}", device.SerialNumber, device.Id);
             return ClockResponses.Fail;
         }
 
         // Step 2: Persist attendances to database
         await _attendanceService.CreateAttendancesAsync(attendances);
 
-        _logger.LogInformation("Successfully saved {Count} attendance records from device {DeviceId}", attendances.Count, device.Id);
+        _logger.LogInformation("Device-SN-{SN}: successfully saved {Count} attendance records from device {DeviceId}", device.SerialNumber, attendances.Count, device.Id);
 
-        await _shiftService.GetCurrentShiftAndNextShiftAsync(Guid.Empty, DateTime.Now);
+        await _attendanceService.UpdateShiftAttendancesAsync(attendances, device);
+        
         return ClockResponses.Ok; 
     }
 }
