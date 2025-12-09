@@ -12,6 +12,7 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { CheckCircle, XCircle, Trash2, Pencil } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ShiftActionsProps {
     shift: Shift;
@@ -29,11 +30,12 @@ export const ShiftActions = ({
     onEdit
 }: ShiftActionsProps) => {
     const isPending = shift.status === ShiftStatus.Pending;
-
+    const { isManager } = useAuth()
+    
     return (
         <div className="flex justify-end gap-2">
             {/* Edit button - show for all shifts if onEdit callback is provided */}
-            {onEdit && (
+            {isManager && onEdit && (
                 <Button
                     size="sm"
                     variant="outline"

@@ -26,15 +26,18 @@ interface EmployeeContextValue {
   createDialogOpen: boolean
   createAccountDialogOpen: boolean
   deleteDialogOpen: boolean
+  assignSalaryDialogOpen: boolean
   employeeToEdit: Employee | null
   employeeForAccount: Employee | null
   employeeToDelete: Employee | null
+  employeeForSalary: Employee | null
   isCreatingAccount: boolean
   
   // Actions
   setCreateDialogOpen: (open: boolean) => void
   setCreateAccountDialogOpen: (open: boolean) => void
   setDeleteDialogOpen: (open: boolean) => void
+  setAssignSalaryDialogOpen: (open: boolean) => void
   setSelectedDeviceIds: (deviceIds: string[]) => void
   handleDelete: (employee: Employee) => void
   handleConfirmDelete: () => Promise<void>
@@ -42,6 +45,7 @@ interface EmployeeContextValue {
   handleUpdateEmployee: (data: UpdateEmployeeRequest) => Promise<void>
   handleEdit: (user: Employee) => void
   handleCreateAccount: (user: Employee) => void
+  handleAssignSalary: (user: Employee) => void
   handleCreateAccountSubmit: (data: CreateEmployeeAccountRequest) => Promise<Account | undefined>
   handleFilterSubmit: (deviceIds: string[]) => void
   handleOpenCreateDialog: () => void
@@ -69,9 +73,11 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   const [createDialogOpen, setCreateDialogOpenState] = useState(false)
   const [createAccountDialogOpen, setCreateAccountDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [assignSalaryDialogOpen, setAssignSalaryDialogOpen] = useState(false)
   const [employeeToEdit, setEmployeeToEdit] = useState<Employee | null>(null)
   const [employeeForAccount, setEmployeeForAccount] = useState<Employee | null>(null)
   const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null)
+  const [employeeForSalary, setEmployeeForSalary] = useState<Employee | null>(null)
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([])
   
@@ -158,6 +164,11 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     setCreateAccountDialogOpen(true)
   }
 
+  const handleAssignSalary = (user: Employee) => {
+    setEmployeeForSalary(user)
+    setAssignSalaryDialogOpen(true)
+  }
+
   const handleCreateAccountSubmit = async (data: CreateEmployeeAccountRequest) => {
     setIsCreatingAccount(true)
     try {
@@ -209,15 +220,18 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     createDialogOpen,
     createAccountDialogOpen,
     deleteDialogOpen,
+    assignSalaryDialogOpen,
     employeeToEdit,
     employeeForAccount,
     employeeToDelete,
+    employeeForSalary,
     isCreatingAccount,
     
     // Actions
     setCreateDialogOpen,
     setCreateAccountDialogOpen,
     setDeleteDialogOpen,
+    setAssignSalaryDialogOpen,
     setSelectedDeviceIds,
     handleDelete,
     handleConfirmDelete,
@@ -226,6 +240,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     handleEdit,
     handleOpenCreateDialog,
     handleCreateAccount,
+    handleAssignSalary,
     handleCreateAccountSubmit,
     handleFilterSubmit,
     

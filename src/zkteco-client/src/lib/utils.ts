@@ -30,3 +30,8 @@ export function formatTime(timeString: string): string {
   const minutes = date.getMinutes().toString().padStart(2, '0');
   return `${hours}:${minutes}`;
 }
+
+export const formatCurrency = (amount: number): string =>new Intl.NumberFormat('vi-VN', {
+  style: 'currency',
+  currency: 'VND'
+}).format(amount);

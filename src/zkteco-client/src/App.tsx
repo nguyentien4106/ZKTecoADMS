@@ -24,6 +24,7 @@ import { Profile } from './pages/Profile'
 import { UserRole } from './constants/roles'
 import EmployeeDashboardDemo from './pages/EmployeeDashboardDemo'
 import { MonthlyAttendanceSummary } from './pages/MonthlyAttendanceSummary'
+import { SalaryProfiles } from './pages/SalaryProfiles'
 
 function App() {
   return (
@@ -101,7 +102,7 @@ function App() {
         <Route
           path="employees"
           element={
-            <RoleProtectedRoute requiredRole={UserRole.EMPLOYEE}>
+            <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
               <Employees />
             </RoleProtectedRoute>
           }
@@ -111,6 +112,14 @@ function App() {
           element={
             <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
               <Reports />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="salary-profiles"
+          element={
+            <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
+              <SalaryProfiles />
             </RoleProtectedRoute>
           }
         />

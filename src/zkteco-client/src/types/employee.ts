@@ -1,5 +1,15 @@
 import { Account } from "./account";
 
+export interface CurrentSalaryProfile {
+  id: string;
+  salaryProfileId: string;
+  profileName: string;
+  rate: number;
+  currency: string;
+  rateTypeName: string;
+  effectiveDate: string;
+  isActive: boolean;
+}
 
 export interface CreateEmployeeRequest {
     pin: string;
@@ -36,4 +46,5 @@ export interface Employee {
   deviceId: string;
   deviceName?: string;
   applicationUser?: Account | null;
+  currentSalaryProfile?: CurrentSalaryProfile | null;
 }

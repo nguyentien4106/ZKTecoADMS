@@ -26,5 +26,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .WithOne(u => u.Employee)
             .HasForeignKey<Employee>(u => u.ApplicationUserId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        // One-to-Many relationship with SalaryProfiles is configured in EmployeeSalaryProfileConfiguration
     }
 }

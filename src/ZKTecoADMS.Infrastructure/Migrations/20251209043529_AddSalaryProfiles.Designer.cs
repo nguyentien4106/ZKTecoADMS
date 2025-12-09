@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZKTecoADMS.Infrastructure;
@@ -11,9 +12,11 @@ using ZKTecoADMS.Infrastructure;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     [DbContext(typeof(ZKTecoDbContext))]
-    partial class ZKTecoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251209043529_AddSalaryProfiles")]
+    partial class AddSalaryProfiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1338,7 +1341,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.EmployeeSalaryProfile", b =>
                 {
                     b.HasOne("ZKTecoADMS.Domain.Entities.Employee", "Employee")
-                        .WithMany("SalaryProfiles")
+                        .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1513,8 +1516,6 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("FaceTemplates");
 
                     b.Navigation("FingerprintTemplates");
-
-                    b.Navigation("SalaryProfiles");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.SalaryProfile", b =>
