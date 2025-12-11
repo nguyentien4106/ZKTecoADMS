@@ -58,6 +58,7 @@ export const defaultNewShiftTemplate: CreateShiftTemplateRequest = {
     endTime: '17:00:00',
     maximumAllowedLateMinutes: 30,
     maximumAllowedEarlyLeaveMinutes: 30,
+    breakTimeMinutes: 60,
 }
 
 export const defaultShiftManagementFilter: ShiftManagementFilter = {
@@ -78,6 +79,7 @@ export const defaultNewShiftWithEmployeeUserId: CreatShiftDialog = {
     endTime: tomorrow,
     maximumAllowedLateMinutes: 30,
     maximumAllowedEarlyLeaveMinutes: 30,
+    breakTimeMinutes: 60,
     description: ''
 }
 

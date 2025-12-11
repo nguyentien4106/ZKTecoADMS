@@ -863,6 +863,150 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.ToTable("Leaves");
                 });
 
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Payslip", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ApprovedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<decimal>("BaseSalary")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("Bonus")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<decimal?>("Deductions")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("EmployeeUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("GeneratedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("GeneratedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<decimal>("GrossSalary")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("HolidayPay")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("HolidayUnits")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("NetSalary")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("NightShiftPay")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("NightShiftUnits")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<decimal?>("OvertimePay")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("OvertimeUnits")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime?>("PaidDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("PeriodEnd")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("PeriodStart")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<decimal>("RegularWorkUnits")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("SalaryProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovedByUserId");
+
+                    b.HasIndex("GeneratedByUserId");
+
+                    b.HasIndex("SalaryProfileId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("Year", "Month");
+
+                    b.HasIndex("EmployeeUserId", "Year", "Month")
+                        .IsUnique();
+
+                    b.ToTable("Payslips");
+                });
+
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.SalaryProfile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -942,6 +1086,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.Property<Guid?>("ApplicationUserId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("BreakTimeMinutes")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("CheckInAttendanceId")
                         .HasColumnType("uuid");
@@ -1024,6 +1171,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<int>("BreakTimeMinutes")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -1405,6 +1555,39 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("Manager");
 
                     b.Navigation("Shift");
+                });
+
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Payslip", b =>
+                {
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "ApprovedByUser")
+                        .WithMany()
+                        .HasForeignKey("ApprovedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "EmployeeUser")
+                        .WithMany()
+                        .HasForeignKey("EmployeeUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "GeneratedByUser")
+                        .WithMany()
+                        .HasForeignKey("GeneratedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ZKTecoADMS.Domain.Entities.SalaryProfile", "SalaryProfile")
+                        .WithMany()
+                        .HasForeignKey("SalaryProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApprovedByUser");
+
+                    b.Navigation("EmployeeUser");
+
+                    b.Navigation("GeneratedByUser");
+
+                    b.Navigation("SalaryProfile");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Shift", b =>

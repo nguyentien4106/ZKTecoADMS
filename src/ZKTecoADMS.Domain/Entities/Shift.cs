@@ -20,6 +20,9 @@ public class Shift : AuditableEntity<Guid>
 
     [Required]
     public int MaximumAllowedEarlyLeaveMinutes { get; set; } = 30;
+
+    [Required]
+    public int BreakTimeMinutes { get; set; } = 60;
     
     [MaxLength(500)]
     public string? Description { get; set; }

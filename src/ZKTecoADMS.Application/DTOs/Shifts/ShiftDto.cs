@@ -12,6 +12,7 @@ public class ShiftDto
     public DateTime EndTime { get; set; }
     public int MaximumAllowedLateMinutes { get; set; } = 30;
     public int MaximumAllowedEarlyLeaveMinutes { get; set; } = 30;
+    public int BreakTimeMinutes { get; set; } = 60;
     public string? Description { get; set; }
     public ShiftStatus Status { get; set; }
     public DateTime? ApprovedAt { get; set; }

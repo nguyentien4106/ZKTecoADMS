@@ -25,6 +25,7 @@ import { UserRole } from './constants/roles'
 import EmployeeDashboardDemo from './pages/EmployeeDashboardDemo'
 import { MonthlyAttendanceSummary } from './pages/MonthlyAttendanceSummary'
 import { SalaryProfiles } from './pages/SalaryProfiles'
+import { Payslips } from './pages/Payslips'
 
 function App() {
   return (
@@ -71,6 +72,9 @@ function App() {
             </RoleProtectedRoute>
           }
         />
+
+        {/* Payslips - accessible by all authenticated users */}
+        <Route path="payslips" element={<Payslips />} />
         
         {/* Manager and Admin only routes */}
         

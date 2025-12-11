@@ -160,7 +160,7 @@ public class ZKTecoDbInitializer(
                 MaximumAllowedEarlyLeaveMinutes = 30,
                 IsActive = true,
                 ManagerId = manager.Id,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 CreatedBy = "System"
             },
             new ShiftTemplate
@@ -173,7 +173,7 @@ public class ZKTecoDbInitializer(
                 MaximumAllowedEarlyLeaveMinutes = 30,
                 IsActive = true,
                 ManagerId = manager.Id,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 CreatedBy = "System"
             },
             new ShiftTemplate
@@ -186,7 +186,7 @@ public class ZKTecoDbInitializer(
                 MaximumAllowedEarlyLeaveMinutes = 30,
                 IsActive = true,
                 ManagerId = manager.Id,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 CreatedBy = "System"
             }
         };

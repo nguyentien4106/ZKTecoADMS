@@ -20,6 +20,9 @@ namespace ZKTecoADMS.Domain.Entities
         
         [Required]
         public int MaximumAllowedEarlyLeaveMinutes { get; set; } = 30;
+
+        [Required]
+        public int BreakTimeMinutes { get; set; } = 60;
         
         public bool IsActive { get; set; }
     }

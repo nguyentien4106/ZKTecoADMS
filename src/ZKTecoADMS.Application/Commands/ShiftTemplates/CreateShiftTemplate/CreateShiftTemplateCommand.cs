@@ -8,4 +8,5 @@ public record CreateShiftTemplateCommand(
     TimeSpan StartTime,
     TimeSpan EndTime,
     int MaximumAllowedLateMinutes = 30,
-    int MaximumAllowedEarlyLeaveMinutes = 30) : ICommand<AppResponse<ShiftTemplateDto>>;
+    int MaximumAllowedEarlyLeaveMinutes = 30,
+    int BreakTimeMinutes = 60) : ICommand<AppResponse<ShiftTemplateDto>>;

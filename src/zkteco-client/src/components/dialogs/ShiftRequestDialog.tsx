@@ -75,6 +75,7 @@ export const ShiftRequestDialog = () => {
             workingDays,
             maximumAllowedLateMinutes: selectedTemplate.maximumAllowedLateMinutes,
             maximumAllowedEarlyLeaveMinutes: selectedTemplate.maximumAllowedEarlyLeaveMinutes,
+            breakTimeMinutes: selectedTemplate.breakTimeMinutes,
             description: description,
         };
         await handleCreate(createData);

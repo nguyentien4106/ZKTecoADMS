@@ -51,7 +51,7 @@ public class EmployeeSalaryProfileRepository : EfRepository<EmployeeSalaryProfil
         foreach (var profile in otherProfiles)
         {
             profile.IsActive = false;
-            profile.EndDate = DateTime.UtcNow;
+            profile.EndDate = DateTime.Now;
         }
 
         await _context.SaveChangesAsync(cancellationToken);

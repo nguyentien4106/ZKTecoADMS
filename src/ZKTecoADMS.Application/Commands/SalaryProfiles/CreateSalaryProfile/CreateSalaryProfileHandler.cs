@@ -28,8 +28,8 @@ public class CreateSalaryProfileHandler(ISalaryProfileRepository repository)
             HolidayMultiplier = request.HolidayMultiplier,
             NightShiftMultiplier = request.NightShiftMultiplier,
             IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now
         };
 
         await repository.AddAsync(salaryProfile, cancellationToken);

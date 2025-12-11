@@ -40,6 +40,7 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
             request.WorkingDays,
             request.MaximumAllowedLateMinutes,
             request.MaximumAllowedEarlyLeaveMinutes,
+            request.BreakTimeMinutes,
             request.Description,
             IsManager
         );

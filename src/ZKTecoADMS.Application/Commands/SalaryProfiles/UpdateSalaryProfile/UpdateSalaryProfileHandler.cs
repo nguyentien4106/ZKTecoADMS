@@ -30,7 +30,7 @@ public class UpdateSalaryProfileHandler(ISalaryProfileRepository repository)
         salaryProfile.HolidayMultiplier = request.HolidayMultiplier;
         salaryProfile.NightShiftMultiplier = request.NightShiftMultiplier;
         salaryProfile.IsActive = request.IsActive;
-        salaryProfile.UpdatedAt = DateTime.UtcNow;
+        salaryProfile.UpdatedAt = DateTime.Now;
 
         await repository.UpdateAsync(salaryProfile, cancellationToken);
 

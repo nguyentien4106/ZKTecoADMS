@@ -40,7 +40,7 @@ public class AssignSalaryProfileHandler(
             EffectiveDate = request.EffectiveDate,
             IsActive = true,
             Notes = request.Notes,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         };
 
         await employeeSalaryProfileRepository.AddAsync(employeeSalaryProfile, cancellationToken);

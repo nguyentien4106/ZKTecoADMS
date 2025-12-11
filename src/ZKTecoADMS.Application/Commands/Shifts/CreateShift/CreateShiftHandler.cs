@@ -32,6 +32,7 @@ public class CreateShiftHandler(IRepository<Shift> shiftRepository)
                     EndTime = day.EndTime,
                     MaximumAllowedLateMinutes = request.MaximumAllowedLateMinutes,
                     MaximumAllowedEarlyLeaveMinutes = request.MaximumAllowedEarlyLeaveMinutes,
+                    BreakTimeMinutes = request.BreakTimeMinutes,
                     Description = request.IsManager ? "Assigned by manager. " + request.Description : request.Description,
                     Status = request.IsManager ? ShiftStatus.Approved : ShiftStatus.Pending,
                     IsActive = true

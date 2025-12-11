@@ -9,5 +9,6 @@ public record CreateShiftCommand(
     List<WorkingDay> WorkingDays,
     int MaximumAllowedLateMinutes = 30,
     int MaximumAllowedEarlyLeaveMinutes = 30,
+    int BreakTimeMinutes = 60,
     string? Description = null,
     bool IsManager = false) : ICommand<AppResponse<ShiftDto>>;

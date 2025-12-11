@@ -25,6 +25,10 @@ export const ROLE_PERMISSIONS = {
     '/reports',
     '/settings',
     '/shifts',
+    '/leaves',
+    '/leave-management',
+    '/salary-profiles',
+    '/payslips'
   ],
   [UserRole.MANAGER]: [
     '/shifts',
@@ -37,7 +41,8 @@ export const ROLE_PERMISSIONS = {
     '/settings',
     '/leaves',
     '/leave-management',
-    '/salary-profiles'
+    '/salary-profiles',
+    '/payslips'
   ],
   [UserRole.EMPLOYEE]: [
     '/dashboard',
@@ -45,6 +50,7 @@ export const ROLE_PERMISSIONS = {
     '/settings',
     '/employees',
     '/my-shifts',
-    '/leaves'
+    '/leaves',
+    '/payslips'
   ]
 }

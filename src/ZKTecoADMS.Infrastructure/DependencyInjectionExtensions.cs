@@ -149,6 +149,7 @@ public static class DependencyInjectionExtensions
         // Salary profile repositories
         services.AddScoped<ISalaryProfileRepository, SalaryProfileRepository>();
         services.AddScoped<IEmployeeSalaryProfileRepository, EmployeeSalaryProfileRepository>();
+        services.AddScoped<IPayslipRepository, PayslipRepository>();
         
         return services;
     }
