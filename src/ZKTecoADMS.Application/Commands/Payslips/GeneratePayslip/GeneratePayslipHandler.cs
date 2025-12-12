@@ -161,7 +161,7 @@ public class GeneratePayslipHandler(
 
         var dto = MapToDto(payslipWithDetails!);
 
-        return AppResponse<PayslipDto>.Success(dto);
+        return AppResponse<PayslipDto>.Success(payslipWithDetails.Adapt<PayslipDto>());
     }
 
     private (decimal regular, decimal holiday, decimal nightShift) CalculateWorkUnits(
@@ -252,9 +252,10 @@ public class GeneratePayslipHandler(
         {
             Id = payslip.Id,
             EmployeeUserId = payslip.EmployeeUserId,
-            EmployeeName = payslip.EmployeeUser?.UserName ?? string.Empty,
+            EmployeeName = payslip.EmployeeUser?.FirstName + " " + payslip.EmployeeUser?.LastName ?? string.Empty,
             SalaryProfileId = payslip.SalaryProfileId,
             SalaryProfileName = payslip.SalaryProfile?.Name ?? string.Empty,
+
             Year = payslip.Year,
             Month = payslip.Month,
             PeriodStart = payslip.PeriodStart,

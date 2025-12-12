@@ -1,8 +1,4 @@
-using ZKTecoADMS.Application.CQRS;
 using ZKTecoADMS.Application.DTOs.Payslips;
-using ZKTecoADMS.Application.Models;
-using ZKTecoADMS.Domain.Repositories;
-using ZKTecoADMS.Domain.Entities;
 
 namespace ZKTecoADMS.Application.Queries.Payslips.GetEmployeePayslips;
 
@@ -23,7 +19,7 @@ public class GetEmployeePayslipsHandler(
         }
         var dtos = payslips.Select(MapToDto).ToList();
         
-        return AppResponse<List<PayslipDto>>.Success(dtos);
+        return AppResponse<List<PayslipDto>>.Success(payslips.Adapt<List<PayslipDto>>());
     }
 
     private PayslipDto MapToDto(Payslip payslip)
