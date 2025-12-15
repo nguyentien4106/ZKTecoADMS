@@ -19,8 +19,10 @@ public class SalaryProfile : AuditableEntity<Guid>
     [Required]
     public decimal Rate { get; set; }
 
+    public int? StandardHoursPerDay { get; set; }
+
     [MaxLength(10)]
-    public string Currency { get; set; } = "USD";
+    public string Currency { get; set; } = "VND";
 
     public decimal? OvertimeMultiplier { get; set; }
 
@@ -28,7 +30,48 @@ public class SalaryProfile : AuditableEntity<Guid>
 
     public decimal? NightShiftMultiplier { get; set; }
 
-    public bool IsActive { get; set; } = true;
+
+    // Base Salary Configuration (Monthly profiles)
+    public decimal? SalaryPerDay { get; set; }
+    
+    public decimal? SalaryPerHour { get; set; }
+    
+    
+    // Leave & Attendance Rules
+    [MaxLength(100)]
+    public string? WeeklyOffDays { get; set; } // Comma-separated days like "Saturday,Sunday"
+    
+    public decimal? PaidLeaveDays { get; set; }
+    
+    public decimal? UnpaidLeaveDays { get; set; }
+    
+    // Allowances
+    public decimal? MealAllowance { get; set; }
+    
+    public decimal? TransportAllowance { get; set; }
+    
+    public decimal? HousingAllowance { get; set; }
+    
+    public decimal? ResponsibilityAllowance { get; set; }
+    
+    public decimal? AttendanceBonus { get; set; }
+    
+    public decimal? PhoneSkillShiftAllowance { get; set; }
+
+    // Overtime Configuration (for Monthly profiles)
+    public decimal? OTRateWeekday { get; set; }
+    
+    public decimal? OTRateWeekend { get; set; }
+    
+    public decimal? OTRateHoliday { get; set; }
+    
+    public decimal? NightShiftRate { get; set; }
+    
+    // Health Insurance
+    public bool? HasHealthInsurance { get; set; }
+    
+    public decimal? HealthInsuranceRate { get; set; }
+
 
     // Navigation Properties
     public virtual ICollection<EmployeeSalaryProfile> EmployeeSalaryProfiles { get; set; } = new List<EmployeeSalaryProfile>();

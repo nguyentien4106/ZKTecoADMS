@@ -8,5 +8,7 @@ public static class ClaimTypeNames
 
     public const string ManagerId = "managerId";
 
+    public const string EmployeeType = "employeeType";
+
     public const string UserName = "userName";
 }

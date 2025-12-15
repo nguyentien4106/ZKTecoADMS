@@ -18,8 +18,6 @@ public class EmployeeSalaryProfile : AuditableEntity<Guid>
 
     public DateTime? EndDate { get; set; }
 
-    public bool IsActive { get; set; } = true;
-
     [MaxLength(500)]
     public string? Notes { get; set; }
 }

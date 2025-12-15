@@ -11,8 +11,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.HasKey(e => e.Id);
         builder.HasIndex(e => e.Pin);
         builder.HasIndex(e => e.ApplicationUserId)
-            .IsUnique()
-            .HasFilter("\"ApplicationUserId\" IS NOT NULL");
+            .IsUnique();
         builder.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
         builder.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
         

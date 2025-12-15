@@ -26,6 +26,8 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
     public DbSet<SalaryProfile> SalaryProfiles => Set<SalaryProfile>();
     public DbSet<EmployeeSalaryProfile> EmployeeSalaryProfiles => Set<EmployeeSalaryProfile>();
     public DbSet<Payslip> Payslips => Set<Payslip>();
+    public DbSet<Holiday> Holidays => Set<Holiday>();
+    public DbSet<EmployeeWorkingInfo> EmployeeWorkingInfos => Set<EmployeeWorkingInfo>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

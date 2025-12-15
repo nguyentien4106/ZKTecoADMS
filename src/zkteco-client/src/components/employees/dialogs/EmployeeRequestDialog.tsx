@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { UserPrivileges } from "@/constants";
 import { defaultNewEmployee } from "@/constants/defaultValue";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { useDevices } from "@/hooks/useDevices";
 import {
   MultiSelect,
@@ -40,7 +40,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { PasswordInput } from "../password-input";
+import { PasswordInput } from "../../password-input";
 import { CreateEmployeeRequest, UpdateEmployeeRequest } from "@/types/employee";
 import { useEmployeeContext } from "@/contexts/EmployeeContext";
 
@@ -123,9 +123,9 @@ export const CreateUserDialog = () => {
     <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add New User</DialogTitle>
+          <DialogTitle>Add New Employee</DialogTitle>
           <DialogDescription>
-            Create a new user and sync to devices
+            Create a new employee and sync to devices
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -150,6 +150,7 @@ export const CreateUserDialog = () => {
                         <MultiSelect
                           values={Array.isArray(field.value) ? field.value : []}
                           onValuesChange={field.onChange}
+                          
                         >
                           <MultiSelectTrigger>
                             <MultiSelectValue placeholder="Choose devices..." />

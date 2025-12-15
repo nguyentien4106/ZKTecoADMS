@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ZKTecoADMS.Infrastructure;
@@ -11,9 +12,11 @@ using ZKTecoADMS.Infrastructure;
 namespace ZKTecoADMS.Infrastructure.Migrations
 {
     [DbContext(typeof(ZKTecoDbContext))]
-    partial class ZKTecoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251215103644_AddEmployeeWorkingInfoFields")]
+    partial class AddEmployeeWorkingInfoFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -695,10 +698,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<decimal>("BalancedLateEarlyLeaveMinutes")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("BalancedPaidLeaveDays")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("BalancedUnpaidLeaveDays")
+                    b.Property<decimal>("BalancedLeaveDays")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("CreatedAt")
@@ -713,14 +713,20 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<Guid>("EmployeeUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<decimal?>("PaidLeaveDaysPerYear")
-                        .HasColumnType("numeric");
+                    b.Property<int?>("OfficialHolidaysPerYear")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PaidLeaveDaysPerYear")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("StandardHoursPerDay")
                         .HasColumnType("integer");
 
-                    b.Property<decimal?>("UnpaidLeaveDaysPerYear")
+                    b.Property<decimal>("TotalLeaveDays")
                         .HasColumnType("numeric");
+
+                    b.Property<int?>("UnpaidLeaveDaysPerYear")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -1208,8 +1214,8 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<decimal?>("OvertimeMultiplier")
                         .HasColumnType("decimal(5,2)");
 
-                    b.Property<decimal?>("PaidLeaveDays")
-                        .HasColumnType("numeric");
+                    b.Property<int?>("PaidLeaveDays")
+                        .HasColumnType("integer");
 
                     b.Property<decimal?>("PhoneSkillShiftAllowance")
                         .HasColumnType("numeric");
@@ -1235,8 +1241,8 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Property<decimal?>("TransportAllowance")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal?>("UnpaidLeaveDays")
-                        .HasColumnType("numeric");
+                    b.Property<int?>("UnpaidLeaveDays")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");

@@ -35,3 +35,11 @@ export const formatCurrency = (amount: number): string =>new Intl.NumberFormat('
   style: 'currency',
   currency: 'VND'
 }).format(amount);
+
+export const formatNumber = (value: number): string => {
+  return value?.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) || "0";
+};
+  
+export const parseFormattedNumber = (value: string): number => {
+  return parseFloat(value.replace(/,/g, '')) || 0;
+};

@@ -106,7 +106,7 @@ public static class DependencyInjectionExtensions
         services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
                 {
                     // Configuration for authentication fields
-                    options.SignIn.RequireConfirmedAccount = true;
+                    options.SignIn.RequireConfirmedEmail = true;
                     options.Password.RequireDigit = true;
                     options.Password.RequiredLength = 8;
                     options.Password.RequireNonAlphanumeric = true;

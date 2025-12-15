@@ -212,10 +212,10 @@ public class ShiftService(
         return shift;
     }
 
-    public async Task<(Shift? CurrentShift, Shift? NextShift)> GetTodayShiftAndNextShiftAsync(Guid employeeId, CancellationToken cancellationToken = default)
+    public async Task<(Shift? CurrentShift, Shift? NextShift)> GetTodayShiftAndNextShiftAsync(Guid employeeUserId, CancellationToken cancellationToken = default)
     {
         var currentShift = await repository.GetSingleAsync(
-            s => s.EmployeeUserId == employeeId &&
+            s => s.EmployeeUserId == employeeUserId &&
                  s.StartTime.Date == DateTime.Now.Date &&
                  s.Status == ShiftStatus.Approved,
             includeProperties: [nameof(Shift.CheckInAttendance), nameof(Shift.CheckOutAttendance)],
@@ -223,7 +223,7 @@ public class ShiftService(
 
         var nextShift = await repository.GetFirstOrDefaultAsync(
             s => s.StartTime,
-            filter: s => s.EmployeeUserId == employeeId &&
+            filter: s => s.EmployeeUserId == employeeUserId &&
                  s.StartTime > DateTime.Now &&
                  s.Status == ShiftStatus.Approved,
             includeProperties: [nameof(Shift.CheckInAttendance), nameof(Shift.CheckOutAttendance)],

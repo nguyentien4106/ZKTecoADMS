@@ -14,6 +14,35 @@ public class SalaryProfileDto
     public decimal? OvertimeMultiplier { get; set; }
     public decimal? HolidayMultiplier { get; set; }
     public decimal? NightShiftMultiplier { get; set; }
+    
+    // Base Salary Configuration (Monthly profiles)
+    public decimal? SalaryPerDay { get; set; }
+    public decimal? SalaryPerHour { get; set; }
+    public int? StandardHoursPerDay { get; set; }
+
+    // Leave & Attendance Rules
+    public string? WeeklyOffDays { get; set; }
+    public int? PaidLeaveDays { get; set; }
+    public int? UnpaidLeaveDays { get; set; }
+
+    // Allowances
+    public decimal? MealAllowance { get; set; }
+    public decimal? TransportAllowance { get; set; }
+    public decimal? HousingAllowance { get; set; }
+    public decimal? ResponsibilityAllowance { get; set; }
+    public decimal? AttendanceBonus { get; set; }
+    public decimal? PhoneSkillShiftAllowance { get; set; }
+
+    // Overtime Configuration (for Monthly profiles)
+    public decimal? OTRateWeekday { get; set; }
+    public decimal? OTRateWeekend { get; set; }
+    public decimal? OTRateHoliday { get; set; }
+    public decimal? NightShiftRate { get; set; }
+
+    // Health Insurance
+    public bool? HasHealthInsurance { get; set; }
+    public decimal? HealthInsuranceRate { get; set; }
+    
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

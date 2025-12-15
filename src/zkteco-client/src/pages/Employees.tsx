@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { EmployeesTable } from "@/components/employees";
 import { Plus } from "lucide-react";
-import { CreateUserDialog } from "@/components/dialogs/EmployeeRequestDialog";
+import { CreateUserDialog } from "@/components/employees/dialogs/EmployeeRequestDialog";
 import { EmployeeAccountRequestDialog } from "@/components/dialogs/EmployeeAccountRequestDialog";
 import FilterBar from "@/components/employees/FilterBar";
 import { EmployeeProvider, useEmployeeContext } from "@/contexts/EmployeeContext";

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ZKTecoADMS.Domain.Entities.Base;
+using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Domain.Entities;
 
@@ -32,6 +33,8 @@ public class Employee : AuditableEntity<Guid>
     
     public Guid ApplicationUserId { get; set; }
     public virtual ApplicationUser ApplicationUser { get; set; } = null!;
+
+    public SalaryRateType EmployeeType { get; set; } = SalaryRateType.Hourly; 
 
     // Navigation Properties
     public virtual ICollection<FingerprintTemplate> FingerprintTemplates { get; set; } = new List<FingerprintTemplate>();

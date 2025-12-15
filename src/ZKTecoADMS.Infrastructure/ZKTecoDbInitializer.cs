@@ -50,6 +50,7 @@ public class ZKTecoDbInitializer(
             await SeedRolesAsync();
             await SeedUsersAsync();
             await SeedShiftTemplatesAsync();
+            await SeedHolidaysAsync();
 
             await context.SaveChangesAsync();
             logger.LogInformation("Database seeding completed successfully.");
@@ -193,6 +194,36 @@ public class ZKTecoDbInitializer(
 
         await context.ShiftTemplates.AddRangeAsync(shiftTemplates);
         logger.LogInformation("Created {Count} shift templates", shiftTemplates.Count);
+    }
+
+    #endregion
+
+    #region Holidays
+
+    private async Task SeedHolidaysAsync()
+    {
+        if (await context.Holidays.AnyAsync())
+        {
+            logger.LogInformation("Holidays already seeded");
+            return;
+        }
+
+        logger.LogInformation("Seeding Vietnam holidays...");
+
+        var currentYear = DateTime.Now.Year;
+        var holidays = VietnamHolidays.GetDefaultHolidays(currentYear);
+
+        // Set audit fields
+        foreach (var holiday in holidays)
+        {
+            holiday.CreatedAt = DateTime.Now;
+            holiday.CreatedBy = "System";
+        }
+
+        await context.Holidays.AddRangeAsync(holidays);
+        await context.SaveChangesAsync();
+
+        logger.LogInformation("Seeded {Count} Vietnam holidays for year {Year}", holidays.Count, currentYear);
     }
 
     #endregion

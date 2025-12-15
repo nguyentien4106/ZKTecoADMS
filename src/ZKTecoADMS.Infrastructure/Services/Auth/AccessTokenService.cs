@@ -13,6 +13,7 @@ public class AccessTokenService(ITokenGeneratorService tokenGenerator, JwtSettin
     {
         var roles = await userManager.GetRolesAsync(user);
         var rolesClaims = roles.Select(role => new Claim(ClaimTypes.Role, role));
+        
         List<Claim> claims =
             [
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -21,6 +22,7 @@ public class AccessTokenService(ITokenGeneratorService tokenGenerator, JwtSettin
                 new Claim(ClaimTypeNames.UserName, user.UserName!),
                 new Claim(ClaimTypeNames.EmployeeId, user.Employee?.Id.ToString() ?? ""),
                 new Claim(ClaimTypeNames.ManagerId, user.ManagerId?.ToString() ?? ""),
+                new Claim(ClaimTypeNames.EmployeeType, ""),
                 ..rolesClaims
             ];
 
