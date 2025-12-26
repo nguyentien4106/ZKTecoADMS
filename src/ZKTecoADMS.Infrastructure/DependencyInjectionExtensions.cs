@@ -90,6 +90,13 @@ public static class DependencyInjectionExtensions
             
             options.AddPolicy(PolicyNames.AtLeastEmployee,
                 policy => policy.RequireRole(nameof(Roles.Admin), nameof(Roles.Manager), nameof(Roles.Employee)));
+
+            options.AddPolicy(PolicyNames.HourlyEmployeeOnly,
+                policy => policy.RequireAssertion(context =>
+                {
+                    var employmentTypeClaim = context.User.FindFirst(c => c.Type == "employeeType");
+                    return employmentTypeClaim != null && employmentTypeClaim.Value == EmploymentType.Hourly.ToString();
+                }).RequireRole(nameof(Roles.Employee)));
         });
 
         services.AddAuthorizationBuilder()

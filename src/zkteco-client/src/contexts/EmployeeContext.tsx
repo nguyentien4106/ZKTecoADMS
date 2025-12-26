@@ -9,7 +9,7 @@ import {
   useCreateEmployee,
   useUpdateEmployee,
 } from '@/hooks/useEmployee';
-import { useCreateEmployeeAccount } from '@/hooks/useDeviceUsers';
+import { useCreateEmployeeAccount, useUpdateEmployeeAccount } from '@/hooks/useDeviceUsers';
 import { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee';
 import { GetEmployeesParams } from '@/services/employeeService';
 import { CreateEmployeeAccountRequest } from '@/types/account';
@@ -25,16 +25,19 @@ interface EmployeeContextValue {
   deleteDialogOpen: boolean;
   addToDeviceDialogOpen: boolean;
   createAccountDialogOpen: boolean;
+  updateAccountDialogOpen: boolean;
   employeeToEdit: Employee | null;
   employeeToDelete: Employee | null;
   employeeToAddToDevice: Employee | null;
   employeeForAccount: Employee | null;
+  employeeForUpdateAccount: Employee | null;
   
   // Actions
   setCreateDialogOpen: (open: boolean) => void;
   setDeleteDialogOpen: (open: boolean) => void;
   setAddToDeviceDialogOpen: (open: boolean) => void;
   setCreateAccountDialogOpen: (open: boolean) => void;
+  setUpdateAccountDialogOpen: (open: boolean) => void;
   setQueryParams: (params: GetEmployeesParams) => void;
   handleDelete: (employee: Employee) => void;
   handleConfirmDelete: () => Promise<void>;
@@ -44,13 +47,16 @@ interface EmployeeContextValue {
   handleOpenCreateDialog: () => void;
   handleAddToDevice: (employee: Employee) => void;
   handleOpenCreateAccount: (employee: Employee) => void;
+  handleOpenUpdateAccount: (employee: Employee) => void;
   handleCreateAccount: (data: CreateEmployeeAccountRequest) => Promise<void>;
+  handleUpdateAccount: (data: any) => Promise<void>;
   
   // Mutation states
   isDeletePending: boolean;
   isCreatePending: boolean;
   isUpdatePending: boolean;
   isCreateAccountPending: boolean;
+  isUpdateAccountPending: boolean;
 }
 
 const EmployeeInfoContext = createContext<EmployeeContextValue | undefined>(undefined);
@@ -73,10 +79,12 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [addToDeviceDialogOpen, setAddToDeviceDialogOpen] = useState(false);
   const [createAccountDialogOpen, setCreateAccountDialogOpen] = useState(false);
+  const [updateAccountDialogOpen, setUpdateAccountDialogOpen] = useState(false);
   const [employeeToEdit, setEmployeeToEdit] = useState<Employee | null>(null);
   const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null);
   const [employeeToAddToDevice, setEmployeeToAddToDevice] = useState<Employee | null>(null);
   const [employeeForAccount, setEmployeeForAccount] = useState<Employee | null>(null);
+  const [employeeForUpdateAccount, setEmployeeForUpdateAccount] = useState<Employee | null>(null);
   const [queryParams, setQueryParams] = useState<GetEmployeesParams>({
     pageNumber: 1,
     pageSize: 10,
@@ -91,6 +99,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   const createEmployeeMutation = useCreateEmployee();
   const updateEmployeeMutation = useUpdateEmployee();
   const createAccountMutation = useCreateEmployeeAccount();
+  const updateAccountMutation = useUpdateEmployeeAccount();
 
   // Wrapper for setCreateDialogOpen to clear employee state when closing
   const setCreateDialogOpen = (open: boolean) => {
@@ -155,6 +164,17 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     setEmployeeForAccount(null);
   };
 
+  const handleOpenUpdateAccount = (employee: Employee) => {
+    setEmployeeForUpdateAccount(employee);
+    setUpdateAccountDialogOpen(true);
+  };
+
+  const handleUpdateAccount = async (data: any) => {
+    await updateAccountMutation.mutateAsync(data);
+    setUpdateAccountDialogOpen(false);
+    setEmployeeForUpdateAccount(null);
+  };
+
   const value: EmployeeContextValue = {
     // State
     employees,
@@ -166,16 +186,19 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     deleteDialogOpen,
     addToDeviceDialogOpen,
     createAccountDialogOpen,
+    updateAccountDialogOpen,
     employeeToEdit,
     employeeToDelete,
     employeeToAddToDevice,
     employeeForAccount,
+    employeeForUpdateAccount,
     
     // Actions
     setCreateDialogOpen,
     setDeleteDialogOpen,
     setAddToDeviceDialogOpen,
     setCreateAccountDialogOpen,
+    setUpdateAccountDialogOpen,
     setQueryParams,
     handleDelete,
     handleConfirmDelete,
@@ -185,13 +208,16 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     handleOpenCreateDialog,
     handleAddToDevice,
     handleOpenCreateAccount,
+    handleOpenUpdateAccount,
     handleCreateAccount,
+    handleUpdateAccount,
     
     // Mutation states
     isDeletePending: deleteEmployeeMutation.isPending,
     isCreatePending: createEmployeeMutation.isPending,
     isUpdatePending: updateEmployeeMutation.isPending,
     isCreateAccountPending: createAccountMutation.isPending,
+    isUpdateAccountPending: updateAccountMutation.isPending,
   };
 
   return (

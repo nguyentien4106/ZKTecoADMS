@@ -47,4 +47,6 @@ public class EmployeeDto
 
     public AccountDto? Account {get;set;}
 
+    public bool HasAccount {get;set;}
+
 }

@@ -2,7 +2,7 @@
 // src/components/employees/EmployeeActions.tsx
 // ==========================================
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Pencil, Trash2, UserPlus, UserCog } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, UserPlus, UserCog, UserPen } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,10 @@ export const EmployeeActions = ({ employee }: EmployeeActionsProps) => {
     handleDelete,
     handleAddToDevice,
     handleOpenCreateAccount,
+    handleOpenUpdateAccount,
   } = useEmployeeContext();
+
+  const hasAccount = employee.hasAccount || !!employee.applicationUserId;
 
   return (
     <DropdownMenu>
@@ -40,10 +43,17 @@ export const EmployeeActions = ({ employee }: EmployeeActionsProps) => {
           <UserPlus className="mr-2 h-4 w-4" />
           Add To Device
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleOpenCreateAccount(employee)}>
-          <UserCog className="mr-2 h-4 w-4" />
-          Create Account
-        </DropdownMenuItem>
+        {hasAccount ? (
+          <DropdownMenuItem onClick={() => handleOpenUpdateAccount(employee)}>
+            <UserPen className="mr-2 h-4 w-4" />
+            Update Account
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem onClick={() => handleOpenCreateAccount(employee)}>
+            <UserCog className="mr-2 h-4 w-4" />
+            Create Account
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem
           onClick={() => handleDelete(employee)}
           className="text-destructive"

@@ -25,13 +25,9 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             .OnDelete(DeleteBehavior.Restrict) // Prevent cascade delete
             .IsRequired(false); // Manager is optional
 
-        // One-to-One relationship with Employee
-        // An ApplicationUser can be associated with one Employee record
-        // This is configured from the Employee side, but we define the inverse here
-        builder.HasOne(u => u.Employee)
+        builder.HasOne(e => e.Employee)
             .WithOne(e => e.ApplicationUser)
-            .HasForeignKey<ApplicationUser>(u => u.EmployeeId)
-            .OnDelete(DeleteBehavior.SetNull) // If Employee is deleted, just clear the reference
-            .IsRequired(false); // Employee association is optional (user might just be a manager)
+            .HasForeignKey<Employee>(e => e.ApplicationUserId)
+            .IsRequired(false);
     }
 }

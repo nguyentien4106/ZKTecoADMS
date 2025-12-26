@@ -1,3 +1,5 @@
+import { Account } from "./account";
+
 export interface Employee {
   id: string;
   // Identity Information
@@ -37,6 +39,10 @@ export interface Employee {
   cardNumber?: string;
   deviceId?: string;
   applicationUserId?: string;
+  
+  // Account Information
+  hasAccount?: boolean;
+  account?: Account
 }
 
 export interface CreateEmployeeRequest {
@@ -67,6 +73,8 @@ export interface CreateEmployeeRequest {
   cardNumber?: string;
   deviceId?: string;
   applicationUserId?: string;
+
+  hasAccount?: boolean;
 }
 
 export interface UpdateEmployeeRequest extends CreateEmployeeRequest {

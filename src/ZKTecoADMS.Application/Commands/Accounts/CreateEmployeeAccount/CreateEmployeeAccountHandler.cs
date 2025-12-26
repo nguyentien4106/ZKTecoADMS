@@ -4,12 +4,17 @@ using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Commands.Accounts;
 public class CreateEmployeeAccountHandler(
-    UserManager<ApplicationUser> userManager
+    UserManager<ApplicationUser> userManager,
+    IRepository<Employee> employeeRepository
 ) : ICommandHandler<CreateEmployeeAccountCommand, AppResponse<AccountDto>>
 {
     public async Task<AppResponse<AccountDto>> Handle(CreateEmployeeAccountCommand request, CancellationToken cancellationToken)
     {
-         // Validate manager exists if ManagerId is provided
+        if (!request.EmployeeId.HasValue)
+        {
+            return AppResponse<AccountDto>.Error("EmployeeId is required to create an employee account.");
+        }
+        // Validate manager exists if ManagerId is provided
         var manager = await userManager.FindByIdAsync(request.ManagerId.ToString());
         if (manager == null)
         {
@@ -22,10 +27,17 @@ public class CreateEmployeeAccountHandler(
         {
             return AppResponse<AccountDto>.Error("The specified user is not a manager.");
         }
+
+        var employee = await employeeRepository.GetByIdAsync(request.EmployeeId.Value);
         
+        if(employee == null)
+        {
+            return AppResponse<AccountDto>.Error("Employee not found.");
+        }
+
         var newUser = new ApplicationUser
         {
-            UserName = request.Email.Split("@")[0],
+            UserName = request.UserName,
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
@@ -49,7 +61,10 @@ public class CreateEmployeeAccountHandler(
         {
             return AppResponse<AccountDto>.Error(roleResult.Errors.Select(e => e.Description).ToList());
         }
-        
+
+        employee.ApplicationUserId = newUser.Id;
+        await employeeRepository.UpdateAsync(employee);
+
         return AppResponse<AccountDto>.Success(new AccountDto
         {
             Id = newUser.Id,

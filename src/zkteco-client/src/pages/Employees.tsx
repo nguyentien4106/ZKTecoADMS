@@ -9,6 +9,7 @@ import { EmployeeFilterBar } from "@/components/employees/EmployeeFilterBar";
 import { EmployeeProvider, useEmployeeContext } from "@/contexts/EmployeeContext";
 import { AddEmployeeToDeviceDialog } from "@/components/employees/dialogs/AddEmployeeToDeviceDialog";
 import { NewEmployeeAccountDialog } from "@/components/employees/dialogs/NewEmployeeAccountDialog";
+import { UpdateEmployeeAccountDialog } from "@/components/employees/dialogs/UpdateEmployeeAccountDialog";
 
 const EmployeesContent = () => {
   const { 
@@ -35,6 +36,7 @@ const EmployeesContent = () => {
       <NewEmployeeDialog />
       <AddEmployeeToDeviceDialog />
       <NewEmployeeAccountDialog />
+      <UpdateEmployeeAccountDialog />
     </div>
   );
 };

@@ -77,6 +77,11 @@ export const useCreateEmployeeAccount = () => {
       queryClient.invalidateQueries({ queryKey: ['employees'] });
       toast.success('Employee account created successfully');
     },
+    onError: (error: any) => {
+      toast.error('Failed to create employee account', {
+        description: error.message || 'An error occurred',
+      });
+    }
   });
 };
 

@@ -46,14 +46,14 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 
         // Relationships
         
-        // One-to-One relationship with ApplicationUser (optional)
-        // An Employee can have one ApplicationUser account (for login)
-        // An ApplicationUser can be associated with one Employee record
-        builder.HasOne(e => e.ApplicationUser)
-            .WithOne(u => u.Employee)
-            .HasForeignKey<Employee>(e => e.ApplicationUserId)
-            .OnDelete(DeleteBehavior.SetNull)
-            .IsRequired(false);
+        // // One-to-One relationship with ApplicationUser (optional)
+        // // An Employee can have one ApplicationUser account (for login)
+        // // An ApplicationUser can be associated with one Employee record
+        // builder.HasOne(e => e.ApplicationUser)
+        //     .WithOne(u => u.Employee)
+        //     .HasForeignKey<Employee>(e => e.ApplicationUserId)
+        //     .OnDelete(DeleteBehavior.SetNull)
+        //     .IsRequired(false);
 
         // Many-to-One relationship with Manager (ApplicationUser)
         // One manager (ApplicationUser) can manage many employees
@@ -66,8 +66,9 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 
         // One-to-Many relationship with DeviceUsers
         builder.HasMany(e => e.DeviceUsers)
-            .WithOne(du => du.Employee)
+            .WithOne()
             .HasForeignKey(du => du.EmployeeId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
     }
 }

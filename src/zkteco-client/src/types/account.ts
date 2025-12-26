@@ -1,12 +1,15 @@
 export interface Account {
-    id: string
-    email: string
-    firstName: string
-    lastName: string
-    phoneNumber?: string
-    employeeDeviceId: string
-    fullName: string
-    userName?: string
+    id: string;
+    email: string;
+    userName: string;
+    firstName?: string;
+    lastName?: string;
+    fullName?: string;
+    phoneNumber?: string;
+    roles?: string[];
+    managerId?: string;
+    employeeId?: string;
+    managerName?: string;
 }
 
 export interface CreateEmployeeAccountRequest {

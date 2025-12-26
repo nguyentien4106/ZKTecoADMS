@@ -1,8 +1,5 @@
-using ZKTecoADMS.Application.CQRS;
 using ZKTecoADMS.Application.DTOs.Auth;
 using ZKTecoADMS.Application.Interfaces.Auth;
-using ZKTecoADMS.Application.Models;
-using ZKTecoADMS.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,18 +17,18 @@ public class LoginCommandHandler(
 {
     public async Task<AppResponse<AuthenticateResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        // Find user by username with Employee navigation property
+        // First, find the user by username (lightweight query for validation)
         var user = await userManager.Users
-            .Include(u => u.Employee)
-                .ThenInclude(e => e!.Manager) // Include the Manager of the Employee if needed
-            .Include(u => u.Manager) // Include the direct Manager of the ApplicationUser
-            .SingleOrDefaultAsync(u => u.UserName == request.UserName, cancellationToken);
-            
+            .Where(e => e.UserName == request.UserName)
+            .Include(e => e.Employee)
+            .Include(e => e.Manager)
+            .FirstOrDefaultAsync(cancellationToken);
+        
         if (user == null)
         {
             return AppResponse<AuthenticateResponse>.Error($"{request.UserName} is not found.");
         }
-
+        
         // Check if the user's email is confirmed (if required)
         if (!await userManager.IsEmailConfirmedAsync(user))
         {
@@ -40,7 +37,7 @@ public class LoginCommandHandler(
 
         // Check if the user account is locked out
         if (await userManager.IsLockedOutAsync(user))
-        {
+        {   
             return AppResponse<AuthenticateResponse>.Error("Account is locked out. Please try again later.");
         }
 
@@ -56,7 +53,13 @@ public class LoginCommandHandler(
         // Reset failed login attempts on successful login
         await userManager.ResetAccessFailedCountAsync(user);
 
-        // Generate tokens
-        return await authenticateService.Authenticate(user, cancellationToken);
+        // Now reload the user with all navigation properties for token generation
+        var userWithIncludes = await userManager.Users
+            .Include(u => u.Employee)
+            .Include(u => u.Manager)
+            .SingleOrDefaultAsync(u => u.Id == user.Id, cancellationToken);
+
+        // Generate tokens with fully loaded user entity
+        return await authenticateService.Authenticate(userWithIncludes!, cancellationToken);
     }
 }
