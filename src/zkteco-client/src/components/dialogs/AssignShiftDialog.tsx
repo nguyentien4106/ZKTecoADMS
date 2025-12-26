@@ -82,6 +82,7 @@ export const AssignShiftDialog = ({
             workingDays,
             maximumAllowedLateMinutes: selectedTemplate.maximumAllowedLateMinutes,
             maximumAllowedEarlyLeaveMinutes: selectedTemplate.maximumAllowedEarlyLeaveMinutes,
+            breakTimeMinutes: selectedTemplate.breakTimeMinutes,
             description: description,
         };
 

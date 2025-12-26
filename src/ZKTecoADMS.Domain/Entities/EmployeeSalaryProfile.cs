@@ -7,7 +7,7 @@ public class EmployeeSalaryProfile : AuditableEntity<Guid>
 {
     [Required]
     public Guid EmployeeId { get; set; }
-    public virtual Employee Employee { get; set; } = null!;
+    public virtual DeviceUser Employee { get; set; } = null!;
 
     [Required]
     public Guid SalaryProfileId { get; set; }
@@ -17,8 +17,6 @@ public class EmployeeSalaryProfile : AuditableEntity<Guid>
     public DateTime EffectiveDate { get; set; }
 
     public DateTime? EndDate { get; set; }
-
-    public bool IsActive { get; set; } = true;
 
     [MaxLength(500)]
     public string? Notes { get; set; }

@@ -16,6 +16,7 @@ export interface Shift {
     endTime: string;
     maximumAllowedLateMinutes: number;
     maximumAllowedEarlyLeaveMinutes: number;
+    breakTimeMinutes: number;
     description?: string;
     status: ShiftStatus;
     approvedByUserId?: string;
@@ -37,6 +38,7 @@ export interface CreateShiftRequest {
     }[];
     maximumAllowedLateMinutes?: number;
     maximumAllowedEarlyLeaveMinutes?: number;
+    breakTimeMinutes?: number;
     description?: string;
 }
 
@@ -48,6 +50,7 @@ export interface CreatShiftDialog {
     endTime: Date;
     maximumAllowedLateMinutes: number;
     maximumAllowedEarlyLeaveMinutes: number;
+    breakTimeMinutes: number;
     description: string;
 }
 
@@ -77,6 +80,7 @@ export interface ShiftTemplate {
     endTime: string;
     maximumAllowedLateMinutes: number;
     maximumAllowedEarlyLeaveMinutes: number;
+    breakTimeMinutes: number;
     totalHours: number;
     isActive: boolean;
     createdAt: string;
@@ -98,6 +102,7 @@ export interface CreateShiftTemplateRequest {
     endTime: string;
     maximumAllowedLateMinutes?: number;
     maximumAllowedEarlyLeaveMinutes?: number;
+    breakTimeMinutes?: number;
 }
 
 export interface UpdateShiftTemplateRequest {
@@ -106,6 +111,7 @@ export interface UpdateShiftTemplateRequest {
     endTime: string;
     maximumAllowedLateMinutes?: number;
     maximumAllowedEarlyLeaveMinutes?: number;
+    breakTimeMinutes?: number;
     isActive: boolean;
 }
 

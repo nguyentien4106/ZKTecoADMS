@@ -13,6 +13,7 @@ using ZKTecoADMS.Api.Models.Responses;
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.SalaryProfiles;
 using ZKTecoADMS.Application.Models;
+using Mapster;
 
 namespace ZKTecoADMS.Api.Controllers;
 
@@ -51,16 +52,7 @@ public class SalaryProfilesController(IMediator mediator) : AuthenticatedControl
     [Authorize(Policy = PolicyNames.AtLeastManager)]
     public async Task<ActionResult<AppResponse<SalaryProfileDto>>> CreateProfile([FromBody] CreateSalaryProfileRequest request)
     {
-        var command = new CreateSalaryProfileCommand(
-            request.Name,
-            request.Description,
-            request.RateType,
-            request.Rate,
-            request.Currency,
-            request.OvertimeMultiplier,
-            request.HolidayMultiplier,
-            request.NightShiftMultiplier
-        );
+        var command = request.Adapt<CreateSalaryProfileCommand>();
         
         var result = await mediator.Send(command);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
@@ -73,18 +65,8 @@ public class SalaryProfilesController(IMediator mediator) : AuthenticatedControl
     [Authorize(Policy = PolicyNames.AtLeastManager)]
     public async Task<ActionResult<AppResponse<SalaryProfileDto>>> UpdateProfile(Guid id, [FromBody] UpdateSalaryProfileRequest request)
     {
-        var command = new UpdateSalaryProfileCommand(
-            id,
-            request.Name,
-            request.Description,
-            request.RateType,
-            request.Rate,
-            request.Currency,
-            request.OvertimeMultiplier,
-            request.HolidayMultiplier,
-            request.NightShiftMultiplier,
-            request.IsActive
-        );
+        var command = request.Adapt<UpdateSalaryProfileCommand>();
+        command = command with { Id = id };
         
         var result = await mediator.Send(command);
         return result.IsSuccess ? Ok(result) : BadRequest(result);

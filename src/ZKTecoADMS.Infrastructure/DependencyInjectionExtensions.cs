@@ -90,6 +90,13 @@ public static class DependencyInjectionExtensions
             
             options.AddPolicy(PolicyNames.AtLeastEmployee,
                 policy => policy.RequireRole(nameof(Roles.Admin), nameof(Roles.Manager), nameof(Roles.Employee)));
+
+            options.AddPolicy(PolicyNames.HourlyEmployeeOnly,
+                policy => policy.RequireAssertion(context =>
+                {
+                    var employmentTypeClaim = context.User.FindFirst(c => c.Type == "employeeType");
+                    return employmentTypeClaim != null && employmentTypeClaim.Value == EmploymentType.Hourly.ToString();
+                }).RequireRole(nameof(Roles.Employee)));
         });
 
         services.AddAuthorizationBuilder()
@@ -106,7 +113,7 @@ public static class DependencyInjectionExtensions
         services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
                 {
                     // Configuration for authentication fields
-                    options.SignIn.RequireConfirmedAccount = true;
+                    options.SignIn.RequireConfirmedEmail = true;
                     options.Password.RequireDigit = true;
                     options.Password.RequiredLength = 8;
                     options.Password.RequireNonAlphanumeric = true;
@@ -134,10 +141,10 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IRefreshTokenValidatorService, RefreshTokenService>();
 
         services.AddScoped<IDeviceService, DeviceService>();
-        services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<IDeviceUserService, DeviceUserService>();
         services.AddScoped<IAttendanceService, AttendanceService>();
         services.AddScoped<IDeviceCmdService, DeviceCmdService>();
-        services.AddScoped<IEmployeeOperationService, EmployeeOperationService>();
+        services.AddScoped<IDeviceUserOperationService, EmployeeOperationService>();
         services.AddScoped<IAttendanceOperationService, AttendanceOperationService>();
         services.AddScoped<IShiftService, ShiftService>();
         
@@ -149,6 +156,7 @@ public static class DependencyInjectionExtensions
         // Salary profile repositories
         services.AddScoped<ISalaryProfileRepository, SalaryProfileRepository>();
         services.AddScoped<IEmployeeSalaryProfileRepository, EmployeeSalaryProfileRepository>();
+        services.AddScoped<IPayslipRepository, PayslipRepository>();
         
         return services;
     }

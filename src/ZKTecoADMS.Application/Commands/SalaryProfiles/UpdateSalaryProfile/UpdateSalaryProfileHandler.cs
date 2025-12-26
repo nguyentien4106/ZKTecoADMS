@@ -29,27 +29,33 @@ public class UpdateSalaryProfileHandler(ISalaryProfileRepository repository)
         salaryProfile.OvertimeMultiplier = request.OvertimeMultiplier;
         salaryProfile.HolidayMultiplier = request.HolidayMultiplier;
         salaryProfile.NightShiftMultiplier = request.NightShiftMultiplier;
+        // Base Salary Configuration
+        salaryProfile.StandardHoursPerDay = request.StandardHoursPerDay;
+        // Leave & Attendance Rules
+        salaryProfile.WeeklyOffDays = request.WeeklyOffDays;
+        salaryProfile.PaidLeaveDays = request.PaidLeaveDays;
+        salaryProfile.UnpaidLeaveDays = request.UnpaidLeaveDays;
+        // Allowances
+        salaryProfile.MealAllowance = request.MealAllowance;
+        salaryProfile.TransportAllowance = request.TransportAllowance;
+        salaryProfile.HousingAllowance = request.HousingAllowance;
+        salaryProfile.ResponsibilityAllowance = request.ResponsibilityAllowance;
+        salaryProfile.AttendanceBonus = request.AttendanceBonus;
+        salaryProfile.PhoneSkillShiftAllowance = request.PhoneSkillShiftAllowance;
+        // Overtime Configuration
+        salaryProfile.OTRateWeekday = request.OTRateWeekday;
+        salaryProfile.OTRateWeekend = request.OTRateWeekend;
+        salaryProfile.OTRateHoliday = request.OTRateHoliday;
+        salaryProfile.NightShiftRate = request.NightShiftRate;
+        // Health Insurance
+        salaryProfile.HasHealthInsurance = request.HasHealthInsurance;
+        salaryProfile.HealthInsuranceRate = request.HealthInsuranceRate;
+        // Deductions
         salaryProfile.IsActive = request.IsActive;
-        salaryProfile.UpdatedAt = DateTime.UtcNow;
 
         await repository.UpdateAsync(salaryProfile, cancellationToken);
 
-        var dto = new SalaryProfileDto
-        {
-            Id = salaryProfile.Id,
-            Name = salaryProfile.Name,
-            Description = salaryProfile.Description,
-            RateType = salaryProfile.RateType,
-            RateTypeName = salaryProfile.RateType.ToString(),
-            Rate = salaryProfile.Rate,
-            Currency = salaryProfile.Currency,
-            OvertimeMultiplier = salaryProfile.OvertimeMultiplier,
-            HolidayMultiplier = salaryProfile.HolidayMultiplier,
-            NightShiftMultiplier = salaryProfile.NightShiftMultiplier,
-            IsActive = salaryProfile.IsActive,
-            CreatedAt = salaryProfile.CreatedAt,
-            UpdatedAt = salaryProfile.UpdatedAt ?? salaryProfile.CreatedAt
-        };
+        var dto = salaryProfile.Adapt<SalaryProfileDto>();
 
         return AppResponse<SalaryProfileDto>.Success(dto);
     }

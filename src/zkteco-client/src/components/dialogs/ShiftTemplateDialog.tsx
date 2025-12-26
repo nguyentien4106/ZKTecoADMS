@@ -42,6 +42,7 @@ export const ShiftTemplateDialog = () => {
         endTime: '17:00',
         maximumAllowedLateMinutes: 30,
         maximumAllowedEarlyLeaveMinutes: 30,
+        breakTimeMinutes: 60,
         isActive: true,
     });
 
@@ -53,6 +54,7 @@ export const ShiftTemplateDialog = () => {
                 endTime: extractTime(selectedTemplate.endTime),
                 maximumAllowedLateMinutes: selectedTemplate.maximumAllowedLateMinutes ?? 30,
                 maximumAllowedEarlyLeaveMinutes: selectedTemplate.maximumAllowedEarlyLeaveMinutes ?? 30,
+                breakTimeMinutes: selectedTemplate.breakTimeMinutes ?? 60,
                 isActive: selectedTemplate.isActive,
             });
         } else if (!isEditMode) {
@@ -63,6 +65,7 @@ export const ShiftTemplateDialog = () => {
                 endTime: defaultNewShiftTemplate.endTime || '17:00',
                 maximumAllowedLateMinutes: defaultNewShiftTemplate.maximumAllowedLateMinutes ?? 30,
                 maximumAllowedEarlyLeaveMinutes: defaultNewShiftTemplate.maximumAllowedEarlyLeaveMinutes ?? 30,
+                breakTimeMinutes: 60,
                 isActive: true,
             });
         }
@@ -99,6 +102,7 @@ export const ShiftTemplateDialog = () => {
                 endTime,
                 maximumAllowedLateMinutes: formData.maximumAllowedLateMinutes,
                 maximumAllowedEarlyLeaveMinutes: formData.maximumAllowedEarlyLeaveMinutes,
+                breakTimeMinutes: formData.breakTimeMinutes,
                 isActive: formData.isActive,
             });
         } else {
@@ -108,6 +112,7 @@ export const ShiftTemplateDialog = () => {
                 endTime,
                 maximumAllowedLateMinutes: formData.maximumAllowedLateMinutes,
                 maximumAllowedEarlyLeaveMinutes: formData.maximumAllowedEarlyLeaveMinutes,
+                breakTimeMinutes: formData.breakTimeMinutes,
             });
         }
         // Context handles closing? 
@@ -197,6 +202,18 @@ export const ShiftTemplateDialog = () => {
                                     placeholder="30"
                                 />
                             </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="breakTime">Break Time (minutes)</Label>
+                            <Input
+                                id="breakTime"
+                                type="number"
+                                min="0"
+                                value={formData.breakTimeMinutes}
+                                onChange={(e) => setFormData({ ...formData, breakTimeMinutes: parseInt(e.target.value) || 0 })}
+                                placeholder="60"
+                            />
                         </div>
 
                         {isEditMode && (

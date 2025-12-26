@@ -1,3 +1,9 @@
+using MediatR;
+using ZKTecoADMS.Application.Models;
+
 namespace ZKTecoADMS.Application.Commands.Employees.DeleteEmployee;
 
-public record DeleteEmployeeCommand(Guid EmployeeId) : ICommand<AppResponse<Guid>>;
+public class DeleteEmployeeCommand : IRequest<AppResponse<bool>>
+{
+    public Guid Id { get; set; }
+}

@@ -1,36 +1,24 @@
-using ZKTecoADMS.Application.Constants;
-using ZKTecoADMS.Domain.Enums;
-using Microsoft.AspNetCore.Identity;
+using MediatR;
+using ZKTecoADMS.Application.Models;
+using ZKTecoADMS.Domain.Entities;
+using ZKTecoADMS.Domain.Repositories;
 
 namespace ZKTecoADMS.Application.Commands.Employees.DeleteEmployee;
 
-public class DeleteEmployeeHandler(
-    IRepository<Employee> employeeRepository,
-    IRepository<DeviceCommand> deviceCmdRepository) : ICommandHandler<DeleteEmployeeCommand, AppResponse<Guid>>
+public class DeleteEmployeeHandler(IRepository<Employee> employeeRepository) 
+    : IRequestHandler<DeleteEmployeeCommand, AppResponse<bool>>
 {
-    public async Task<AppResponse<Guid>> Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
+    public async Task<AppResponse<bool>> Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
     {
-        var employee = await employeeRepository.GetByIdAsync(request.EmployeeId, cancellationToken: cancellationToken);
+        var employee = await employeeRepository.GetByIdAsync(request.Id);
         
         if (employee == null)
         {
-            return AppResponse<Guid>.Fail("Employee not found");
+            return AppResponse<bool>.Error("Employee not found");
         }
 
-        employee.IsActive = false;
-        await employeeRepository.UpdateAsync(employee, cancellationToken);
-        
-        var cmd = new DeviceCommand
-        {
-            DeviceId = employee.DeviceId,
-            Command = ClockCommandBuilder.BuildDeleteEmployeeCommand(employee.Pin),
-            Status = CommandStatus.Created,
-            CommandType = DeviceCommandTypes.DeleteEmployee,
-            ObjectReferenceId = employee.Id
-        };
-        
-        await deviceCmdRepository.AddAsync(cmd, cancellationToken);
-        
-        return AppResponse<Guid>.Success(employee.Id);
+        await employeeRepository.DeleteAsync(employee, cancellationToken);
+
+        return AppResponse<bool>.Success(true);
     }
 }

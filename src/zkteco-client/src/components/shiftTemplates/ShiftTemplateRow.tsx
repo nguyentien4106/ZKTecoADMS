@@ -35,6 +35,7 @@ export const ShiftTemplateRow = ({
             <TableCell className="whitespace-nowrap">{template.totalHours}</TableCell>
             <TableCell className="text-center">{template.maximumAllowedLateMinutes}</TableCell>
             <TableCell className="text-center">{template.maximumAllowedEarlyLeaveMinutes}</TableCell>
+            <TableCell className="text-center">{template.breakTimeMinutes}</TableCell>
             <TableCell>
                 <Badge variant={template.isActive ? "default" : "secondary"}>
                     {template.isActive ? "Active" : "Inactive"}

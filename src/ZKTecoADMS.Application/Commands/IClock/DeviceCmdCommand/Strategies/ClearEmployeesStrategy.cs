@@ -4,7 +4,7 @@ using ZKTecoADMS.Domain.Enums;
 namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand.Strategies;
 
 [DeviceCommandStrategy(DeviceCommandTypes.ClearEmployees)]
-public class ClearEmployeesStrategy(IRepository<Employee> employeeRepository) : IDeviceCommandStrategy
+public class ClearEmployeesStrategy(IRepository<DeviceUser> employeeRepository) : IDeviceCommandStrategy
 {
     public async Task ExecuteAsync(Device device, Guid objectRefId, ClockCommandResponse response, CancellationToken cancellationToken)
     {

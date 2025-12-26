@@ -4,7 +4,7 @@ using ZKTecoADMS.Domain.Enums;
 namespace ZKTecoADMS.Application.Queries.Attendances.GetMonthlyAttendanceSummary;
 
 public class GetMonthlyAttendanceSummaryHandler(
-    IRepository<Employee> employeeRepository,
+    IRepository<DeviceUser> employeeRepository,
     IRepository<Attendance> attendanceRepository,
     IRepository<Shift> shiftRepository
 ) : IQueryHandler<GetMonthlyAttendanceSummaryQuery, AppResponse<List<MonthlyAttendanceSummaryDto>>>
@@ -67,8 +67,7 @@ public class GetMonthlyAttendanceSummaryHandler(
         // Get all shifts for the month
         List<Shift> shifts = [];
         var allShifts = await shiftRepository.GetAllAsync(
-            filter: s => s.EmployeeUserId == employee.ApplicationUserId &&
-                        s.StartTime >= startDate &&
+            filter: s => s.StartTime >= startDate &&
                         s.StartTime <= endDate.AddDays(1) &&
                         s.Status == ShiftStatus.Approved,
             includeProperties: new[] { "Leave" },

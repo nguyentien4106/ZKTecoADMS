@@ -16,22 +16,18 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             .IsRequired()
             .HasMaxLength(50);
         
-        // One-to-One relationship with Employee (configured from ApplicationUser side)
-        // When ApplicationUser is deleted, the Employee's ApplicationUserId will be set to null
-        builder.HasOne(u => u.Employee)
+        // Many-to-One relationship: Manager hierarchy
+        // An ApplicationUser can have one manager (another ApplicationUser)
+        // A manager (ApplicationUser) can manage many other ApplicationUsers
+        builder.HasOne(u => u.Manager)
+            .WithMany(m => m.ManagedEmployees)
+            .HasForeignKey(u => u.ManagerId)
+            .OnDelete(DeleteBehavior.Restrict) // Prevent cascade delete
+            .IsRequired(false); // Manager is optional
+
+        builder.HasOne(e => e.Employee)
             .WithOne(e => e.ApplicationUser)
             .HasForeignKey<Employee>(e => e.ApplicationUserId)
-            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired(false);
-        
-        // Many-to-One relationship with Manager (ApplicationUser)
-        // One manager can manage many employees
-        
-        builder.HasOne(e => e.Manager)
-            .WithMany(m => m.ManagedEmployees)
-            .HasForeignKey(e => e.ManagerId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired(false);
-
     }
 }

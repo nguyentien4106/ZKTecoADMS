@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using MediatR;
 using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Commands.Shifts.CreateShift;
 using ZKTecoADMS.Application.Commands.Shifts.DeleteShift;
@@ -10,7 +8,6 @@ using ZKTecoADMS.Application.Commands.Shifts.UpdateShift;
 using ZKTecoADMS.Application.Queries.Shifts.GetShiftsByEmployee;
 using ZKTecoADMS.Application.Queries.Shifts.GetPendingShifts;
 using ZKTecoADMS.Application.Queries.Shifts.GetShiftsByManager;
-using ZKTecoADMS.Api.Models.Responses;
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Shifts;
 using ZKTecoADMS.Application.Models;
@@ -32,7 +29,7 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
+    [Authorize(Policy = PolicyNames.HourlyEmployeeOnly)]
     public async Task<ActionResult<AppResponse<ShiftDto>>> CreateShift([FromBody] CreateShiftRequest request)
     {
         var command = new CreateShiftCommand(
@@ -40,6 +37,7 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
             request.WorkingDays,
             request.MaximumAllowedLateMinutes,
             request.MaximumAllowedEarlyLeaveMinutes,
+            request.BreakTimeMinutes,
             request.Description,
             IsManager
         );
@@ -102,10 +100,4 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
         var result = await mediator.Send(command);
         return Ok(result);
     }
-}
-
-public class FilterParameters
-{
-    // Define filter parameters here
-
 }

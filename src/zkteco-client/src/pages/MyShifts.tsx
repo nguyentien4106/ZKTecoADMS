@@ -5,6 +5,7 @@ import { ShiftTable } from '@/components/shifts/ShiftTable';
 import { ShiftRequestDialog } from '@/components/dialogs/ShiftRequestDialog';
 import { ShiftProvider, useShiftContext } from '@/contexts/ShiftContext';
 import { useCallback } from 'react';
+import { useAuth } from "@/contexts/AuthContext";
 
 const MyShiftsContent = () => {
     const { 
@@ -38,6 +39,9 @@ const MyShiftsContent = () => {
         // Implement filters change logic if needed
         console.log("Filters changed:", filters);
     }, []); 
+    const {
+        isHourlyEmployee
+    } = useAuth();  
 
     return (
         <div>
@@ -45,10 +49,12 @@ const MyShiftsContent = () => {
                 title="My Shifts"
                 description="Manage your shift schedules"
                 action={
-                    <Button onClick={() => setDialogMode('create')}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Request Shift
-                    </Button>
+                    isHourlyEmployee && (
+                        <Button onClick={() => setDialogMode('create')}>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Request Shift
+                        </Button>
+                    )
                 }
             />
              <div className="mt-6">

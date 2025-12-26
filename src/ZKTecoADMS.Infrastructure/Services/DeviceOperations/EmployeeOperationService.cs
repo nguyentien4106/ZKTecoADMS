@@ -8,7 +8,7 @@ namespace ZKTecoADMS.Core.Services.DeviceOperations;
 /// <summary>
 /// Service for parsing and processing employee data from device OPERLOG data.
 /// </summary>
-public class EmployeeOperationService(ILogger<EmployeeOperationService> logger) : IEmployeeOperationService
+public class EmployeeOperationService(ILogger<EmployeeOperationService> logger) : IDeviceUserOperationService
 {
     // Field identifiers based on protocol
     private const string USER_PREFIX = "USER";
@@ -26,7 +26,7 @@ public class EmployeeOperationService(ILogger<EmployeeOperationService> logger) 
     /// <summary>
     /// Parses and processes employee data from device OPERLOG format.
     /// </summary>
-    public async Task<List<Employee>> ProcessEmployeesFromDeviceAsync(Device device, string body)
+    public async Task<List<DeviceUser>> ProcessUsersFromDeviceAsync(Device device, string body)
     {
         var employeeLines = ExtractEmployeeLines(body);
         logger.LogInformation("Processing {Count} employee records from device {DeviceId}",
@@ -46,9 +46,9 @@ public class EmployeeOperationService(ILogger<EmployeeOperationService> logger) 
                    .ToList();
     }
 
-    private async Task<List<Employee>> ProcessEmployeeLinesAsync(Device device, List<string> employeeLines)
+    private async Task<List<DeviceUser>> ProcessEmployeeLinesAsync(Device device, List<string> employeeLines)
     {
-        var employees = new List<Employee>();
+        var employees = new List<DeviceUser>();
 
         foreach (var line in employeeLines)
         {
@@ -70,13 +70,13 @@ public class EmployeeOperationService(ILogger<EmployeeOperationService> logger) 
         return employees;
     }
 
-    private Task<Employee?> TryProcessEmployeeLineAsync(Device device, string line)
+    private Task<DeviceUser?> TryProcessEmployeeLineAsync(Device device, string line)
     {
         var employeeFields = ParseEmployeeLine(line);
 
         if (employeeFields == null || !ValidateEmployeeFields(employeeFields))
         {
-            return Task.FromResult<Employee?>(null);
+            return Task.FromResult<DeviceUser?>(null);
         }
 
         return Task.FromResult(ExtractEmployeeData(employeeFields, device.Id));
@@ -138,13 +138,13 @@ public class EmployeeOperationService(ILogger<EmployeeOperationService> logger) 
 
     }
 
-    private Employee? ExtractEmployeeData(Dictionary<string, string> fields, Guid deviceId)
+    private DeviceUser? ExtractEmployeeData(Dictionary<string, string> fields, Guid deviceId)
     {
         try
         {
-            var employee = new Employee
+            var employee = new DeviceUser
             {
-                Pin = ExtractField(fields, PIN_KEY, string.Empty),
+                Pin = ExtractField(fields, PIN_KEY, string.Empty) ?? string.Empty,
                 Name = ExtractField(fields, NAME_KEY, string.Empty)!,
                 Password = ExtractField(fields, PASSWORD_KEY),
                 CardNumber = ExtractField(fields, CARD_KEY),

@@ -3,10 +3,10 @@
 // ==========================================
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useMonthlyAttendanceSummary } from '@/hooks/useAttendance'
-import { useEmployees } from '@/hooks/useEmployees'
+import { useDeviceUsers } from '@/hooks/useDeviceUsers'
 import { useDevices } from '@/hooks/useDevices'
 import { MonthlyAttendanceSummary } from '@/types/attendance'
-import { Employee } from '@/types/employee'
+import { DeviceUser } from '@/types/deviceUser'
 import { Device } from '@/types'
 
 interface SelectOption {
@@ -17,7 +17,7 @@ interface SelectOption {
 interface MonthlyAttendanceContextType {
   // Data
   data: MonthlyAttendanceSummary | undefined
-  employees: Employee[]
+  employees: DeviceUser[]
   devices: Device[]
   employeeOptions: SelectOption[]
   deviceOptions: SelectOption[]
@@ -65,7 +65,7 @@ export const MonthlyAttendanceProvider = ({ children }: MonthlyAttendanceProvide
   const { data: devices = [], isLoading: devicesLoading } = useDevices()
 
   // Fetch employees by selected devices
-  const { data: employees = [], isLoading: employeesLoading } = useEmployees(selectedDeviceIds)
+  const { data: employees = [], isLoading: employeesLoading } = useDeviceUsers(selectedDeviceIds)
 
   // Fetch monthly attendance summary
   const { data, isLoading, error } = useMonthlyAttendanceSummary(

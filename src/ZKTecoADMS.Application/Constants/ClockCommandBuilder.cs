@@ -4,7 +4,7 @@ namespace ZKTecoADMS.Application.Constants;
 
 public static class ClockCommandBuilder
 {
-    public static string BuildAddOrUpdateEmployeeCommand(Employee user)
+    public static string BuildAddOrUpdateEmployeeCommand(DeviceUser user)
     {
         return $"DATA UPDATE USERINFO PIN={user.Pin}\tName={user.Name}\tPri={user.Privilege}\tPasswd={user.Password}\tCard={user.CardNumber}\tGrp={user.GroupId}\tTZ=0000\tVerifyMode={user.VerifyMode}";
     }

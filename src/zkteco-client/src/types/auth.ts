@@ -51,4 +51,5 @@ export interface AuthContextType {
   logout: () => void;
   applicationUserId: string | null;
   isManager: boolean;
+  isHourlyEmployee: boolean;
 }

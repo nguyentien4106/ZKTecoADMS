@@ -1,4 +1,4 @@
-using ZKTecoADMS.Application.DTOs.Employees;
+using ZKTecoADMS.Application.DTOs.DeviceUsers;
 
 namespace ZKTecoADMS.Application.DTOs.SalaryProfiles;
 

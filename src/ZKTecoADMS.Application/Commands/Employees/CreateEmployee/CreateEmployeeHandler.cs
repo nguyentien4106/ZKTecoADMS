@@ -1,54 +1,32 @@
-using ZKTecoADMS.Application.Constants;
-using ZKTecoADMS.Application.DTOs.Employees;
-using ZKTecoADMS.Application.Interfaces;
-using ZKTecoADMS.Domain.Enums;
+using MediatR;
 
 namespace ZKTecoADMS.Application.Commands.Employees.CreateEmployee;
 
 public class CreateEmployeeHandler(
-    IDeviceService deviceService, 
-    IRepository<Employee> employeeRepository,
-    IRepository<DeviceCommand> deviceCmdRepository) : ICommandHandler<CreateEmployeeCommand, AppResponse<List<AppResponse<EmployeeDto>>>>
+    IRepository<Employee> employeeRepository) : IRequestHandler<CreateEmployeeCommand, AppResponse<Guid>>
 {
-    public async Task<AppResponse<List<AppResponse<EmployeeDto>>>> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
+    public async Task<AppResponse<Guid>> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
     {
-        var employees = request.DeviceIds.Select(deviceId => new Employee
-            {
-                Pin = request.Pin,
-                Name = request.Name,
-                CardNumber = request.CardNumber,
-                Password = request.Password,
-                Privilege = request.Privilege,
-                Department = request.Department,
-                DeviceId = deviceId
-            })
-            .ToList();
-        var employeeResults = new List<AppResponse<EmployeeDto>>();
-        
-        foreach (var employee in employees)
+        // Check if employee code already exists
+        var existingEmployee = await employeeRepository.GetSingleAsync(
+            e => e.EmployeeCode == request.EmployeeCode || e.CompanyEmail == request.CompanyEmail,
+            cancellationToken: cancellationToken
+        );
+
+        if(existingEmployee == null)
         {
-            var validEmployee = await deviceService.IsValidEmployeeAsync(employee);
-            if (!validEmployee.IsSuccess)
-            {
-                employeeResults.Add(AppResponse<EmployeeDto>.Error(validEmployee.Errors));
-                continue;
-            }
-            
-            var employeeEntity = await employeeRepository.AddAsync(employee, cancellationToken);
-            employeeResults.Add(AppResponse<EmployeeDto>.Success(employeeEntity.Adapt<EmployeeDto>()));
-            
-            var cmd = new DeviceCommand
-            {
-                DeviceId = employeeEntity.DeviceId,
-                Command = ClockCommandBuilder.BuildAddOrUpdateEmployeeCommand(employeeEntity),
-                Priority = 10,
-                Status = CommandStatus.Created,
-                CommandType = DeviceCommandTypes.AddEmployee,
-                ObjectReferenceId = employeeEntity.Id
-            };
-            await deviceCmdRepository.AddAsync(cmd, cancellationToken);
+            var employee = request.Adapt<Employee>();
+
+            await employeeRepository.AddAsync(employee, cancellationToken);
+
+            return AppResponse<Guid>.Success(employee.Id);
         }
-        
-        return AppResponse<List<AppResponse<EmployeeDto>>>.Success(employeeResults);
+
+        if (existingEmployee.EmployeeCode == request.EmployeeCode)
+        {
+            return AppResponse<Guid>.Error($"Employee with code {request.EmployeeCode} already exists");
+        }
+
+        return AppResponse<Guid>.Error($"Employee with company email {request.CompanyEmail} already exists");
     }
 }

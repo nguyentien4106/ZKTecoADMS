@@ -122,14 +122,14 @@ public class GetManagerDashboardHandler(
             var onLeaveUserIds = employeesOnLeave.Select(e => e.EmployeeUserId).ToHashSet();
 
             // Build late employees list (checked in but late, excluding those on leave)
-            var lateEmployees = new List<LateEmployeeDto>();
+            var lateEmployees = new List<LateDeviceUserDto>();
             foreach (var shift in todayShifts.Where(s => !onLeaveUserIds.Contains(s.EmployeeUserId)))
             {
                 if (employeeCheckIns.TryGetValue(shift.EmployeeUserId, out var checkIn))
                 {
                     if (checkIn.AttendanceTime > shift.StartTime)
                     {
-                        lateEmployees.Add(new LateEmployeeDto
+                        lateEmployees.Add(new LateDeviceUserDto
                         {
                             EmployeeUserId = shift.EmployeeUserId,
                 FullName = GetFullName(shift.EmployeeUser),
@@ -138,7 +138,7 @@ public class GetManagerDashboardHandler(
                             ShiftStartTime = shift.StartTime,
                             ActualCheckInTime = checkIn.AttendanceTime,
                             LateBy = checkIn.AttendanceTime - shift.StartTime,
-                            Department = shift.EmployeeUser.Employee?.Department ?? ""
+                            Department = ""
                         });
                     }
                 }
@@ -149,7 +149,7 @@ public class GetManagerDashboardHandler(
             var absentEmployees = todayShifts
                 .Where(s => !onLeaveUserIds.Contains(s.EmployeeUserId) &&
                            !checkedInUserIds.Contains(s.EmployeeUserId))
-                .Select(s => new AbsentEmployeeDto
+                .Select(s => new AbsentDeviceUserDto
                 {
                     EmployeeUserId = s.EmployeeUserId,
                     FullName = GetFullName(s.EmployeeUser),
@@ -157,7 +157,7 @@ public class GetManagerDashboardHandler(
                     ShiftId = s.Id,
                     ShiftStartTime = s.StartTime,
                     ShiftEndTime = s.EndTime,
-                    Department = s.EmployeeUser.Employee?.Department ?? ""
+                    Department = ""
                 })
                 .ToList();
 
@@ -187,7 +187,7 @@ public class GetManagerDashboardHandler(
                     status = "Absent";
                 }
 
-                return new TodayEmployeeDto
+                return new TodayDeviceUserDto
                 {
                     EmployeeUserId = s.EmployeeUserId,
                     FullName = GetFullName(s.EmployeeUser),
@@ -198,7 +198,7 @@ public class GetManagerDashboardHandler(
                     Status = status,
                     CheckInTime = checkInTime,
                     CheckOutTime = checkOutTime,
-                    Department = s.EmployeeUser.Employee?.Department ?? ""
+                    Department = ""
                 };
             }).ToList();
 

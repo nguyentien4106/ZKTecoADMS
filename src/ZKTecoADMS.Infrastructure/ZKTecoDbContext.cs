@@ -1,5 +1,4 @@
-﻿using ZKTecoADMS.Application.Interfaces;
-using ZKTecoADMS.Domain.Entities;
+﻿using ZKTecoADMS.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +9,7 @@ namespace ZKTecoADMS.Infrastructure;
 public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<UserRefreshToken> UserRefreshTokens => Set<UserRefreshToken>();
-    public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<DeviceUser> DeviceUsers => Set<DeviceUser>();
     public DbSet<Device> Devices => Set<Device>();
     public DbSet<FingerprintTemplate> FingerprintTemplates => Set<FingerprintTemplate>();
     public DbSet<FaceTemplate> FaceTemplates => Set<FaceTemplate>();
@@ -25,6 +24,10 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
     public DbSet<Leave> Leaves => Set<Leave>();
     public DbSet<SalaryProfile> SalaryProfiles => Set<SalaryProfile>();
     public DbSet<EmployeeSalaryProfile> EmployeeSalaryProfiles => Set<EmployeeSalaryProfile>();
+    public DbSet<Payslip> Payslips => Set<Payslip>();
+    public DbSet<Holiday> Holidays => Set<Holiday>();
+    public DbSet<EmployeeWorkingInfo> EmployeeWorkingInfos => Set<EmployeeWorkingInfo>();
+    public DbSet<Employee> Employees => Set<Employee>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +42,7 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
                 if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
                 {
                     property.SetColumnType("timestamp without time zone");
+                    property.SetDefaultValueSql("NOW()");
                 }
             }
         }

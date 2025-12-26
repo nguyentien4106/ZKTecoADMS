@@ -49,6 +49,7 @@ public class ShiftTemplatesController(IMediator mediator) : AuthenticatedControl
             request.EndTime,
             request.MaximumAllowedLateMinutes,
             request.MaximumAllowedEarlyLeaveMinutes,
+            request.BreakTimeMinutes,
             request.IsActive);
         var result = await mediator.Send(command);
         return Ok(result);

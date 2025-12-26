@@ -8,10 +8,10 @@ using ZKTecoADMS.Domain.Repositories;
 namespace ZKTecoADMS.Application.Queries.Dashboard.GetDashboardData;
 
 public class GetDashboardDataHandler(
-    IEmployeeService employeeService,
+    IDeviceUserService employeeService,
     IDeviceService deviceService,
     IAttendanceService attendanceService,
-    IRepository<Employee> employeeRepository,
+    IRepository<DeviceUser> employeeRepository,
     IRepository<Attendance> attendanceRepository
     ) : IQueryHandler<GetDashboardDataQuery, AppResponse<DashboardDataDto>>
 {
@@ -67,7 +67,7 @@ public class GetDashboardDataHandler(
         // Filter employees by department if specified
         var employees = string.IsNullOrEmpty(request.Department)
             ? allEmployees
-            : allEmployees.Where(u => u.Department == request.Department).ToList();
+            : allEmployees.ToList();
 
         // Build dashboard data
         var dashboardData = new DashboardDataDto
@@ -84,10 +84,10 @@ public class GetDashboardDataHandler(
     }
 
     private DashboardSummaryDto BuildSummary(
-        List<Employee> users,
+        List<DeviceUser> users,
         List<Device> devices,
         List<Attendance> todayAttendances,
-        List<Employee> allUsers)
+        List<DeviceUser> allUsers)
     {
         var todayCheckIns = todayAttendances.Count(a => a.AttendanceState == AttendanceStates.CheckIn);
         var todayCheckOuts = todayAttendances.Count(a => a.AttendanceState == AttendanceStates.CheckOut);
@@ -125,7 +125,7 @@ public class GetDashboardDataHandler(
     }
 
     private List<EmployeePerformanceDto> BuildTopPerformers(
-        List<Employee> users,
+        List<DeviceUser> users,
         List<Attendance> attendances,
         int count,
         DateTime startDate,
@@ -154,7 +154,6 @@ public class GetDashboardDataHandler(
             {
                 UserId = user.Id,
                 FullName = user.Name,
-                Department = user.Department ?? "N/A",
                 TotalAttendanceDays = attendanceDays,
                 OnTimeDays = onTimeDays,
                 LateDays = lateDays,
@@ -176,7 +175,7 @@ public class GetDashboardDataHandler(
     }
 
     private List<EmployeePerformanceDto> BuildLateEmployees(
-        List<Employee> users,
+        List<DeviceUser> users,
         List<Attendance> attendances,
         int count,
         DateTime startDate,
@@ -205,7 +204,6 @@ public class GetDashboardDataHandler(
             {
                 UserId = user.Id,
                 FullName = user.Name,
-                Department = user.Department ?? "N/A",
                 TotalAttendanceDays = attendanceDays,
                 OnTimeDays = onTimeDays,
                 LateDays = lateDays,
@@ -227,21 +225,18 @@ public class GetDashboardDataHandler(
     }
 
     private List<DepartmentStatisticsDto> BuildDepartmentStatistics(
-        List<Employee> allUsers,
+        List<DeviceUser> allUsers,
         List<Attendance> todayAttendances,
         List<Attendance> periodAttendances,
         DateTime startDate,
         DateTime endDate)
     {
         var departments = allUsers
-            .Where(u => !string.IsNullOrEmpty(u.Department))
-            .GroupBy(u => u.Department)
-            .Select(g => g.Key!)
             .ToList();
 
         return departments.Select(dept =>
         {
-            var deptUsers = allUsers.Where(u => u.Department == dept && u.IsActive).ToList();
+            var deptUsers = allUsers.Where(u => u.IsActive).ToList();
             var deptUserIds = deptUsers.Select(u => u.Id).ToHashSet();
 
             var todayDeptAttendances = todayAttendances.Where(a => a.EmployeeId.HasValue && deptUserIds.Contains(a.EmployeeId.Value)).ToList();
@@ -275,7 +270,6 @@ public class GetDashboardDataHandler(
 
             return new DepartmentStatisticsDto
             {
-                Department = dept,
                 TotalEmployees = deptUsers.Count,
                 ActiveToday = activeToday,
                 AbsentToday = Math.Max(0, absentToday),
@@ -288,7 +282,7 @@ public class GetDashboardDataHandler(
     }
 
     private List<AttendanceTrendDto> BuildAttendanceTrends(
-        List<Employee> users,
+        List<DeviceUser> users,
         List<Attendance> allAttendances,
         DateTime startDate,
         DateTime endDate,
@@ -343,7 +337,7 @@ public class GetDashboardDataHandler(
     private List<DeviceStatusDto> BuildDeviceStatuses(
         List<Device> devices,
         List<Attendance> todayAttendances,
-        List<Employee> allUsers)
+        List<DeviceUser> allUsers)
     {
         return devices.Select(device =>
         {

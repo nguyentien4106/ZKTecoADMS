@@ -40,6 +40,7 @@ export const ShiftTemplateList = ({
                         <TableHead>Total Hours</TableHead>
                         <TableHead className="text-center">Max Late (min)</TableHead>
                         <TableHead className="text-center">Max Early Leave (min)</TableHead>
+                        <TableHead className="text-center">Break Time (min)</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Created At</TableHead>
                         <TableHead className="text-right">Actions</TableHead>

@@ -15,9 +15,33 @@ export interface SalaryProfile {
   rateTypeName: string;
   rate: number;
   currency: string;
+
   overtimeMultiplier?: number;
   holidayMultiplier?: number;
   nightShiftMultiplier?: number;
+  // Base Salary Configuration
+  standardHoursPerDay?: number;
+  
+  // Leave & Attendance Rules
+  weeklyOffDays?: string;
+  paidLeaveDays?: number;
+  unpaidLeaveDays?: number;
+  // Allowances
+  mealAllowance?: number;
+  transportAllowance?: number;
+  housingAllowance?: number;
+  responsibilityAllowance?: number;
+  attendanceBonus?: number;
+  phoneSkillShiftAllowance?: number;
+  // Overtime Configuration
+  otRateWeekday?: number;
+  otRateWeekend?: number;
+  otRateHoliday?: number;
+  nightShiftRate?: number;
+  otHourLimitPerMonth?: number;
+  // Health Insurance
+  hasHealthInsurance?: boolean;
+  healthInsuranceRate?: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -45,6 +69,30 @@ export interface CreateSalaryProfileRequest {
   overtimeMultiplier?: number;
   holidayMultiplier?: number;
   nightShiftMultiplier?: number;
+
+  // Base Salary Configuration
+  standardHoursPerDay?: number;
+  // Leave & Attendance Rules
+  weeklyOffDays?: string;
+  paidLeaveDays?: number;
+  unpaidLeaveDays?: number;
+
+  // Allowances
+  mealAllowance?: number;
+  transportAllowance?: number;
+  housingAllowance?: number;
+  responsibilityAllowance?: number;
+  attendanceBonus?: number;
+  phoneSkillShiftAllowance?: number;
+  // Overtime Configuration
+  otRateWeekday?: number;
+  otRateWeekend?: number;
+  otRateHoliday?: number;
+  nightShiftRate?: number;
+
+  // Health Insurance
+  hasHealthInsurance?: boolean;
+  healthInsuranceRate?: number;
 }
 
 export interface UpdateSalaryProfileRequest extends CreateSalaryProfileRequest {

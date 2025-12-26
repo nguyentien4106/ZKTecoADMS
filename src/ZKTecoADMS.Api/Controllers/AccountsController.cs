@@ -1,16 +1,17 @@
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using ZKTecoADMS.Api.Controllers.Base;
-using ZKTecoADMS.Application.Commands.Accounts.CreateEmployeeAccount;
 using ZKTecoADMS.Application.Commands.Accounts.UpdateEmployeeAccount;
 using ZKTecoADMS.Application.Commands.Accounts.UpdateUserProfile;
 using ZKTecoADMS.Application.Commands.Accounts.UpdateUserPassword;
 using ZKTecoADMS.Application.Constants;
-using ZKTecoADMS.Application.DTOs.Employees;
-using ZKTecoADMS.Application.DTOs.Users;
 using ZKTecoADMS.Application.Models;
-using ZKTecoADMS.Application.Queries.Employees.GetEmployeesByManager;
+using ZKTecoADMS.Application.Queries.DeviceUsers.GetDeviceUsersByManager;
 using ZKTecoADMS.Application.Queries.Users.GetCurrentUserProfile;
+using ZKTecoADMS.Application.DTOs.Commons;
+using ZKTecoADMS.Application.Commands.Accounts;
+using ZKTecoADMS.Application.DTOs.Employees;
+using ZKTecoADMS.Application.DTOs.Accounts;
 
 namespace ZKTecoADMS.Api.Controllers;
 
@@ -19,11 +20,11 @@ namespace ZKTecoADMS.Api.Controllers;
 public class AccountsController(IMediator mediator) : AuthenticatedControllerBase
 {
 
-    [HttpGet("employees")]
+    [HttpGet("DeviceUsers")]
     [Authorize(Policy = PolicyNames.AtLeastManager)]
-    public async Task<ActionResult<AppResponse<IEnumerable<AccountDto>>>> GetEmployeesByManager(CancellationToken cancellationToken)
+    public async Task<ActionResult<AppResponse<IEnumerable<AccountDto>>>> GetDeviceUsersByManager(CancellationToken cancellationToken)
     {
-        var query = new GetEmployeesByManagerQuery(CurrentUserId);
+        var query = new GetDeviceUsersByManagerQuery(CurrentUserId);
         var result = await mediator.Send(query, cancellationToken);
         return Ok(result);
     }
@@ -50,7 +51,7 @@ public class AccountsController(IMediator mediator) : AuthenticatedControllerBas
     }
 
     [HttpGet("profile")]
-    public async Task<ActionResult<AppResponse<UserProfileDto>>> GetProfile(CancellationToken cancellationToken)
+    public async Task<ActionResult<AppResponse<AccountDto>>> GetProfile(CancellationToken cancellationToken)
     {
         var query = new GetCurrentUserProfileQuery(CurrentUserId);
         var result = await mediator.Send(query, cancellationToken);
@@ -58,7 +59,7 @@ public class AccountsController(IMediator mediator) : AuthenticatedControllerBas
     }
 
     [HttpPut("profile")]
-    public async Task<ActionResult<AppResponse<UserProfileDto>>> UpdateProfile([FromBody] UpdateProfileRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<AppResponse<AccountDto>>> UpdateProfile([FromBody] UpdateProfileRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateUserProfileCommand
         {
@@ -72,7 +73,7 @@ public class AccountsController(IMediator mediator) : AuthenticatedControllerBas
     }
 
     [HttpPut("profile/password")]
-    public async Task<ActionResult<AppResponse<UserProfileDto>>> UpdatePassword([FromBody] UpdatePasswordRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<AppResponse<AccountDto>>> UpdatePassword([FromBody] UpdatePasswordRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateUserPasswordCommand
         {
@@ -83,16 +84,6 @@ public class AccountsController(IMediator mediator) : AuthenticatedControllerBas
         var result = await mediator.Send(command, cancellationToken);
         return Ok(result);
     }
-}
-
-public class CreateEmployeeAccountRequest
-{
-    public required string Email { get; set; }
-    public required string Password { get; set; }
-    public Guid EmployeeDeviceId { get; set; }
-    public required string FirstName { get; set; }
-    public required string LastName { get; set; }
-    public string? PhoneNumber { get; set; }
 }
 
 public class UpdateEmployeeAccountRequest

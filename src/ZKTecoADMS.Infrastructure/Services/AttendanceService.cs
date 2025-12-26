@@ -9,7 +9,7 @@ namespace ZKTecoADMS.Infrastructure.Services;
 public class AttendanceService(
     IRepository<Attendance> attendanceRepository,
     IShiftService shiftService,
-    IRepository<Employee> employeeRepository,
+    IRepository<DeviceUser> employeeRepository,
     IRepository<Shift> shiftRepository,
     ILogger<AttendanceService> logger
 )
@@ -64,27 +64,6 @@ public class AttendanceService(
                 logger.LogWarning("{DeviceSN}:No employee found for Attendance ID {AttendanceId} with PIN {PIN}.", device.SerialNumber, attendance.Id, attendance.PIN);
                 continue;
             }
-            
-            
-            var shift = await shiftService.GetShiftByDateAsync(employeeUser.ApplicationUserId, attendance.AttendanceTime.Date);
-            if (shift == null)
-            {
-                logger.LogWarning("{DeviceSN}:No shift found for Employee ID {EmployeeId} on {AttendanceDate}.", device.SerialNumber, employeeUser.ApplicationUserId, attendance.AttendanceTime.Date);
-                continue;
-            }
-
-            if(shift.CheckInAttendanceId == null)
-            {
-                logger.LogInformation("{DeviceSN}:Linking Attendance ID {AttendanceId} as Check-In for Shift ID {ShiftId}.", device.SerialNumber, attendance.Id, shift.Id);
-                shift.CheckInAttendanceId = attendance.Id;
-            }
-            else
-            {
-                logger.LogInformation("{DeviceSN}:Linking Attendance ID {AttendanceId} as Check-Out for Shift ID {ShiftId}.", device.SerialNumber, attendance.Id, shift.Id);
-                shift.CheckOutAttendanceId = attendance.Id;
-            }
-
-            await shiftRepository.UpdateAsync(shift);
         }
         return true;
     }

@@ -10,7 +10,7 @@ namespace ZKTecoADMS.Application.Commands.IClock.DeviceCmdCommand.Strategies;
 /// </summary>
 [DeviceCommandStrategy(DeviceCommandTypes.DeleteEmployee)]
 public class DeleteUserStrategy(
-    IRepository<Employee> employeeRepository,
+    IRepository<DeviceUser> employeeRepository,
     UserManager<ApplicationUser> userManager) : IDeviceCommandStrategy
 {
     public async Task ExecuteAsync(Device device, Guid objectRefId, ClockCommandResponse response, CancellationToken cancellationToken)
@@ -19,16 +19,6 @@ public class DeleteUserStrategy(
         if (employee != null && response.IsSuccess)
         {
             await employeeRepository.DeleteAsync(employee, cancellationToken);
-            if(employee.ApplicationUserId == null)
-            {
-                return;
-            }
-            
-            var employeeAccount = await userManager.FindByIdAsync(employee.ApplicationUserId.ToString());
-            if (employeeAccount != null)
-            {
-                await userManager.DeleteAsync(employeeAccount);
-            }
         }
     }
 }

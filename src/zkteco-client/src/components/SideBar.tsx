@@ -14,7 +14,9 @@ import {
   Terminal,
   Calendar,
   CalendarCheck,
-  CalendarClock
+  CalendarClock,
+  Receipt,
+  UserCircle
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from '@/contexts/SidebarContext'
@@ -28,11 +30,14 @@ const navItems = [
   { to: '/devices', icon: Monitor, label: 'Devices' },
   { to: '/device-commands', icon: Terminal, label: 'Commands' },
   { to: '/employees', icon: Users, label: 'Employees' },
+  { to: '/device-users', icon: Users, label: 'Device Users' },
+  { to: '/employee-info', icon: UserCircle, label: 'Employee Info' },
   { to: '/attendance', icon: Clock, label: 'Attendance' },
   { to: '/attendance-summary', icon: CalendarClock, label: 'Attendance Summary' },
   { to: '/my-shifts', icon: Calendar, label: 'My Shifts' },
   { to: '/shifts', icon: CalendarCheck, label: 'Shifts' },
   { to: '/leaves', icon: CalendarCheck, label: 'Leaves' },
+  { to: '/payslips', icon: Receipt, label: 'Payslips' },
   { to: '/reports', icon: FileText, label: 'Reports' },
   { to: '/settings', icon: Settings, label: 'Settings' },
   { to: '/salary-profiles', icon: Settings, label: 'Salary Profiles' },
