@@ -26,6 +26,6 @@ public class Attendance : Entity<Guid>
     // Navigation Properties
     public virtual Device Device { get; set; } = null!;
     
-    public virtual Employee? Employee { get; set; }
+    public virtual DeviceUser? Employee { get; set; }
 }
 

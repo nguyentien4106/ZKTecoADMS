@@ -35,6 +35,7 @@ export const ROLE_PERMISSIONS = {
     '/device-commands',
     '/devices',
     '/employees',
+    '/device-users',
     '/dashboard',
     '/attendance',
     '/reports',

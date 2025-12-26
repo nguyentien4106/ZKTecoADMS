@@ -20,9 +20,9 @@ public class AccessTokenService(ITokenGeneratorService tokenGenerator, JwtSettin
                 new Claim(ClaimTypes.Email, user.Email ?? ""),
                 new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName),
                 new Claim(ClaimTypeNames.UserName, user.UserName!),
-                new Claim(ClaimTypeNames.EmployeeId, user.Employee?.Id.ToString() ?? ""),
+                new Claim(ClaimTypeNames.EmployeeId, user.EmployeeId.ToString() ?? ""),
                 new Claim(ClaimTypeNames.ManagerId, user.ManagerId?.ToString() ?? ""),
-                new Claim(ClaimTypeNames.EmployeeType, ""),
+                new Claim(ClaimTypeNames.EmployeeType, user.Employee?.EmploymentType.ToString() ?? ""),
                 ..rolesClaims
             ];
 

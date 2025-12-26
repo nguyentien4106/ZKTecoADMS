@@ -1,256 +1,202 @@
 // ==========================================
-// src/contexts/EmployeeContext.tsx
+// src/contexts/EmployeeInfoContext.tsx
 // ==========================================
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { toast } from 'sonner'
+import { createContext, useContext, useState, ReactNode } from 'react';
+
 import {
   useEmployees,
   useDeleteEmployee,
   useCreateEmployee,
   useUpdateEmployee,
-  useCreateEmployeeAccount,
-  useUpdateEmployeeAccount,
-} from '@/hooks/useEmployees'
-import { useDevices } from '@/hooks/useDevices'
-import { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee'
-import { Account, CreateEmployeeAccountRequest } from '@/types/account'
+} from '@/hooks/useEmployee';
+import { useCreateEmployeeAccount } from '@/hooks/useDeviceUsers';
+import { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee';
+import { GetEmployeesParams } from '@/services/employeeService';
+import { CreateEmployeeAccountRequest } from '@/types/account';
 
 interface EmployeeContextValue {
   // State
-  employees: Employee[] | undefined
-  isLoading: boolean
-  devices: any[] | undefined
-  selectedDeviceIds: string[]
+  employees: any | undefined;
+  isLoading: boolean;
+  queryParams: GetEmployeesParams;
   
   // Dialog states
-  createDialogOpen: boolean
-  createAccountDialogOpen: boolean
-  deleteDialogOpen: boolean
-  assignSalaryDialogOpen: boolean
-  employeeToEdit: Employee | null
-  employeeForAccount: Employee | null
-  employeeToDelete: Employee | null
-  employeeForSalary: Employee | null
-  isCreatingAccount: boolean
+  createDialogOpen: boolean;
+  deleteDialogOpen: boolean;
+  addToDeviceDialogOpen: boolean;
+  createAccountDialogOpen: boolean;
+  employeeToEdit: Employee | null;
+  employeeToDelete: Employee | null;
+  employeeToAddToDevice: Employee | null;
+  employeeForAccount: Employee | null;
   
   // Actions
-  setCreateDialogOpen: (open: boolean) => void
-  setCreateAccountDialogOpen: (open: boolean) => void
-  setDeleteDialogOpen: (open: boolean) => void
-  setAssignSalaryDialogOpen: (open: boolean) => void
-  setSelectedDeviceIds: (deviceIds: string[]) => void
-  handleDelete: (employee: Employee) => void
-  handleConfirmDelete: () => Promise<void>
-  handleAddEmployee: (data: CreateEmployeeRequest) => Promise<void>
-  handleUpdateEmployee: (data: UpdateEmployeeRequest) => Promise<void>
-  handleEdit: (user: Employee) => void
-  handleCreateAccount: (user: Employee) => void
-  handleAssignSalary: (user: Employee) => void
-  handleCreateAccountSubmit: (data: CreateEmployeeAccountRequest) => Promise<Account | undefined>
-  handleFilterSubmit: (deviceIds: string[]) => void
-  handleOpenCreateDialog: () => void
+  setCreateDialogOpen: (open: boolean) => void;
+  setDeleteDialogOpen: (open: boolean) => void;
+  setAddToDeviceDialogOpen: (open: boolean) => void;
+  setCreateAccountDialogOpen: (open: boolean) => void;
+  setQueryParams: (params: GetEmployeesParams) => void;
+  handleDelete: (employee: Employee) => void;
+  handleConfirmDelete: () => Promise<void>;
+  handleAddEmployee: (data: CreateEmployeeRequest) => Promise<void>;
+  handleUpdateEmployee: (data: UpdateEmployeeRequest) => Promise<void>;
+  handleEdit: (employee: Employee) => void;
+  handleOpenCreateDialog: () => void;
+  handleAddToDevice: (employee: Employee) => void;
+  handleOpenCreateAccount: (employee: Employee) => void;
+  handleCreateAccount: (data: CreateEmployeeAccountRequest) => Promise<void>;
   
   // Mutation states
-  isDeletePending: boolean
+  isDeletePending: boolean;
+  isCreatePending: boolean;
+  isUpdatePending: boolean;
+  isCreateAccountPending: boolean;
 }
 
-const EmployeeContext = createContext<EmployeeContextValue | undefined>(undefined)
+const EmployeeInfoContext = createContext<EmployeeContextValue | undefined>(undefined);
 
 export const useEmployeeContext = () => {
-  const context = useContext(EmployeeContext)
+  const context = useContext(EmployeeInfoContext);
   if (!context) {
-    throw new Error('useEmployeeContext must be used within EmployeeProvider')
+    throw new Error('useEmployeeInfoContext must be used within EmployeeInfoProvider');
   }
-  return context
-}
+  return context;
+};
 
 interface EmployeeProviderProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   // Dialog states
-  const [createDialogOpen, setCreateDialogOpenState] = useState(false)
-  const [createAccountDialogOpen, setCreateAccountDialogOpen] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [assignSalaryDialogOpen, setAssignSalaryDialogOpen] = useState(false)
-  const [employeeToEdit, setEmployeeToEdit] = useState<Employee | null>(null)
-  const [employeeForAccount, setEmployeeForAccount] = useState<Employee | null>(null)
-  const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null)
-  const [employeeForSalary, setEmployeeForSalary] = useState<Employee | null>(null)
-  const [isCreatingAccount, setIsCreatingAccount] = useState(false)
-  const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([])
+  const [createDialogOpen, setCreateDialogOpenState] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [addToDeviceDialogOpen, setAddToDeviceDialogOpen] = useState(false);
+  const [createAccountDialogOpen, setCreateAccountDialogOpen] = useState(false);
+  const [employeeToEdit, setEmployeeToEdit] = useState<Employee | null>(null);
+  const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null);
+  const [employeeToAddToDevice, setEmployeeToAddToDevice] = useState<Employee | null>(null);
+  const [employeeForAccount, setEmployeeForAccount] = useState<Employee | null>(null);
+  const [queryParams, setQueryParams] = useState<GetEmployeesParams>({
+    pageNumber: 1,
+    pageSize: 10,
+    searchTerm: '',
+    workStatus: '',
+    employmentType: '',
+  });
   
   // Hooks
-  const { data: devices } = useDevices()
-  const { data: employees, isLoading } = useEmployees(selectedDeviceIds)
-  const deleteEmployee = useDeleteEmployee()
-  const createEmployee = useCreateEmployee()
-  const updateEmployee = useUpdateEmployee()
-  const createEmployeeAccount = useCreateEmployeeAccount()
-  const updateEmployeeAccount = useUpdateEmployeeAccount()
+  const { data: employees, isLoading } = useEmployees(queryParams);
+  const deleteEmployeeMutation = useDeleteEmployee();
+  const createEmployeeMutation = useCreateEmployee();
+  const updateEmployeeMutation = useUpdateEmployee();
+  const createAccountMutation = useCreateEmployeeAccount();
 
-  // Initialize selected devices
-  useEffect(() => {
-    if (devices) {
-      setSelectedDeviceIds(devices.map((device) => device.id))
-    }
-  }, [devices])
-
-  // Wrapper for setCreateDialogOpen to clear user state when closing
+  // Wrapper for setCreateDialogOpen to clear employee state when closing
   const setCreateDialogOpen = (open: boolean) => {
     if (!open) {
-      setEmployeeToEdit(null) // Clear user data when dialog closes
+      setEmployeeToEdit(null); // Clear employee data when dialog closes
     }
-    setCreateDialogOpenState(open)
-  }
+    setCreateDialogOpenState(open);
+  };
 
   // Handlers
   const handleDelete = (employee: Employee) => {
-    setEmployeeToDelete(employee)
-    setDeleteDialogOpen(true)
-  }
+    setEmployeeToDelete(employee);
+    setDeleteDialogOpen(true);
+  };
 
   const handleConfirmDelete = async () => {
-    if (!employeeToDelete?.id) return
-    await deleteEmployee.mutateAsync(employeeToDelete.id)
-    setDeleteDialogOpen(false)
-    setEmployeeToDelete(null)
-  }
+    if (!employeeToDelete?.id) return;
+    await deleteEmployeeMutation.mutateAsync(employeeToDelete.id);
+    setDeleteDialogOpen(false);
+    setEmployeeToDelete(null);
+  };
 
   const handleAddEmployee = async (data: CreateEmployeeRequest) => {
-    const results = await createEmployee.mutateAsync(data)
-    const successes = results.filter((res) => res.isSuccess)
-    const errors = results.filter((res) => !res.isSuccess)
-
-    if (successes && successes.length) {
-      toast.success('Employee added successfully to devices.', {
-        description: successes.map((item) => item.data.deviceName).join(', '),
-      })
-    }
-    if (errors && errors.length) {
-      toast.error('Employee added failed to devices.', {
-        description: errors.map((item) => item.data.deviceName).join(', '),
-      })
-    }
-  }
+    await createEmployeeMutation.mutateAsync(data);
+    setCreateDialogOpen(false);
+  };
 
   const handleUpdateEmployee = async (data: UpdateEmployeeRequest) => {
-    try {
-      await updateEmployee.mutateAsync(data)
-    } catch (error: any) {
-      toast.error('Failed to update employee', {
-        description: error.message || 'An error occurred',
-      })
-    }
-  }
+    if (!employeeToEdit?.id) return;
+    
+    await updateEmployeeMutation.mutateAsync({
+      id: employeeToEdit.id,
+      data,
+    });
+    setCreateDialogOpen(false);
+    setEmployeeToEdit(null);
+  };
 
-  const handleEdit = (user: Employee) => {
-    setEmployeeToEdit(user)
-    setCreateDialogOpen(true)
-  }
+  const handleEdit = (employee: Employee) => {
+    setEmployeeToEdit(employee);
+    setCreateDialogOpen(true);
+  };
 
   const handleOpenCreateDialog = () => {
-    setEmployeeToEdit(null) // Clear any previous user data
-    setCreateDialogOpen(true)
-  }
+    setEmployeeToEdit(null); // Clear any previous employee data
+    setCreateDialogOpen(true);
+  };
 
-  const handleFilterSubmit = (deviceIds: string[]) => {
-    setSelectedDeviceIds(deviceIds)
-  }
+  const handleAddToDevice = (employee: Employee) => {
+    setEmployeeToAddToDevice(employee);
+    setAddToDeviceDialogOpen(true);
+  };
 
-  const handleCreateAccount = (user: Employee) => {
-    setEmployeeForAccount(user)
-    setCreateAccountDialogOpen(true)
-  }
+  const handleOpenCreateAccount = (employee: Employee) => {
+    setEmployeeForAccount(employee);
+    setCreateAccountDialogOpen(true);
+  };
 
-  const handleAssignSalary = (user: Employee) => {
-    setEmployeeForSalary(user)
-    setAssignSalaryDialogOpen(true)
-  }
-
-  const handleCreateAccountSubmit = async (data: CreateEmployeeAccountRequest) => {
-    setIsCreatingAccount(true)
-    try {
-      // Check if the user already has an account
-      const isUpdateMode = !!employeeForAccount?.applicationUser
-      let updatedEmployeeAccount: Account | undefined = undefined;
-      if (isUpdateMode) {
-        // Update existing account
-        
-        updatedEmployeeAccount = await updateEmployeeAccount.mutateAsync({
-          employeeDeviceId: employeeForAccount!.id,
-          data: {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            phoneNumber: data.phoneNumber,
-            password: data.password,
-            userName: data.userName
-          }
-        })
-      } else {
-        // Create new account
-        updatedEmployeeAccount = await createEmployeeAccount.mutateAsync(data)
-      }
-
-      setCreateAccountDialogOpen(false)
-      setEmployeeForAccount(null)
-
-      return updatedEmployeeAccount;
-
-    } catch (error: any) {
-      const action = employeeForAccount?.applicationUser ? 'update' : 'create'
-      toast.error(`Failed to ${action} account`, {
-        description: error.message || 'An error occurred',
-      })
-    } finally {
-      setIsCreatingAccount(false)
-    }
-  }
+  const handleCreateAccount = async (data: CreateEmployeeAccountRequest) => {
+    await createAccountMutation.mutateAsync(data);
+    setCreateAccountDialogOpen(false);
+    setEmployeeForAccount(null);
+  };
 
   const value: EmployeeContextValue = {
     // State
     employees,
     isLoading,
-    devices,
-    selectedDeviceIds,
+    queryParams,
     
     // Dialog states
     createDialogOpen,
-    createAccountDialogOpen,
     deleteDialogOpen,
-    assignSalaryDialogOpen,
+    addToDeviceDialogOpen,
+    createAccountDialogOpen,
     employeeToEdit,
-    employeeForAccount,
     employeeToDelete,
-    employeeForSalary,
-    isCreatingAccount,
+    employeeToAddToDevice,
+    employeeForAccount,
     
     // Actions
     setCreateDialogOpen,
-    setCreateAccountDialogOpen,
     setDeleteDialogOpen,
-    setAssignSalaryDialogOpen,
-    setSelectedDeviceIds,
+    setAddToDeviceDialogOpen,
+    setCreateAccountDialogOpen,
+    setQueryParams,
     handleDelete,
     handleConfirmDelete,
     handleAddEmployee,
     handleUpdateEmployee,
     handleEdit,
     handleOpenCreateDialog,
+    handleAddToDevice,
+    handleOpenCreateAccount,
     handleCreateAccount,
-    handleAssignSalary,
-    handleCreateAccountSubmit,
-    handleFilterSubmit,
     
     // Mutation states
-    isDeletePending: deleteEmployee.isPending,
-  }
+    isDeletePending: deleteEmployeeMutation.isPending,
+    isCreatePending: createEmployeeMutation.isPending,
+    isUpdatePending: updateEmployeeMutation.isPending,
+    isCreateAccountPending: createAccountMutation.isPending,
+  };
 
   return (
-    <EmployeeContext.Provider value={value}>
+    <EmployeeInfoContext.Provider value={value}>
       {children}
-    </EmployeeContext.Provider>
-  )
-}
+    </EmployeeInfoContext.Provider>
+  );
+};

@@ -1,12 +1,12 @@
 import { LeaveDialogState, LeaveStatus, LeaveType } from '@/types/leave';
 import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
-import { CreateEmployeeRequest } from "@/types/employee";
+import { CreateDeviceUserRequest } from "@/types/deviceUser";
 import { CreateShiftTemplateRequest, CreatShiftDialog, ShiftManagementFilter } from "@/types/shift";
 import { format, startOfMonth, subMonths } from "date-fns";
 import { DateTimeFormat } from ".";
 
-export const defaultNewEmployee: CreateEmployeeRequest = {
+export const defaultNewEmployee: CreateDeviceUserRequest = {
     pin: '',
     name: '',
     cardNumber: '',

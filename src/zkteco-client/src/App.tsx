@@ -10,7 +10,7 @@ import { MainLayout } from './layouts/MainLayout'
 import { Login } from './pages/auth/Login'
 import { Dashboard } from './pages/Dashboard'
 import { Devices } from './pages/Devices'
-import { Employees } from './pages/Employees'
+import { DeviceUsers } from './pages/DeviceUsers'
 import { Attendance } from './pages/Attendance'
 import { Reports } from './pages/Reports'
 import { Settings } from './pages/Settings'
@@ -26,6 +26,7 @@ import EmployeeDashboardDemo from './pages/EmployeeDashboardDemo'
 import { MonthlyAttendanceSummary } from './pages/MonthlyAttendanceSummary'
 import { SalaryProfiles } from './pages/SalaryProfiles'
 import { Payslips } from './pages/Payslips'
+import Employees from './pages/Employees'
 
 function App() {
   return (
@@ -104,10 +105,10 @@ function App() {
           }
         />
         <Route
-          path="employees"
+          path="device-users"
           element={
             <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
-              <Employees />
+              <DeviceUsers />
             </RoleProtectedRoute>
           }
         />
@@ -124,6 +125,14 @@ function App() {
           element={
             <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
               <SalaryProfiles />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="employees"
+          element={
+            <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
+              <Employees />
             </RoleProtectedRoute>
           }
         />

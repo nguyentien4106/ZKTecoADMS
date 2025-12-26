@@ -12,9 +12,6 @@ public class ShiftConfiguration : IEntityTypeConfiguration<Shift>
         
         builder.HasIndex(s => s.EmployeeUserId);
         
-        builder.Property(s => s.CreatedAt).HasDefaultValueSql("NOW()");
-        builder.Property(s => s.UpdatedAt).HasDefaultValueSql("NOW()");
-        
         // Relationship: ApplicationUser -> RequestedShifts
         builder.HasOne(s => s.EmployeeUser)
             .WithMany(u => u.RequestedShifts)

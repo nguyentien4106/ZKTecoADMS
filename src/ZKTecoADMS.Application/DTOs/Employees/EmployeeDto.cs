@@ -1,43 +1,50 @@
-namespace ZKTecoADMS.Application.DTOs.Employees;
+using ZKTecoADMS.Application.DTOs.Commons;
+using ZKTecoADMS.Domain.Enums;
 
-public class CurrentSalaryProfileDto
-{
-    public Guid Id { get; set; }
-    public Guid SalaryProfileId { get; set; }
-    public string ProfileName { get; set; } = string.Empty;
-    public decimal Rate { get; set; }
-    public string Currency { get; set; } = string.Empty;
-    public string RateTypeName { get; set; } = string.Empty;
-    public DateTime EffectiveDate { get; set; }
-    public bool IsActive { get; set; }
-}
+namespace ZKTecoADMS.Application.DTOs.Employees;
 
 public class EmployeeDto
 {
     public Guid Id { get; set; }
-    public string Pin { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string? CardNumber { get; set; }
-    public string? Password { get; set; }
-    public int Privilege { get; set; }
-    public bool IsActive { get; set; }
-    public string? Department { get; set; }
-    public Guid DeviceId { get; set; }
-    public string? DeviceName { get; set; }
-
-    public AccountDto? ApplicationUser { get; set; }
-    public CurrentSalaryProfileDto? CurrentSalaryProfile { get; set; }
-}
-
-public class AccountDto
-{
-    public Guid Id { get; set; }
-    public required string Email { get; set; }
-    public required string FirstName { get; set; }
-    public required string LastName { get; set; }
+    
+    // Identity Information
+    public string EmployeeCode { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
     public string FullName => $"{FirstName} {LastName}";
-    public string? PhoneNumber { get; set; }
+    public string? Gender { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public string? PhotoUrl { get; set; }
+    public string? NationalIdNumber { get; set; }
+    public DateTime? NationalIdIssueDate { get; set; }
+    public string? NationalIdIssuePlace { get; set; }
 
-    public string? UserName { get; set; }
+    // Contact Information
+    public string? PhoneNumber { get; set; }
+    public string? PersonalEmail { get; set; }
+    public string? CompanyEmail { get; set; }
+    public string? PermanentAddress { get; set; }
+    public string? TemporaryAddress { get; set; }
+    public string? EmergencyContactName { get; set; }
+    public string? EmergencyContactPhone { get; set; }
+
+    // Work Information
+    public string? Department { get; set; }
+    public string? Position { get; set; }
+    public string? Level { get; set; }
+    public EmploymentType EmploymentType { get; set; }
+    public DateTime? JoinDate { get; set; }
+    public DateTime? ProbationEndDate { get; set; }
+    public EmployeeWorkStatus WorkStatus { get; set; }
+    public DateTime? ResignationDate { get; set; }
+    public string? ResignationReason { get; set; }
+
+    // ZKTeco Integration
+    public string? Pin { get; set; }
+    public string? CardNumber { get; set; }
+    public Guid? DeviceId { get; set; }
+    public Guid? ApplicationUserId { get; set; }
+
+    public AccountDto? Account {get;set;}
 
 }

@@ -10,7 +10,7 @@ public interface IDeviceService
     Task UpdateDeviceHeartbeatAsync(string serialNumber);
     Task<IEnumerable<DeviceCommand>> GetPendingCommandsAsync(Guid deviceId);
     Task<DeviceCommand> CreateCommandAsync(DeviceCommand command);
-    Task<AppResponse<bool>> IsValidEmployeeAsync(Employee employee);
+    Task<AppResponse<bool>> IsUserValid(DeviceUser deviceUser);
     Task<IEnumerable<Device>> GetAllDevicesByEmployeeAsync(Guid employeeId);
     
 }

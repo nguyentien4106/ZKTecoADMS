@@ -1,56 +1,48 @@
 // ==========================================
-// src/pages/Employees.tsx
+// src/pages/EmployeeInfo.tsx
 // ==========================================
-import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
-import { EmployeesTable } from "@/components/employees";
 import { Plus } from "lucide-react";
-import { CreateUserDialog } from "@/components/employees/dialogs/EmployeeRequestDialog";
-import { EmployeeAccountRequestDialog } from "@/components/dialogs/EmployeeAccountRequestDialog";
-import FilterBar from "@/components/employees/FilterBar";
+import { EmployeeTable } from "@/components/employees/EmployeeTable";
+import { NewEmployeeDialog } from "@/components/employees/dialogs/NewEmployeeDialog";
+import { EmployeeFilterBar } from "@/components/employees/EmployeeFilterBar";
 import { EmployeeProvider, useEmployeeContext } from "@/contexts/EmployeeContext";
+import { AddEmployeeToDeviceDialog } from "@/components/employees/dialogs/AddEmployeeToDeviceDialog";
+import { NewEmployeeAccountDialog } from "@/components/employees/dialogs/NewEmployeeAccountDialog";
 
 const EmployeesContent = () => {
-  const {
-    devices,
-    selectedDeviceIds,
-    handleOpenCreateDialog,
-    handleFilterSubmit,
+  const { 
+    handleOpenCreateDialog
   } = useEmployeeContext();
 
   return (
-    <div>
-      <PageHeader
-        title="Employees"
-        description="Manage employees and sync them to devices"
-        action={
-          <Button onClick={handleOpenCreateDialog}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Employee
-          </Button>
-        }
-      />
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Employees</h2>
+          <p className="text-muted-foreground">
+            Manage employee records and information
+          </p>
+        </div>
+        <Button onClick={handleOpenCreateDialog}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Employee
+        </Button>
+      </div>
 
-      <FilterBar
-        devices={devices}
-        handleSubmit={handleFilterSubmit}
-        selectedDeviceIds={selectedDeviceIds}
-      />
-
-      <EmployeesTable />
-
-      <CreateUserDialog />
-
-      <EmployeeAccountRequestDialog
-      />
+      <EmployeeFilterBar />
+      <EmployeeTable />
+      <NewEmployeeDialog />
+      <AddEmployeeToDeviceDialog />
+      <NewEmployeeAccountDialog />
     </div>
   );
 };
 
-export const Employees = () => {
+export default function Employees() {
   return (
-    <EmployeeProvider>
-      <EmployeesContent />
-    </EmployeeProvider>
+      <EmployeeProvider>
+        <EmployeesContent />
+      </EmployeeProvider>
   );
-};
+}

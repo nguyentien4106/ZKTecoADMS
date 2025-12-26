@@ -17,7 +17,7 @@ public class MonthlySalaryProfileStrategy(
 
     public Task<(bool IsValid, string? ErrorMessage)> ValidateAssignmentAsync(
         SalaryProfile salaryProfile,
-        Employee employee,
+        DeviceUser employee,
         CancellationToken cancellationToken = default)
     {
         // Validate monthly rate is positive
@@ -78,7 +78,7 @@ public class MonthlySalaryProfileStrategy(
     }
 
 
-    public async Task<SalaryProfile?> ConfigEmployeeWorkingInfoAsync(SalaryProfile salaryProfile, Employee employee)
+    public async Task<SalaryProfile?> ConfigEmployeeWorkingInfoAsync(SalaryProfile salaryProfile, DeviceUser employee)
     {
          // Configure or update EmployeeWorkingInfo using the strategy
         var workingInfo = await employeeWorkingInfoRepository.GetSingleAsync(
@@ -90,7 +90,6 @@ public class MonthlySalaryProfileStrategy(
             workingInfo = new EmployeeWorkingInfo
             {
                 EmployeeId = employee.Id,
-                EmployeeUserId = employee.ApplicationUserId,
                 PaidLeaveDaysPerYear = salaryProfile.PaidLeaveDays,
                 UnpaidLeaveDaysPerYear = salaryProfile.UnpaidLeaveDays,
                 WeeklyOffDays = salaryProfile.WeeklyOffDays,

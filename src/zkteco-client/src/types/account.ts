@@ -12,11 +12,11 @@ export interface Account {
 export interface CreateEmployeeAccountRequest {
   email: string
   password: string
-  employeeDeviceId: string
   firstName: string
   lastName: string
   phoneNumber?: string
-  userName?: string
+  userName: string
+  employeeId: string
 }
 
 export interface UpdateEmployeeAccountRequest {

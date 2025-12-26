@@ -187,18 +187,6 @@ public class GetEmployeeDashboardHandler(
             };
         }
 
-        // Get attendance records
-        var userAttendances = attendances
-            .Where(a => a.PIN == user.Employee.Pin)
-            .Where(a => a.AttendanceTime.Date >= startDate && a.AttendanceTime.Date <= endDate)
-            .OrderBy(a => a.AttendanceTime)
-            .ToList();
-
-        // Group by date
-        var attendanceByDate = userAttendances
-            .GroupBy(a => a.AttendanceTime.Date)
-            .ToDictionary(g => g.Key, g => g.ToList());
-
         int presentDays = 0;
         int lateCheckIns = 0;
         int earlyCheckOuts = 0;
@@ -208,34 +196,6 @@ public class GetEmployeeDashboardHandler(
         {
             var shiftDate = shift.StartTime.Date;
             
-            if (attendanceByDate.TryGetValue(shiftDate, out var dayAttendances))
-            {
-                var checkIn = dayAttendances.FirstOrDefault(a => a.AttendanceState == AttendanceStates.CheckIn);
-                var checkOut = dayAttendances.LastOrDefault(a => a.AttendanceState == AttendanceStates.CheckOut);
-
-                if (checkIn != null)
-                {
-                    presentDays++;
-
-                    // Check if late
-                    if (checkIn.AttendanceTime > shift.StartTime)
-                    {
-                        lateCheckIns++;
-                    }
-
-                    // Check if early out
-                    if (checkOut != null && checkOut.AttendanceTime < shift.EndTime)
-                    {
-                        earlyCheckOuts++;
-                    }
-
-                    // Calculate work hours
-                    if (checkOut != null)
-                    {
-                        totalWorkHours += (checkOut.AttendanceTime - checkIn.AttendanceTime).TotalHours;
-                    }
-                }
-            }
         }
 
         int absentDays = totalWorkDays - presentDays;

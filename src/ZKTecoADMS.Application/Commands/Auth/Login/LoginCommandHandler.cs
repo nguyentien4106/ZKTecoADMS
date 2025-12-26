@@ -20,10 +20,11 @@ public class LoginCommandHandler(
 {
     public async Task<AppResponse<AuthenticateResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        // Find user by email with Employee and Manager includes
+        // Find user by username with Employee navigation property
         var user = await userManager.Users
             .Include(u => u.Employee)
-            .Include(u => u.Manager)
+                .ThenInclude(e => e!.Manager) // Include the Manager of the Employee if needed
+            .Include(u => u.Manager) // Include the direct Manager of the ApplicationUser
             .SingleOrDefaultAsync(u => u.UserName == request.UserName, cancellationToken);
             
         if (user == null)

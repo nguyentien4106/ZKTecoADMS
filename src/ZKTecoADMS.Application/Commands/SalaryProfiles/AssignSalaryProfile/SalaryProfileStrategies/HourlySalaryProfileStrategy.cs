@@ -16,7 +16,7 @@ public class HourlySalaryProfileStrategy(
 
     public Task<(bool IsValid, string? ErrorMessage)> ValidateAssignmentAsync(
         Domain.Entities.SalaryProfile salaryProfile,
-        Employee employee,
+        DeviceUser employee,
         CancellationToken cancellationToken = default)
     {
         // Validate hourly rate is positive
@@ -44,7 +44,7 @@ public class HourlySalaryProfileStrategy(
         return Task.FromResult<(bool, string?)>((true, null));
     }
 
-    public async Task<SalaryProfile?> ConfigEmployeeWorkingInfoAsync(SalaryProfile salaryProfile, Employee employee)
+    public async Task<SalaryProfile?> ConfigEmployeeWorkingInfoAsync(SalaryProfile salaryProfile, DeviceUser employee)
     {
         // For hourly salary profiles, there may not be additional working info to configure
         await employeeWorkingInfoRepository.DeleteAsync(

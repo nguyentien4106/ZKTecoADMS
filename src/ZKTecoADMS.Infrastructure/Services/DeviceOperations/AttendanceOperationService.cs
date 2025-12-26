@@ -12,7 +12,7 @@ namespace ZKTecoADMS.Core.Services.DeviceOperations;
 public class AttendanceOperationService(
     ILogger<AttendanceOperationService> logger,
     IAttendanceService attendanceService,
-    IEmployeeService employeeService) : IAttendanceOperationService
+    IDeviceUserService employeeService) : IAttendanceOperationService
 {
     // Field indices based on TFT protocol
     // Format: [PIN]\t[Punch date/time]\t[Attendance State]\t[Verify Mode]\t[Workcode]\t[Reserved 1]\t[Reserved 2]
@@ -133,7 +133,7 @@ public class AttendanceOperationService(
 
     private async Task<Attendance> CreateAttendanceRecordAsync(Guid deviceId, AttendanceData attendanceData)
     {
-        var employee = await employeeService.GetEmployeeByPinAsync(deviceId, attendanceData.PIN);
+        var employee = await employeeService.GetDeviceUserByPinAsync(deviceId, attendanceData.PIN);
 
         return new Attendance
         {

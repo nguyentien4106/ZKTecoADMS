@@ -34,7 +34,7 @@ public class GetCurrentUserProfileHandler(UserManager<ApplicationUser> userManag
             Roles = roles.ToList(),
             ManagerId = user.ManagerId,
             ManagerName = user.Manager != null ? $"{user.Manager.FirstName} {user.Manager.LastName}" : null,
-            Created = user.Created
+            Created = user.CreatedAt
         };
 
         return AppResponse<UserProfileDto>.Success(profile);

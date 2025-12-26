@@ -11,7 +11,7 @@ namespace ZKTecoADMS.Infrastructure.Services;
 public class ShiftService(
     IRepository<Shift> repository,
     UserManager<ApplicationUser> userManager,
-    IRepository<Employee> employeeRepository,
+    IRepository<DeviceUser> employeeRepository,
     IRepository<Attendance> attendanceRepository,
     ILogger<ShiftService> logger) : IShiftService
 {
@@ -138,7 +138,7 @@ public class ShiftService(
 
         // Get employee to find PIN
         var employee = await employeeRepository.GetSingleAsync(
-            e => e.ApplicationUserId == shift.EmployeeUserId,
+            e => e.DeviceId == shift.EmployeeUserId,
             cancellationToken: cancellationToken);
 
         if (employee == null)

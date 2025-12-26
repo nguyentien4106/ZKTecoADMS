@@ -96,9 +96,9 @@ public class DeviceService(
         await deviceRepository.DeleteAsync(device);
     }
 
-    public async Task<AppResponse<bool>> IsValidEmployeeAsync(Employee employee)
+    public async Task<AppResponse<bool>> IsUserValid(DeviceUser employee)
     {
-        var existing = await context.Employees.Include(i => i.Device).FirstOrDefaultAsync(i => i.DeviceId == employee.DeviceId && i.Pin == employee.Pin);
+        var existing = await context.DeviceUsers.Include(i => i.Device).FirstOrDefaultAsync(i => i.DeviceId == employee.DeviceId && i.Pin == employee.Pin);
         
         return existing == null ? AppResponse<bool>.Success() : AppResponse<bool>.Error($"Employee PIN ({employee.Pin}) is existed in device {existing.Device.DeviceName}).");
     }

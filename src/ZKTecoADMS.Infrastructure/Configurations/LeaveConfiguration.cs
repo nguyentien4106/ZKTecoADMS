@@ -13,9 +13,6 @@ public class LeaveConfiguration : IEntityTypeConfiguration<Leave>
         builder.HasIndex(l => l.EmployeeUserId);
         builder.HasIndex(l => l.ShiftId).IsUnique();
         
-        builder.Property(l => l.CreatedAt).HasDefaultValueSql("NOW()");
-        builder.Property(l => l.UpdatedAt).HasDefaultValueSql("NOW()");
-        
         // Relationship: ApplicationUser -> RequestedLeaves
         builder.HasOne(l => l.EmployeeUser)
             .WithMany(u => u.RequestedLeaves)

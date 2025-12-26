@@ -134,10 +134,10 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IRefreshTokenValidatorService, RefreshTokenService>();
 
         services.AddScoped<IDeviceService, DeviceService>();
-        services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<IDeviceUserService, DeviceUserService>();
         services.AddScoped<IAttendanceService, AttendanceService>();
         services.AddScoped<IDeviceCmdService, DeviceCmdService>();
-        services.AddScoped<IEmployeeOperationService, EmployeeOperationService>();
+        services.AddScoped<IDeviceUserOperationService, EmployeeOperationService>();
         services.AddScoped<IAttendanceOperationService, AttendanceOperationService>();
         services.AddScoped<IShiftService, ShiftService>();
         

@@ -1,28 +1,33 @@
-
-// ==========================================
-// src/services/usersService.ts
-// ==========================================
-import { CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee';
 import { apiService } from './api';
-import type { Employee } from '@/types/employee';
-import { AppResponse } from '@/types';
+import { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee';
+import { PaginatedResponse } from '@/types';
+
+export interface GetEmployeesParams {
+  pageNumber?: number;
+  pageSize?: number;
+  searchTerm?: string;
+  employmentType?: string;
+  workStatus?: string;
+}
 
 export const employeeService = {
-  getEmployeesByDevices: async (deviceIds?: string[]) => {
-    return await apiService.post<Employee[]>('/api/employees/devices', { deviceIds })
+  getEmployees: async (params: GetEmployeesParams = {}) => {
+    return apiService.get<PaginatedResponse<Employee>>('/api/employees', params);
   },
-  
-  getById: (id: string) => apiService.get<Employee>(`/api/employees/${id}`),
-  
-  getByPin: (pin: string) => apiService.get<Employee>(`/api/employees/pin/${pin}`),
-  
-  create: async (data: CreateEmployeeRequest) => {
-    return await apiService.post<AppResponse<Employee>[]>('/api/employees', data)
+
+  getEmployeeById: async (id: string) => {
+    return apiService.get<Employee>(`/api/employees/${id}`);
   },
-  
-  update: (data: UpdateEmployeeRequest) => 
-    apiService.put<Employee>(`/api/employees/${data.userId}`, data),
 
-  delete: (id: string) => apiService.delete<string>(`/api/employees/${id}`),
+  createEmployee: async (data: CreateEmployeeRequest) => {
+    return apiService.post<string>('/api/employees', data);
+  },
 
+  updateEmployee: async (id: string, data: UpdateEmployeeRequest) => {
+    return apiService.put<boolean>(`/api/employees/${id}`, data);
+  },
+
+  deleteEmployee: async (id: string) => {
+    return apiService.delete<boolean>(`/api/employees/${id}`);
+  },
 };

@@ -1,42 +1,67 @@
-using ZKTecoADMS.Application.Constants;
-using ZKTecoADMS.Application.DTOs.Employees;
-using ZKTecoADMS.Domain.Enums;
+using MediatR;
+using ZKTecoADMS.Application.Models;
+using ZKTecoADMS.Domain.Entities;
+using ZKTecoADMS.Domain.Repositories;
 
 namespace ZKTecoADMS.Application.Commands.Employees.UpdateEmployee;
 
 public class UpdateEmployeeHandler(
-    IRepository<Employee> employeeRepository,
-    IRepository<DeviceCommand> deviceCmdRepository
-    ) : ICommandHandler<UpdateEmployeeCommand, AppResponse<EmployeeDto>>
+    IRepository<Employee> employeeRepository) : IRequestHandler<UpdateEmployeeCommand, AppResponse<bool>>
 {
-    public async Task<AppResponse<EmployeeDto>> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
+    public async Task<AppResponse<bool>> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
     {
-        var employee = await employeeRepository.GetByIdAsync(request.EmployeeId, cancellationToken: cancellationToken);
+        var employee = await employeeRepository.GetByIdAsync(request.Id);
+        
         if (employee == null)
         {
-            return  AppResponse<EmployeeDto>.Fail("Employee not found");
+            return AppResponse<bool>.Error("Employee not found");
         }
-        employee.Pin = request.PIN;
-        employee.Name = request.Name;
-        employee.CardNumber = request.CardNumber;
-        employee.Password = request.Password;
-        employee.Privilege = request.Privilege;
-        employee.Department = request.Department;
-        employee.IsActive = false;
-        
-        await employeeRepository.UpdateAsync(employee, cancellationToken);
-        
-        var cmd = new DeviceCommand
+
+        // Check if employee code is being changed and if it already exists
+        if (employee.EmployeeCode != request.EmployeeCode)
         {
-            DeviceId = employee.DeviceId,
-            Command = ClockCommandBuilder.BuildAddOrUpdateEmployeeCommand(employee),
-            Priority = 10,
-            Status = CommandStatus.Created,
-            CommandType = DeviceCommandTypes.UpdateEmployee,
-            ObjectReferenceId = employee.Id,
-        };
-        await deviceCmdRepository.AddAsync(cmd, cancellationToken);
-        
-        return AppResponse<EmployeeDto>.Success(employee.Adapt<EmployeeDto>());
+            var existingEmployee = await employeeRepository.GetFirstOrDefaultAsync(
+                e => e.EmployeeCode,
+                e => e.EmployeeCode == request.EmployeeCode && e.Id != request.Id,
+                null,
+                cancellationToken);
+
+            if (existingEmployee != null)
+            {
+                return AppResponse<bool>.Error($"Employee with code {request.EmployeeCode} already exists");
+            }
+        }
+
+        employee.EmployeeCode = request.EmployeeCode;
+        employee.FirstName = request.FirstName;
+        employee.LastName = request.LastName;
+        employee.Gender = request.Gender;
+        employee.DateOfBirth = request.DateOfBirth;
+        employee.PhotoUrl = request.PhotoUrl;
+        employee.NationalIdNumber = request.NationalIdNumber;
+        employee.NationalIdIssueDate = request.NationalIdIssueDate;
+        employee.NationalIdIssuePlace = request.NationalIdIssuePlace;
+        employee.PhoneNumber = request.PhoneNumber;
+        employee.PersonalEmail = request.PersonalEmail;
+        employee.CompanyEmail = request.CompanyEmail;
+        employee.PermanentAddress = request.PermanentAddress;
+        employee.TemporaryAddress = request.TemporaryAddress;
+        employee.EmergencyContactName = request.EmergencyContactName;
+        employee.EmergencyContactPhone = request.EmergencyContactPhone;
+        employee.Department = request.Department;
+        employee.Position = request.Position;
+        employee.Level = request.Level;
+        employee.EmploymentType = request.EmploymentType;
+        employee.JoinDate = request.JoinDate;
+        employee.ProbationEndDate = request.ProbationEndDate;
+        employee.WorkStatus = request.WorkStatus;
+        employee.ResignationDate = request.ResignationDate;
+        employee.ResignationReason = request.ResignationReason;
+        employee.ApplicationUserId = request.ApplicationUserId;
+        employee.UpdatedAt = DateTime.UtcNow;
+
+        await employeeRepository.UpdateAsync(employee, cancellationToken);
+
+        return AppResponse<bool>.Success(true);
     }
 }

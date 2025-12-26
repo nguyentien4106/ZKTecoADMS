@@ -165,8 +165,10 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -177,6 +179,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -248,10 +253,14 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("AttendanceTime")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -268,7 +277,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("character varying(20)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -306,7 +317,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
@@ -336,13 +349,17 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("LastOnline")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("Location")
                         .HasMaxLength(200)
@@ -392,10 +409,14 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -420,14 +441,18 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("SentAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<int>("Status")
                         .HasMaxLength(20)
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -451,7 +476,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -484,7 +511,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -504,7 +533,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -526,7 +557,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("character varying(500)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -539,13 +572,10 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.ToTable("DeviceSettings");
                 });
 
-            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Employee", b =>
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("CardNumber")
@@ -561,16 +591,17 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("Department")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
                     b.Property<Guid>("DeviceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("EmployeeId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("GroupId")
@@ -580,7 +611,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -615,13 +648,183 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId")
-                        .IsUnique()
-                        .HasFilter("\"ApplicationUserId\" IS NOT NULL");
-
                     b.HasIndex("DeviceId");
 
+                    b.HasIndex("EmployeeId");
+
                     b.HasIndex("Pin");
+
+                    b.ToTable("DeviceUsers");
+                });
+
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Employee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ApplicationUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CompanyEmail")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTime?>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Department")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("EmergencyContactName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("EmergencyContactPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("EmployeeCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("EmploymentType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Gender")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("JoinDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTime?>("LastModified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Level")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("ManagerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("NationalIdIssueDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("NationalIdIssuePlace")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("NationalIdNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("PermanentAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("PersonalEmail")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Position")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("ProbationEndDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTime?>("ResignationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("ResignationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("TemporaryAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("WorkStatus")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId")
+                        .IsUnique();
+
+                    b.HasIndex("CompanyEmail")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Employees_CompanyEmail");
+
+                    b.HasIndex("EmployeeCode")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Employees_EmployeeCode");
+
+                    b.HasIndex("ManagerId");
 
                     b.ToTable("Employees");
                 });
@@ -633,31 +836,41 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("EffectiveDate")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("EndDate")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -670,7 +883,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -702,7 +917,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -723,7 +940,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -748,7 +967,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -770,7 +991,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -793,7 +1016,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -815,7 +1040,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -838,16 +1065,22 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
@@ -867,7 +1100,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasDefaultValue(true);
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -884,7 +1119,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasDefaultValue("Vietnam");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -918,7 +1155,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
@@ -927,7 +1166,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -936,7 +1177,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -957,7 +1200,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -997,7 +1242,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("ApprovedDate")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<decimal>("BaseSalary")
                         .HasPrecision(18, 2)
@@ -1008,7 +1255,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -1023,7 +1272,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
@@ -1035,7 +1286,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("GeneratedDate")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<decimal>("GrossSalary")
                         .HasPrecision(18, 2)
@@ -1053,7 +1306,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -1086,13 +1341,19 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime?>("PaidDate")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime>("PeriodEnd")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<DateTime>("PeriodStart")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<decimal>("RegularWorkUnits")
                         .HasPrecision(18, 2)
@@ -1105,7 +1366,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -1141,7 +1404,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -1152,7 +1417,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("character varying(10)");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
@@ -1177,7 +1444,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -1239,7 +1508,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -1284,7 +1555,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
@@ -1297,13 +1570,17 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("EndTime")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -1319,7 +1596,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("character varying(500)");
 
                     b.Property<DateTime>("StartTime")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -1355,7 +1634,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -1383,7 +1664,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("interval");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -1402,7 +1685,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -1437,7 +1722,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -1467,7 +1754,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("character varying(500)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -1477,7 +1766,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -1500,7 +1791,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
@@ -1510,7 +1803,9 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("NOW()");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -1579,7 +1874,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "Manager")
                         .WithMany("ManagedEmployees")
                         .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Manager");
                 });
@@ -1592,7 +1887,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ZKTecoADMS.Domain.Entities.Employee", "Employee")
+                    b.HasOne("ZKTecoADMS.Domain.Entities.DeviceUser", "Employee")
                         .WithMany("AttendanceLogs")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -1646,27 +1941,45 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("Device");
                 });
 
-            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Employee", b =>
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceUser", b =>
                 {
-                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "ApplicationUser")
-                        .WithOne("Employee")
-                        .HasForeignKey("ZKTecoADMS.Domain.Entities.Employee", "ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("ZKTecoADMS.Domain.Entities.Device", "Device")
                         .WithMany("Employees")
                         .HasForeignKey("DeviceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
+                    b.HasOne("ZKTecoADMS.Domain.Entities.Employee", "Employee")
+                        .WithMany("DeviceUsers")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Device");
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Employee", b =>
+                {
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "ApplicationUser")
+                        .WithOne("Employee")
+                        .HasForeignKey("ZKTecoADMS.Domain.Entities.Employee", "ApplicationUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ZKTecoADMS.Domain.Entities.ApplicationUser", "Manager")
+                        .WithMany()
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.EmployeeSalaryProfile", b =>
                 {
-                    b.HasOne("ZKTecoADMS.Domain.Entities.Employee", "Employee")
+                    b.HasOne("ZKTecoADMS.Domain.Entities.DeviceUser", "Employee")
                         .WithMany("SalaryProfiles")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1685,7 +1998,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.EmployeeWorkingInfo", b =>
                 {
-                    b.HasOne("ZKTecoADMS.Domain.Entities.Employee", "Employee")
+                    b.HasOne("ZKTecoADMS.Domain.Entities.DeviceUser", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1704,7 +2017,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.FaceTemplate", b =>
                 {
-                    b.HasOne("ZKTecoADMS.Domain.Entities.Employee", "Employee")
+                    b.HasOne("ZKTecoADMS.Domain.Entities.DeviceUser", "Employee")
                         .WithMany("FaceTemplates")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1715,7 +2028,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.FingerprintTemplate", b =>
                 {
-                    b.HasOne("ZKTecoADMS.Domain.Entities.Employee", "Employee")
+                    b.HasOne("ZKTecoADMS.Domain.Entities.DeviceUser", "Employee")
                         .WithMany("FingerprintTemplates")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1887,7 +2200,7 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("SyncLogs");
                 });
 
-            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Employee", b =>
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.DeviceUser", b =>
                 {
                     b.Navigation("AttendanceLogs");
 
@@ -1896,6 +2209,11 @@ namespace ZKTecoADMS.Infrastructure.Migrations
                     b.Navigation("FingerprintTemplates");
 
                     b.Navigation("SalaryProfiles");
+                });
+
+            modelBuilder.Entity("ZKTecoADMS.Domain.Entities.Employee", b =>
+                {
+                    b.Navigation("DeviceUsers");
                 });
 
             modelBuilder.Entity("ZKTecoADMS.Domain.Entities.SalaryProfile", b =>

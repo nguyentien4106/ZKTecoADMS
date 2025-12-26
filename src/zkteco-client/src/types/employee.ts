@@ -1,50 +1,76 @@
-import { Account } from "./account";
-
-export interface CurrentSalaryProfile {
+export interface Employee {
   id: string;
-  salaryProfileId: string;
-  profileName: string;
-  rate: number;
-  currency: string;
-  rateTypeName: string;
-  effectiveDate: string;
-  isActive: boolean;
+  // Identity Information
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  fullName?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  photoUrl?: string;
+  nationalIdNumber?: string;
+  nationalIdIssueDate?: string;
+  nationalIdIssuePlace?: string;
+
+  // Contact Information
+  phoneNumber?: string;
+  personalEmail?: string;
+  companyEmail: string;
+  permanentAddress?: string;
+  temporaryAddress?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+
+  // Work Information
+  department?: string;
+  position?: string;
+  level?: string;
+  employmentType: number;
+  joinDate?: string;
+  probationEndDate?: string;
+  workStatus?: string;
+  resignationDate?: string;
+  resignationReason?: string;
+
+  // ZKTeco Integration
+  pin?: string;
+  cardNumber?: string;
+  deviceId?: string;
+  applicationUserId?: string;
 }
 
 export interface CreateEmployeeRequest {
-    pin: string;
-    name: string;
-    cardNumber?: string;
-    password?: string;
-    privilege?: number;
-    department?: string;
-    deviceIds?: string[];
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  gender?: string;
+  dateOfBirth?: null | string;
+  photoUrl?: string;
+  nationalIdNumber?: string;
+  nationalIdIssueDate?: null | string;
+  nationalIdIssuePlace?: null | string;
+  phoneNumber?: string;
+  personalEmail?: string;
+  companyEmail?: string;
+  permanentAddress?: string;
+  temporaryAddress?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  department?: string;
+  position?: string;
+  level?: string;
+  employmentType: number;
+  joinDate?: string | null;
+  probationEndDate?: string | null;
+  workStatus: number;
+  pin?: string;
+  cardNumber?: string;
+  deviceId?: string;
+  applicationUserId?: string;
 }
 
-export interface UpdateEmployeeRequest {
-    userId: string
-    pin: string;
-    name: string;
-    cardNumber?: string;
-    password?: string;
-    privilege?: number;
-    department?: string;
-    deviceId: string;
-}
-
-export interface Employee {
+export interface UpdateEmployeeRequest extends CreateEmployeeRequest {
   id: string;
-  pin: string;
-  name: string;
-  password: string;
-  cardNumber: string;
-  department: string;
-  isActive: boolean;
-  privilege: 0 | 1 | 2 | 14;
-  createdAt: string;
-  updatedAt: string;
-  deviceId: string;
-  deviceName?: string;
-  applicationUser?: Account | null;
-  currentSalaryProfile?: CurrentSalaryProfile | null;
+  resignationDate?: string | null;
+  resignationReason?: string | null;
 }

@@ -21,5 +21,5 @@ public class FaceTemplate : Entity<Guid>
     public int Version { get; set; } = 50;
 
     // Navigation Properties
-    public virtual Employee Employee { get; set; } = null!;
+    public virtual DeviceUser Employee { get; set; } = null!;
 }

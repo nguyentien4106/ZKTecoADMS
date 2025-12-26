@@ -29,7 +29,7 @@ public class EmployeeWorkingInfo : Entity<Guid>
     public decimal? UnpaidLeaveDaysPerYear { get; set; }
     
     // Navigation properties
-    public Employee Employee { get; set; } = null!;
+    public DeviceUser Employee { get; set; } = null!;
 
     public ApplicationUser EmployeeUser { get; set; } = null!;
 }

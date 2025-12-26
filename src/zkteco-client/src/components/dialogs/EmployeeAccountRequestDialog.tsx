@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, UserCog, UserPlus } from 'lucide-react'
-import { useEmployeeContext } from '@/contexts/EmployeeContext'
+import { useDeviceUserContext } from '@/contexts/DeviceUserContext'
 import { PasswordInput, validatePassword } from '@/components/PasswordInput'
 
 interface FormData {
@@ -53,11 +53,10 @@ export const EmployeeAccountRequestDialog = () => {
     isCreatingAccount,
     setCreateAccountDialogOpen,
     handleCreateAccountSubmit
-  } = useEmployeeContext()
+  } = useDeviceUserContext()
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [errors, setErrors] = useState<FormErrors>({})
   
-  console.log('employeeForAccount:', employeeForAccount)
   const isUpdateMode = !! employeeForAccount?.applicationUser
 
   // Pre-fill form with existing account data when in update mode

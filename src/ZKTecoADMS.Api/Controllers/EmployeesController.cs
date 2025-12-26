@@ -1,64 +1,72 @@
-using Mapster;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using ZKTecoADMS.Api.Controllers.Base;
+using Microsoft.AspNetCore.Mvc;
 using ZKTecoADMS.Application.Commands.Employees.CreateEmployee;
-using ZKTecoADMS.Application.Commands.Employees.DeleteEmployee;
 using ZKTecoADMS.Application.Commands.Employees.UpdateEmployee;
+using ZKTecoADMS.Application.Commands.Employees.DeleteEmployee;
+using ZKTecoADMS.Application.Queries.Employees.GetEmployees;
+using ZKTecoADMS.Application.Queries.Employees.GetEmployeeById;
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Employees;
+using Mapster;
+using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Models;
-using ZKTecoADMS.Application.Queries.Employees.GetEmployeeDevices;
-using ZKTecoADMS.Domain.Entities;
 
-namespace ZKTecoADMS.API.Controllers;
+namespace ZKTecoADMS.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Policy = PolicyNames.AtLeastManager)]
-public class EmployeesController(IMediator bus) : AuthenticatedControllerBase
+public class EmployeesController(IMediator mediator) : AuthenticatedControllerBase
 {
-    [HttpPost("devices")]
-    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
-    public async Task<ActionResult<IEnumerable<Employee>>> GetEmployeesByDevices([FromBody] GetEmployeesByDevicesRequest request)
+    [HttpGet]
+    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    public async Task<IActionResult> GetEmployees([FromQuery] PaginationRequest request, [FromQuery] string? searchTerm, [FromQuery] string? employmentType, [FromQuery] string? workStatus)
     {
-        var query = request.Adapt<GetEmployeeDevicesQuery>();
+        var query = new GetEmployeesQuery
+        {
+            PaginationRequest = request,
+            SearchTerm = searchTerm,
+            EmploymentType = employmentType,
+            WorkStatus = workStatus,
+            ManagerId = CurrentUserId
+        };
         
-        return Ok(await bus.Send(query));
+        var result = await mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetEmployeeById(Guid id)
+    {
+        var result = await mediator.Send(new GetEmployeeByIdQuery { Id = id });
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<ActionResult<AppResponse<List<AppResponse<EmployeeDto>>>>> CreateEmployee([FromBody] CreateEmployeeRequest request)
+    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeRequest request)
     {
         var command = request.Adapt<CreateEmployeeCommand>();
-        var created = await bus.Send(command);
+        command.ManagerId = CurrentUserId;
 
-        return Ok(created);
+        var result = await mediator.Send(command);
+        return Ok(result);
     }
 
-    [HttpPut("{employeeId}")]
-    public async Task<IActionResult> UpdateEmployee(Guid employeeId, [FromBody] UpdateEmployeeRequest request)
+    [HttpPut("{id}")]
+    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    public async Task<IActionResult> UpdateEmployee(Guid id, [FromBody] UpdateEmployeeCommand command)
     {
-        var cmd = new UpdateEmployeeCommand(
-            employeeId,
-            request.PIN,
-            request.Name,
-            request.CardNumber,
-            request.Password,
-            request.Privilege,
-            request.Email,
-            request.PhoneNumber,
-            request.Department,
-            request.DeviceId);
-        
-        return Ok(await bus.Send(cmd));
+        command.Id = id;
+        var result = await mediator.Send(command);
+        return Ok(result);
     }
 
-    [HttpDelete("{employeeId}")]
-    public async Task<IActionResult> DeleteEmployee(Guid employeeId)
+    [HttpDelete("{id}")]
+    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    public async Task<IActionResult> DeleteEmployee(Guid id)
     {
-        var cmd = new DeleteEmployeeCommand(employeeId);
-
-        return Ok(await bus.Send(cmd));
+        var result = await mediator.Send(new DeleteEmployeeCommand { Id = id });
+        return Ok(result);
     }
-
 }

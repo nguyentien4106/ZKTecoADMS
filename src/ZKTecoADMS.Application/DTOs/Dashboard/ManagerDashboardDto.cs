@@ -3,9 +3,9 @@ namespace ZKTecoADMS.Application.DTOs.Dashboard;
 public class ManagerDashboardDto
 {
     public List<EmployeeOnLeaveDto> EmployeesOnLeave { get; set; } = new();
-    public List<AbsentEmployeeDto> AbsentEmployees { get; set; } = new();
-    public List<LateEmployeeDto> LateEmployees { get; set; } = new();
-    public List<TodayEmployeeDto> TodayEmployees { get; set; } = new();
+    public List<AbsentDeviceUserDto> AbsentEmployees { get; set; } = new();
+    public List<LateDeviceUserDto> LateEmployees { get; set; } = new();
+    public List<TodayDeviceUserDto> TodayEmployees { get; set; } = new();
     public AttendanceRateDto AttendanceRate { get; set; } = null!;
 }
 
@@ -25,7 +25,7 @@ public class EmployeeOnLeaveDto
     public DateTime ShiftEndTime { get; set; }
 }
 
-public class AbsentEmployeeDto
+public class AbsentDeviceUserDto
 {
     public Guid EmployeeUserId { get; set; }
     public string FullName { get; set; } = string.Empty;
@@ -36,7 +36,7 @@ public class AbsentEmployeeDto
     public string Department { get; set; } = string.Empty;
 }
 
-public class LateEmployeeDto
+public class LateDeviceUserDto
 {
     public Guid EmployeeUserId { get; set; }
     public string FullName { get; set; } = string.Empty;
@@ -48,7 +48,7 @@ public class LateEmployeeDto
     public string Department { get; set; } = string.Empty;
 }
 
-public class TodayEmployeeDto
+public class TodayDeviceUserDto
 {
     public Guid EmployeeUserId { get; set; }
     public string FullName { get; set; } = string.Empty;

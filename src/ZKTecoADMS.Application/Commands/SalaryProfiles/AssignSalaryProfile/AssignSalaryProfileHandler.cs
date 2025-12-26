@@ -8,7 +8,7 @@ namespace ZKTecoADMS.Application.Commands.SalaryProfiles.AssignSalaryProfile;
 public class AssignSalaryProfileHandler(
     IEmployeeSalaryProfileRepository employeeSalaryProfileRepository,
     ISalaryProfileRepository salaryProfileRepository,
-    IRepository<Employee> employeeRepository,
+    IRepository<DeviceUser> employeeRepository,
     IRepository<EmployeeWorkingInfo> employeeWorkingInfoRepository,
     SalaryProfileStrategyFactory strategyFactory) 
     : ICommandHandler<AssignSalaryProfileCommand, AppResponse<EmployeeSalaryProfileDto>>

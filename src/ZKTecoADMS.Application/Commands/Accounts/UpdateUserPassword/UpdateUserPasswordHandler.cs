@@ -44,7 +44,7 @@ public class UpdateUserPasswordHandler(UserManager<ApplicationUser> userManager)
             Roles = roles.ToList(),
             ManagerId = user.ManagerId,
             ManagerName = user.Manager != null ? $"{user.Manager.FirstName} {user.Manager.LastName}" : null,
-            Created = user.Created
+            Created = user.CreatedAt
         };
 
         return AppResponse<UserProfileDto>.Success(profile);

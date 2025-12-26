@@ -17,5 +17,5 @@ public class FingerprintTemplate : Entity<Guid>
     public int Version { get; set; } = 10;
 
     // Navigation Properties
-    public virtual Employee Employee { get; set; } = null!;
+    public virtual DeviceUser Employee { get; set; } = null!;
 }

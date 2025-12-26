@@ -7,7 +7,7 @@ public class EmployeeSalaryProfile : AuditableEntity<Guid>
 {
     [Required]
     public Guid EmployeeId { get; set; }
-    public virtual Employee Employee { get; set; } = null!;
+    public virtual DeviceUser Employee { get; set; } = null!;
 
     [Required]
     public Guid SalaryProfileId { get; set; }
