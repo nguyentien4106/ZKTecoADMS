@@ -44,17 +44,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.Property(e => e.EmploymentType)
             .HasConversion<int>();
 
-        // Relationships
-        
-        // // One-to-One relationship with ApplicationUser (optional)
-        // // An Employee can have one ApplicationUser account (for login)
-        // // An ApplicationUser can be associated with one Employee record
-        // builder.HasOne(e => e.ApplicationUser)
-        //     .WithOne(u => u.Employee)
-        //     .HasForeignKey<Employee>(e => e.ApplicationUserId)
-        //     .OnDelete(DeleteBehavior.SetNull)
-        //     .IsRequired(false);
-
+     
         // Many-to-One relationship with Manager (ApplicationUser)
         // One manager (ApplicationUser) can manage many employees
         // Each employee must have a manager

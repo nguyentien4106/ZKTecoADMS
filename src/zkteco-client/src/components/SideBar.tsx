@@ -38,8 +38,6 @@ const navItems = [
   { to: '/shifts', icon: CalendarCheck, label: 'Shifts' },
   { to: '/leaves', icon: CalendarCheck, label: 'Leaves' },
   { to: '/payslips', icon: Receipt, label: 'Payslips' },
-  { to: '/reports', icon: FileText, label: 'Reports' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
   { to: '/salary-profiles', icon: Settings, label: 'Salary Profiles' },
 ]
 

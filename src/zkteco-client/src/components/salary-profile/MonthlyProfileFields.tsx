@@ -33,13 +33,14 @@ export const MonthlyProfileFields = ({
             </p>
           </div>
             <div className="grid gap-2">
-            <Label htmlFor="standardHoursPerDay">Standard Hours per Day</Label>
+            <Label htmlFor="standardHoursPerDay">Standard Hours per Day *</Label>
             <Input
               id="standardHoursPerDay"
               type="number"
               value={formData.standardHoursPerDay || ''}
               onChange={(e) => onChange({ ...formData, standardHoursPerDay: e.target.value ? parseInt(e.target.value) : undefined })}
               placeholder="8"
+              required
             />
             <p className="text-xs text-muted-foreground">
               Standard working hours per day
@@ -93,7 +94,7 @@ export const MonthlyProfileFields = ({
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">
             <Label htmlFor="paidLeaveDays">Paid Leave Days</Label>
             <Input
@@ -117,6 +118,36 @@ export const MonthlyProfileFields = ({
           </div>
 
         </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="checkIn">Check-In Time</Label>
+            <Input
+              id="checkIn"
+              type="time"
+              value={formData.checkIn || ''}
+              onChange={(e) => onChange({ ...formData, checkIn: `${e.target.value}:00` })}
+              placeholder="08:00"
+            />
+            <p className="text-xs text-muted-foreground">
+              Standard check-in time (e.g., 08:00)
+            </p>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="checkOut">Check-Out Time</Label>
+            <Input
+              id="checkOut"
+              type="time"
+              value={formData.checkOut || ''}
+              onChange={(e) => onChange({ ...formData, checkOut: `${e.target.value}:00` })}
+              placeholder="17:00"
+            />
+            <p className="text-xs text-muted-foreground">
+              Standard check-out time (e.g., 17:00)
+            </p>
+          </div>
+        </div>
       </div>
 
       <Separator />
@@ -127,7 +158,7 @@ export const MonthlyProfileFields = ({
         
         <div className="grid grid-cols-3 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="mealAllowance">Meal Allowance</Label>
+            <Label htmlFor="mealAllowance">Meal</Label>
             <MoneyInput
               id="mealAllowance"
               value={formData.mealAllowance}
@@ -137,7 +168,7 @@ export const MonthlyProfileFields = ({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="transportAllowance">Transport Allowance</Label>
+            <Label htmlFor="transportAllowance">Transport</Label>
             <MoneyInput
               id="transportAllowance"
               value={formData.transportAllowance}
@@ -147,7 +178,7 @@ export const MonthlyProfileFields = ({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="housingAllowance">Housing Allowance</Label>
+            <Label htmlFor="housingAllowance">Housing</Label>
             <MoneyInput
               id="housingAllowance"
               value={formData.housingAllowance}
@@ -159,7 +190,7 @@ export const MonthlyProfileFields = ({
 
         <div className="grid grid-cols-3 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="responsibilityAllowance">Responsibility Allowance</Label>
+            <Label htmlFor="responsibilityAllowance">Responsibility</Label>
             <MoneyInput
               id="responsibilityAllowance"
               value={formData.responsibilityAllowance}
@@ -179,7 +210,7 @@ export const MonthlyProfileFields = ({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="phoneSkillShiftAllowance">Phone/Skill/Shift Allowance</Label>
+            <Label htmlFor="phoneSkillShiftAllowance">Phone/Skill</Label>
             <MoneyInput
               id="phoneSkillShiftAllowance"
               value={formData.phoneSkillShiftAllowance}
@@ -237,9 +268,9 @@ export const MonthlyProfileFields = ({
         
         <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="otRateWeekday">OT Rate - Weekday (150%)</Label>
+            <Label htmlFor="oTRateWeekday">OT Rate - Weekday (150%)</Label>
             <Input
-              id="otRateWeekday"
+              id="oTRateWeekday"
               type="number"
               value={formData.otRateWeekday || ''}
               onChange={(e) => onChange({ ...formData, otRateWeekday: e.target.value ? parseFloat(e.target.value) : undefined })}
@@ -249,9 +280,9 @@ export const MonthlyProfileFields = ({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="otRateWeekend">OT Rate - Weekend (200%)</Label>
+            <Label htmlFor="oTRateWeekend">OT Rate - Weekend (200%)</Label>
             <Input
-              id="otRateWeekend"
+              id="oTRateWeekend"
               type="number"
               value={formData.otRateWeekend || ''}
               onChange={(e) => onChange({ ...formData, otRateWeekend: e.target.value ? parseFloat(e.target.value) : undefined })}
@@ -261,11 +292,11 @@ export const MonthlyProfileFields = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="otRateHoliday">OT Rate - Holiday (300%)</Label>
+            <Label htmlFor="oTRateHoliday">OT Rate - Holiday (300%)</Label>
             <Input
-              id="otRateHoliday"
+              id="oTRateHoliday"
               type="number"
               value={formData.otRateHoliday || ''}
               onChange={(e) => onChange({ ...formData, otRateHoliday: e.target.value ? parseFloat(e.target.value) : undefined })}
@@ -286,16 +317,6 @@ export const MonthlyProfileFields = ({
             />
           </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="otHourLimit">OT Hour Limit/Month</Label>
-            <Input
-              id="otHourLimit"
-              type="number"
-              value={formData.otHourLimitPerMonth || ''}
-              onChange={(e) => onChange({ ...formData, otHourLimitPerMonth: e.target.value ? parseInt(e.target.value) : undefined })}
-              placeholder="40"
-            />
-          </div>
         </div>
       </div>
 

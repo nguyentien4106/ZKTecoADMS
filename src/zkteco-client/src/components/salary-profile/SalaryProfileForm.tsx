@@ -27,6 +27,8 @@ export interface SalaryProfileFormData {
   weeklyOffDays?: string;
   paidLeaveDays?: number;
   unpaidLeaveDays?: number;
+  checkIn?: string;
+  checkOut?: string;
   
   // Allowances
   mealAllowance?: number;
@@ -40,7 +42,7 @@ export interface SalaryProfileFormData {
   otRateWeekend?: number;
   otRateHoliday?: number;
   nightShiftRate?: number;
-  otHourLimitPerMonth?: number;
+  
   // Health Insurance
   hasHealthInsurance?: boolean;
   healthInsuranceRate?: number;

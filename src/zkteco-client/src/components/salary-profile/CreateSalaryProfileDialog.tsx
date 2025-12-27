@@ -10,12 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SalaryProfileForm } from './SalaryProfileForm';
 import { CreateSalaryProfileRequest, SalaryRateType } from "@/services/salaryProfileService";
-
-interface CreateSalaryProfileDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (data: CreateSalaryProfileRequest) => Promise<void>;
-}
+import { useSalaryProfileContext } from "@/contexts/SalaryProfileContext";
 
 const defaultFormData: CreateSalaryProfileRequest = {
   name: '',
@@ -26,35 +21,33 @@ const defaultFormData: CreateSalaryProfileRequest = {
   overtimeMultiplier: 1.5,
   holidayMultiplier: 2.0,
   nightShiftMultiplier: 1.3,
+  checkIn: "09:00",
+  checkOut: "18:00",
+  standardHoursPerDay: 8,
+  weeklyOffDays: 'Saturday,Sunday',
+  otRateHoliday: 3,
+  otRateWeekday: 1.5,
+  otRateWeekend: 2,
+  nightShiftRate: 1.3
 };
 
-export const CreateSalaryProfileDialog = ({
-  open,
-  onOpenChange,
-  onSubmit,
-}: CreateSalaryProfileDialogProps) => {
+export const CreateSalaryProfileDialog = () => {
+  const { createDialogOpen, setCreateDialogOpen, handleCreateProfile, isCreatePending } = useSalaryProfileContext();
   const [formData, setFormData] = useState<CreateSalaryProfileRequest>(defaultFormData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      await onSubmit(formData);
-      setFormData(defaultFormData);
-      onOpenChange(false);
-    } finally {
-      setIsSubmitting(false);
-    }
+    await handleCreateProfile(formData);
+    setFormData(defaultFormData);
   };
 
   const handleClose = () => {
     setFormData(defaultFormData);
-    onOpenChange(false);
+    setCreateDialogOpen(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={createDialogOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create Salary Profile</DialogTitle>
           <DialogDescription>
@@ -68,14 +61,14 @@ export const CreateSalaryProfileDialog = ({
         />
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose} disabled={isSubmitting}>
+          <Button variant="outline" onClick={handleClose} disabled={isCreatePending}>
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!formData.name || !formData.rate || isSubmitting}
+            disabled={!formData.name || !formData.rate || isCreatePending}
           >
-            {isSubmitting ? 'Creating...' : 'Create Profile'}
+            {isCreatePending ? 'Creating...' : 'Create Profile'}
           </Button>
         </DialogFooter>
       </DialogContent>

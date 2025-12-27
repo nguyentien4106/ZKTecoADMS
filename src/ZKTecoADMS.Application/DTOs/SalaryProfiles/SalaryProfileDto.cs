@@ -20,6 +20,9 @@ public class SalaryProfileDto
     public decimal? SalaryPerHour { get; set; }
     public int? StandardHoursPerDay { get; set; }
 
+    public TimeOnly? CheckIn { get; set; }
+    public TimeOnly? CheckOut { get; set; }
+
     // Leave & Attendance Rules
     public string? WeeklyOffDays { get; set; }
     public int? PaidLeaveDays { get; set; }

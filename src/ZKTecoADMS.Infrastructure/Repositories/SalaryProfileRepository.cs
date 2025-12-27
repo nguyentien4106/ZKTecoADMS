@@ -18,7 +18,6 @@ public class SalaryProfileRepository : EfRepository<SalaryProfile>, ISalaryProfi
     public async Task<SalaryProfile?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Set<SalaryProfile>()
-            .Include(x => x.EmployeeSalaryProfiles)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 

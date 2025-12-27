@@ -31,10 +31,13 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
+        
+        // Apply entity-specific configurations first
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         // Configure all DateTime properties to use timestamp without time zone
+        // But only set NOW() as default for non-nullable DateTime properties
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             foreach (var property in entityType.GetProperties())
@@ -42,7 +45,13 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
                 if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
                 {
                     property.SetColumnType("timestamp without time zone");
-                    property.SetDefaultValueSql("NOW()");
+                    
+                    // Only set NOW() as default for non-nullable DateTime
+                    // and if no default value has been configured already
+                    if (property.ClrType == typeof(DateTime) && property.GetDefaultValue() == null && property.GetDefaultValueSql() == null)
+                    {
+                        property.SetDefaultValueSql("NOW()");
+                    }
                 }
             }
         }

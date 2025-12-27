@@ -18,6 +18,8 @@ public record CreateSalaryProfileCommand(
     string? WeeklyOffDays,
     int? PaidLeaveDays,
     int? UnpaidLeaveDays,
+    TimeOnly? CheckIn,
+    TimeOnly? CheckOut,
     // Allowances
     decimal? MealAllowance,
     decimal? TransportAllowance,

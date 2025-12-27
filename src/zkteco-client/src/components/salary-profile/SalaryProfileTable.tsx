@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, UserPlus } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -9,14 +9,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { SalaryProfile, SalaryRateType } from "@/services/salaryProfileService";
-
-interface SalaryProfileTableProps {
-  profiles: SalaryProfile[];
-  loading: boolean;
-  onEdit: (profile: SalaryProfile) => void;
-  onDelete: (id: string) => void;
-}
+import { SalaryRateType } from "@/services/salaryProfileService";
+import { useSalaryProfileContext } from "@/contexts/SalaryProfileContext";
 
 const getRateTypeLabel = (type: SalaryRateType) => {
   switch (type) {
@@ -26,13 +20,10 @@ const getRateTypeLabel = (type: SalaryRateType) => {
   }
 };
 
-export const SalaryProfileTable = ({
-  profiles,
-  loading,
-  onEdit,
-  onDelete,
-}: SalaryProfileTableProps) => {
-  if (loading) {
+export const SalaryProfileTable = () => {
+  const { profiles, isLoading, handleEdit, handleDelete, handleOpenAssignDialog } = useSalaryProfileContext();
+
+  if (isLoading) {
     return <div className="text-center py-8">Loading...</div>;
   }
 
@@ -50,7 +41,7 @@ export const SalaryProfileTable = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {profiles.length === 0 ? (
+        {!profiles || profiles.length === 0 ? (
           <TableRow>
             <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
               No salary profiles found
@@ -85,14 +76,22 @@ export const SalaryProfileTable = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onEdit(profile)}
+                    onClick={() => handleOpenAssignDialog(profile)}
+                    title="Assign to Employee"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleEdit(profile)}
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onDelete(profile.id)}
+                    onClick={() => handleDelete(profile.id)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

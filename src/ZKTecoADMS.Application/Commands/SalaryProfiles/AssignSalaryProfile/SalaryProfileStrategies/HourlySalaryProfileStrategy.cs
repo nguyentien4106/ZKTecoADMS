@@ -1,4 +1,3 @@
-using ZKTecoADMS.Application.DTOs.SalaryProfiles;
 using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
@@ -15,8 +14,8 @@ public class HourlySalaryProfileStrategy(
     public SalaryRateType RateType => SalaryRateType.Hourly;
 
     public Task<(bool IsValid, string? ErrorMessage)> ValidateAssignmentAsync(
-        Domain.Entities.SalaryProfile salaryProfile,
-        DeviceUser employee,
+        SalaryProfile salaryProfile,
+        Employee employee,
         CancellationToken cancellationToken = default)
     {
         // Validate hourly rate is positive
@@ -44,7 +43,7 @@ public class HourlySalaryProfileStrategy(
         return Task.FromResult<(bool, string?)>((true, null));
     }
 
-    public async Task<SalaryProfile?> ConfigEmployeeWorkingInfoAsync(SalaryProfile salaryProfile, DeviceUser employee)
+    public async Task<SalaryProfile?> ConfigEmployeeWorkingInfoAsync(SalaryProfile salaryProfile, Employee employee)
     {
         // For hourly salary profiles, there may not be additional working info to configure
         await employeeWorkingInfoRepository.DeleteAsync(

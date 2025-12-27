@@ -21,6 +21,9 @@ public class UpdateSalaryProfileRequest
     public int? PaidLeaveDays { get; set; }
     public int? UnpaidLeaveDays { get; set; }
 
+    public TimeOnly? CheckIn { get; set; }
+    public TimeOnly? CheckOut { get; set; }
+
     // Allowances
     public decimal? MealAllowance { get; set; }
     public decimal? TransportAllowance { get; set; }

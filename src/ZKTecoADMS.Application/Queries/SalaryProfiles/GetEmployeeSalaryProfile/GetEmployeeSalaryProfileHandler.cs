@@ -18,24 +18,7 @@ public class GetEmployeeSalaryProfileHandler(IEmployeeSalaryProfileRepository re
         {
             Id = profile.Id,
             EmployeeId = profile.EmployeeId,
-            EmployeeName = profile.Employee.Name,
-            SalaryProfileId = profile.SalaryProfileId,
-            SalaryProfile = new SalaryProfileDto
-            {
-                Id = profile.SalaryProfile.Id,
-                Name = profile.SalaryProfile.Name,
-                Description = profile.SalaryProfile.Description,
-                RateType = profile.SalaryProfile.RateType,
-                RateTypeName = profile.SalaryProfile.RateType.ToString(),
-                Rate = profile.SalaryProfile.Rate,
-                Currency = profile.SalaryProfile.Currency,
-                OvertimeMultiplier = profile.SalaryProfile.OvertimeMultiplier,
-                HolidayMultiplier = profile.SalaryProfile.HolidayMultiplier,
-                NightShiftMultiplier = profile.SalaryProfile.NightShiftMultiplier,
-                IsActive = profile.SalaryProfile.IsActive,
-                CreatedAt = profile.SalaryProfile.CreatedAt,
-                UpdatedAt = profile.SalaryProfile.UpdatedAt ?? profile.SalaryProfile.CreatedAt
-            },
+            EmployeeName = profile.Employee.FirstName + " " + profile.Employee.LastName,
             EffectiveDate = profile.EffectiveDate,
             EndDate = profile.EndDate,
             IsActive = profile.IsActive,

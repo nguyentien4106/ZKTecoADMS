@@ -1,10 +1,9 @@
+import { PaginatedResponse } from '@/types';
 import { apiService } from './api';
 
 export enum SalaryRateType {
-  Hourly = 1,
-  Daily = 2,
-  Monthly = 3,
-  Yearly = 4
+  Hourly,
+  Monthly,
 }
 
 export interface SalaryProfile {
@@ -51,13 +50,50 @@ export interface EmployeeSalaryProfile {
   id: string;
   employeeId: string;
   employeeName: string;
-  salaryProfileId: string;
-  salaryProfile: SalaryProfile;
   effectiveDate: string;
   endDate?: string;
   isActive: boolean;
   notes?: string;
   createdAt: string;
+
+  // Snapshot fields from SalaryProfile at time of assignment
+  rateType: SalaryRateType;
+  rate: number;
+  standardHoursPerDay?: number;
+  currency: string;
+  
+  // Multipliers
+  overtimeMultiplier?: number;
+  holidayMultiplier?: number;
+  nightShiftMultiplier?: number;
+  
+  // Base Salary
+  salaryPerDay?: number;
+  
+  // Leave & Attendance Rules
+  weeklyOffDays?: string;
+  paidLeaveDays?: number;
+  unpaidLeaveDays?: number;
+  checkIn?: string;
+  checkOut?: string;
+  
+  // Allowances
+  mealAllowance?: number;
+  transportAllowance?: number;
+  housingAllowance?: number;
+  responsibilityAllowance?: number;
+  attendanceBonus?: number;
+  phoneSkillShiftAllowance?: number;
+  
+  // Overtime Configuration
+  otRateWeekday?: number;
+  otRateWeekend?: number;
+  otRateHoliday?: number;
+  nightShiftRate?: number;
+  
+  // Health Insurance
+  hasHealthInsurance?: boolean;
+  healthInsuranceRate?: number;
 }
 
 export interface CreateSalaryProfileRequest {
@@ -76,6 +112,8 @@ export interface CreateSalaryProfileRequest {
   weeklyOffDays?: string;
   paidLeaveDays?: number;
   unpaidLeaveDays?: number;
+  checkIn?: string;
+  checkOut?: string;
 
   // Allowances
   mealAllowance?: number;
@@ -147,6 +185,18 @@ const salaryProfileService = {
   // Get employee's active salary profile
   getEmployeeSalaryProfile: async (employeeId: string): Promise<EmployeeSalaryProfile> => {
     return await apiService.get<EmployeeSalaryProfile>(`/api/salaryprofiles/employee/${employeeId}`);
+  },
+
+  // Get all employee salary profiles
+  getAllEmployeeSalaryProfiles: async (params?: { pageNumber?: number; pageSize?: number }): Promise<PaginatedResponse<EmployeeSalaryProfile>> => {
+    const queryParams = new URLSearchParams();
+    if (params?.pageNumber) queryParams.append('pageNumber', params.pageNumber.toString());
+    if (params?.pageSize) queryParams.append('pageSize', params.pageSize.toString());
+    
+    const queryString = queryParams.toString();
+    return await apiService.get<PaginatedResponse<EmployeeSalaryProfile>>(
+      `/api/salaryprofiles/employees${queryString ? `?${queryString}` : ''}`
+    );
   }
 };
 

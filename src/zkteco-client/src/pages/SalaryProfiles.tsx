@@ -1,90 +1,89 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { SalaryProfileTable } from "@/components/salary/SalaryProfileTable";
-import { CreateSalaryProfileDialog } from "@/components/salary/CreateSalaryProfileDialog";
-import { EditSalaryProfileDialog } from "@/components/salary/EditSalaryProfileDialog";
-import { useSalaryProfiles } from "@/hooks/useSalaryProfiles";
-import { SalaryProfile } from "@/services/salaryProfileService";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SalaryProfileTable } from "@/components/salary-profile/SalaryProfileTable";
+import { EmployeeSalaryProfileTable } from "@/components/salary-profile/EmployeeSalaryProfileTable";
+import { CreateSalaryProfileDialog } from "@/components/salary-profile/CreateSalaryProfileDialog";
+import { EditSalaryProfileDialog } from "@/components/salary-profile/EditSalaryProfileDialog";
+import { AssignSalaryToEmployeeDialog } from "@/components/salary-profile/AssignSalaryToEmployeeDialog";
+import { SalaryProfileProvider, useSalaryProfileContext } from "@/contexts/SalaryProfileContext";
 
-export const SalaryProfiles = () => {
-  const [showActiveOnly, setShowActiveOnly] = useState(false);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedProfile, setSelectedProfile] = useState<SalaryProfile | null>(null);
-
+const SalaryProfilesContent = () => {
   const {
     profiles,
-    loading,
-    createProfile,
-    updateProfile,
-    deleteProfile,
-  } = useSalaryProfiles(showActiveOnly);
+    showActiveOnly,
+    setShowActiveOnly,
+    handleOpenCreateDialog,
+  } = useSalaryProfileContext();
 
-  const handleEdit = (profile: SalaryProfile) => {
-    setSelectedProfile(profile);
-    setIsEditDialogOpen(true);
-  };
-
-  const handleEditDialogClose = () => {
-    setIsEditDialogOpen(false);
-    setSelectedProfile(null);
-  };
+  const [activeTab, setActiveTab] = useState("profiles");
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Salary Profiles"
-        description="Manage salary profiles and rates"
+        description="Manage salary profiles and employee assignments"
         action={
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Create Profile
-          </Button>
+          activeTab === "profiles" && (
+            <Button onClick={handleOpenCreateDialog}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Profile
+            </Button>
+          )
         }
       />
 
-      <Card className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={showActiveOnly}
-              onChange={(e) => setShowActiveOnly(e.target.checked)}
-              id="active-only"
-              className="h-4 w-4"
-            />
-            <Label htmlFor="active-only">Show active only</Label>
-          </div>
-          <Badge variant="outline" className="text-sm">
-            {profiles.length} profile{profiles.length !== 1 ? 's' : ''}
-          </Badge>
-        </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="profiles">Salary Profiles</TabsTrigger>
+          <TabsTrigger value="assignments">Employee Assignments</TabsTrigger>
+        </TabsList>
 
-        <SalaryProfileTable
-          profiles={profiles}
-          loading={loading}
-          onEdit={handleEdit}
-          onDelete={deleteProfile}
-        />
-      </Card>
+        <TabsContent value="profiles" className="mt-6">
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={showActiveOnly}
+                  onChange={(e) => setShowActiveOnly(e.target.checked)}
+                  id="active-only"
+                  className="h-4 w-4"
+                />
+                <Label htmlFor="active-only">Show active only</Label>
+              </div>
+              <Badge variant="outline" className="text-sm">
+                {profiles?.length || 0} profile{profiles?.length !== 1 ? 's' : ''}
+              </Badge>
+            </div>
 
-      <CreateSalaryProfileDialog
-        open={isCreateDialogOpen}
-        onOpenChange={setIsCreateDialogOpen}
-        onSubmit={createProfile}
-      />
+            <SalaryProfileTable />
+          </Card>
+        </TabsContent>
 
-      <EditSalaryProfileDialog
-        open={isEditDialogOpen}
-        profile={selectedProfile}
-        onOpenChange={handleEditDialogClose}
-        onSubmit={updateProfile}
-      />
+        <TabsContent value="assignments" className="mt-6">
+          <Card className="p-4">
+            <EmployeeSalaryProfileTable />
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      <CreateSalaryProfileDialog />
+      <EditSalaryProfileDialog />
+      <AssignSalaryToEmployeeDialog />
     </div>
+  );
+};
+
+export const SalaryProfiles = () => {
+  return (
+    <SalaryProfileProvider>
+      <SalaryProfilesContent />
+    </SalaryProfileProvider>
   );
 };

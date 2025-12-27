@@ -1,37 +1,46 @@
 using ZKTecoADMS.Application.DTOs.SalaryProfiles;
+using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.Commands.SalaryProfiles.UpdateSalaryProfile;
 
-public record UpdateSalaryProfileCommand(
-    Guid Id,
-    string Name,
-    string? Description,
-    Domain.Enums.SalaryRateType RateType,
-    decimal Rate,
-    string Currency,
-    decimal? OvertimeMultiplier,
-    decimal? HolidayMultiplier,
-    decimal? NightShiftMultiplier,
+public class UpdateSalaryProfileCommand : ICommand<AppResponse<SalaryProfileDto>>
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public SalaryRateType RateType { get; set; }
+    public decimal Rate { get; set; }
+    public string Currency { get; set; } = string.Empty;
+    public decimal? OvertimeMultiplier { get; set; }
+    public decimal? HolidayMultiplier { get; set; }
+    public decimal? NightShiftMultiplier { get; set; }
+    
     // Base Salary Configuration
-    int? StandardHoursPerDay,
+    public int? StandardHoursPerDay { get; set; }
+    
     // Leave & Attendance Rules
-    string? WeeklyOffDays,
-    int? PaidLeaveDays,
-    int? UnpaidLeaveDays,
+    public string? WeeklyOffDays { get; set; }
+    public int? PaidLeaveDays { get; set; }
+    public int? UnpaidLeaveDays { get; set; }
+    public TimeOnly? CheckIn { get; set; }
+    public TimeOnly? CheckOut { get; set; }
+    
     // Allowances
-    decimal? MealAllowance,
-    decimal? TransportAllowance,
-    decimal? HousingAllowance,
-    decimal? ResponsibilityAllowance,
-    decimal? AttendanceBonus,
-    decimal? PhoneSkillShiftAllowance,
+    public decimal? MealAllowance { get; set; }
+    public decimal? TransportAllowance { get; set; }
+    public decimal? HousingAllowance { get; set; }
+    public decimal? ResponsibilityAllowance { get; set; }
+    public decimal? AttendanceBonus { get; set; }
+    public decimal? PhoneSkillShiftAllowance { get; set; }
+    
     // Overtime Configuration
-    decimal? OTRateWeekday,
-    decimal? OTRateWeekend,
-    decimal? OTRateHoliday,
-    decimal? NightShiftRate,
+    public decimal? OTRateWeekday { get; set; }
+    public decimal? OTRateWeekend { get; set; }
+    public decimal? OTRateHoliday { get; set; }
+    public decimal? NightShiftRate { get; set; }
+    
     // Health Insurance
-    bool? HasHealthInsurance,
-    decimal? HealthInsuranceRate,
-    bool IsActive
-) : ICommand<AppResponse<SalaryProfileDto>>;
+    public bool? HasHealthInsurance { get; set; }
+    public decimal? HealthInsuranceRate { get; set; }
+    public bool IsActive { get; set; }
+}

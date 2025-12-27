@@ -14,6 +14,7 @@ using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.SalaryProfiles;
 using ZKTecoADMS.Application.Models;
 using Mapster;
+using ZKTecoADMS.Application.Queries.SalaryProfiles;
 
 namespace ZKTecoADMS.Api.Controllers;
 
@@ -66,8 +67,8 @@ public class SalaryProfilesController(IMediator mediator) : AuthenticatedControl
     public async Task<ActionResult<AppResponse<SalaryProfileDto>>> UpdateProfile(Guid id, [FromBody] UpdateSalaryProfileRequest request)
     {
         var command = request.Adapt<UpdateSalaryProfileCommand>();
-        command = command with { Id = id };
-        
+        command.Id = id;
+                
         var result = await mediator.Send(command);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
@@ -91,26 +92,38 @@ public class SalaryProfilesController(IMediator mediator) : AuthenticatedControl
     [Authorize(Policy = PolicyNames.AtLeastManager)]
     public async Task<ActionResult<AppResponse<EmployeeSalaryProfileDto>>> AssignProfile([FromBody] AssignSalaryProfileRequest request)
     {
-        var command = new AssignSalaryProfileCommand(
-            request.EmployeeId,
-            request.SalaryProfileId,
-            request.EffectiveDate,
-            request.Notes
-        );
-        
+        var command = request.Adapt<AssignSalaryProfileCommand>();
         var result = await mediator.Send(command);
+
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }
 
     /// <summary>
     /// Get active salary profile for an employee
     /// </summary>
-    [HttpGet("employee/{employeeId}")]
+    [HttpGet("employees/{employeeId}")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<AppResponse<EmployeeSalaryProfileDto>>> GetEmployeeSalaryProfile(Guid employeeId)
     {
         var query = new GetEmployeeSalaryProfileQuery(employeeId);
         var result = await mediator.Send(query);
         return result.IsSuccess ? Ok(result) : NotFound(result);
+    }
+
+    /// <summary>
+    /// Get active salary profile for an employee
+    /// </summary>
+    [HttpGet("employees")]
+    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    public async Task<ActionResult<AppResponse<PagedResult<EmployeeSalaryProfileDto>>>> GetEmployeesSalaryProfile([FromQuery] PaginationRequest request)
+    {
+        var query = new GetEmployeeProfilesQuery
+        {
+            PaginationRequest = request,
+            ManagerId = CurrentUserId
+        };
+
+        var result = await mediator.Send(query);
+        return Ok(result);
     }
 }

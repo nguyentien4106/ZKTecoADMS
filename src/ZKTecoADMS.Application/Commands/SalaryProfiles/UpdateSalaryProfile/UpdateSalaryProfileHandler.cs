@@ -29,8 +29,12 @@ public class UpdateSalaryProfileHandler(ISalaryProfileRepository repository)
         salaryProfile.OvertimeMultiplier = request.OvertimeMultiplier;
         salaryProfile.HolidayMultiplier = request.HolidayMultiplier;
         salaryProfile.NightShiftMultiplier = request.NightShiftMultiplier;
+        salaryProfile.CheckIn = request.CheckIn;
+        salaryProfile.CheckOut = request.CheckOut;
+
         // Base Salary Configuration
         salaryProfile.StandardHoursPerDay = request.StandardHoursPerDay;
+        
         // Leave & Attendance Rules
         salaryProfile.WeeklyOffDays = request.WeeklyOffDays;
         salaryProfile.PaidLeaveDays = request.PaidLeaveDays;

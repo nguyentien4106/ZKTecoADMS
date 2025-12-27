@@ -1,75 +1,100 @@
-import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import salaryProfileService, {
-  SalaryProfile,
+  AssignSalaryProfileRequest,
   CreateSalaryProfileRequest,
   UpdateSalaryProfileRequest,
 } from '@/services/salaryProfileService';
+import { toast } from 'sonner';
 
 export const useSalaryProfiles = (showActiveOnly: boolean = false) => {
-  const [profiles, setProfiles] = useState<SalaryProfile[]>([]);
-  const [loading, setLoading] = useState(true);
+  return useQuery({
+    queryKey: ['salaryProfiles', showActiveOnly],
+    queryFn: () => salaryProfileService.getAllProfiles(showActiveOnly),
+  });
+};
 
-  const loadProfiles = async () => {
-    try {
-      setLoading(true);
-      const data = await salaryProfileService.getAllProfiles(showActiveOnly);
-      setProfiles(data);
-    } catch (error) {
-      toast.error('Failed to load salary profiles');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+export const useSalaryProfileById = (id: string) => {
+  return useQuery({
+    queryKey: ['salaryProfile', id],
+    queryFn: () => salaryProfileService.getProfileById(id),
+    enabled: !!id,
+  });
+};
 
-  useEffect(() => {
-    loadProfiles();
-  }, [showActiveOnly]);
+export const useCreateSalaryProfile = () => {
+  const queryClient = useQueryClient();
 
-  const createProfile = async (data: CreateSalaryProfileRequest) => {
-    try {
-      await salaryProfileService.createProfile(data);
+  return useMutation({
+    mutationFn: (data: CreateSalaryProfileRequest) => salaryProfileService.createProfile(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salaryProfiles'] });
       toast.success('Salary profile created successfully');
-      await loadProfiles();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create salary profile');
-      throw error;
-    }
-  };
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to create salary profile', {
+        description: error.message,
+      });
+    },
+  });
+};
 
-  const updateProfile = async (id: string, data: UpdateSalaryProfileRequest) => {
-    try {
-      await salaryProfileService.updateProfile(id, data);
+export const useUpdateSalaryProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateSalaryProfileRequest }) =>
+      salaryProfileService.updateProfile(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salaryProfiles'] });
       toast.success('Salary profile updated successfully');
-      await loadProfiles();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update salary profile');
-      throw error;
-    }
-  };
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to update salary profile', {
+        description: error.message,
+      });
+    },
+  });
+};
 
-  const deleteProfile = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this salary profile?')) {
-      return;
-    }
+export const useDeleteSalaryProfile = () => {
+  const queryClient = useQueryClient();
 
-    try {
-      await salaryProfileService.deleteProfile(id);
+  return useMutation({
+    mutationFn: (id: string) => salaryProfileService.deleteProfile(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salaryProfiles'] });
       toast.success('Salary profile deleted successfully');
-      await loadProfiles();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to delete salary profile');
-      throw error;
-    }
-  };
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to delete salary profile', {
+        description: error.message,
+      });
+    },
+  });
+};
 
-  return {
-    profiles,
-    loading,
-    createProfile,
-    updateProfile,
-    deleteProfile,
-    refreshProfiles: loadProfiles,
-  };
+
+export const useAssignSalaryProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: AssignSalaryProfileRequest) => salaryProfileService.assignProfile(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salaryProfiles'] });
+      queryClient.invalidateQueries({ queryKey: ['employeeSalaryProfiles'] });
+      toast.success('Salary profile assigned to employee successfully');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to assign salary profile', {
+        description: error.message,
+      });
+    },
+  });
+}
+
+export const useEmployeeSalaryProfiles = (params?: { pageNumber?: number; pageSize?: number }) => {
+  return useQuery({
+    queryKey: ['employeeSalaryProfiles', params],
+    queryFn: () => salaryProfileService.getAllEmployeeSalaryProfiles(params),
+  });
 };

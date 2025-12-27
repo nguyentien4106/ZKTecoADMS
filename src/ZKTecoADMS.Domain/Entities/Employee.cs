@@ -88,4 +88,7 @@ public class Employee : AuditableEntity<Guid>
     public virtual ApplicationUser Manager {get;set; } = null!;
 
     public virtual ICollection<DeviceUser> DeviceUsers { get; set; } = new List<DeviceUser>();
+
+    public virtual ICollection<EmployeeSalaryProfile>? EmployeeSalaryProfiles { get; set; } = new List<EmployeeSalaryProfile>();
+    
 }

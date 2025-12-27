@@ -19,8 +19,8 @@ public interface ISalaryProfileAssignmentStrategy
     /// </summary>
     Task<(bool IsValid, string? ErrorMessage)> ValidateAssignmentAsync(
         SalaryProfile salaryProfile, 
-        DeviceUser employee,
+        Employee employee,
         CancellationToken cancellationToken = default);
 
-    Task<SalaryProfile?> ConfigEmployeeWorkingInfoAsync(SalaryProfile salaryProfile, DeviceUser employee);
+    Task<SalaryProfile?> ConfigEmployeeWorkingInfoAsync(SalaryProfile salaryProfile, Employee employee);
 }

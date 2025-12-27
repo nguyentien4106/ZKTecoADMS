@@ -18,7 +18,6 @@ public class EmployeeSalaryProfileRepository : EfRepository<EmployeeSalaryProfil
     public async Task<EmployeeSalaryProfile?> GetActiveByEmployeeIdAsync(Guid employeeId, CancellationToken cancellationToken = default)
     {
         return await _context.Set<EmployeeSalaryProfile>()
-            .Include(x => x.SalaryProfile)
             .Include(x => x.Employee)
             .Where(x => x.EmployeeId == employeeId && x.IsActive)
             .OrderByDescending(x => x.EffectiveDate)
@@ -28,7 +27,6 @@ public class EmployeeSalaryProfileRepository : EfRepository<EmployeeSalaryProfil
     public async Task<List<EmployeeSalaryProfile>> GetByEmployeeIdAsync(Guid employeeId, CancellationToken cancellationToken = default)
     {
         return await _context.Set<EmployeeSalaryProfile>()
-            .Include(x => x.SalaryProfile)
             .Where(x => x.EmployeeId == employeeId)
             .OrderByDescending(x => x.EffectiveDate)
             .ToListAsync(cancellationToken);
@@ -37,7 +35,6 @@ public class EmployeeSalaryProfileRepository : EfRepository<EmployeeSalaryProfil
     public async Task<EmployeeSalaryProfile?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Set<EmployeeSalaryProfile>()
-            .Include(x => x.SalaryProfile)
             .Include(x => x.Employee)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }

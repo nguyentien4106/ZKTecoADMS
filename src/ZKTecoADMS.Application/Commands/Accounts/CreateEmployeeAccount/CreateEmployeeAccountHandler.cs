@@ -45,8 +45,7 @@ public class CreateEmployeeAccountHandler(
             CreatedAt = DateTime.Now,
             EmailConfirmed = true,
             PhoneNumberConfirmed = true,
-            ManagerId  = request.ManagerId,
-            EmployeeId = request.EmployeeId
+            ManagerId  = request.ManagerId
         };
 
         var result = await userManager.CreateAsync(newUser, request.Password);
