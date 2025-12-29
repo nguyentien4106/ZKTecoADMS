@@ -8,7 +8,6 @@ namespace ZKTecoADMS.Infrastructure.Services;
 
 public class AttendanceService(
     IRepository<Attendance> attendanceRepository,
-    IShiftService shiftService,
     IRepository<DeviceUser> employeeRepository,
     IRepository<Shift> shiftRepository,
     ILogger<AttendanceService> logger

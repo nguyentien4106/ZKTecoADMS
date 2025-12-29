@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Domain.Entities;
 using ZKTecoADMS.Domain.Enums;
+using ZKTecoADMS.Domain.Repositories;
 
 namespace ZKTecoADMS.Core.Services.DeviceOperations;
 
@@ -11,7 +12,7 @@ namespace ZKTecoADMS.Core.Services.DeviceOperations;
 /// </summary>
 public class AttendanceOperationService(
     ILogger<AttendanceOperationService> logger,
-    IAttendanceService attendanceService,
+    IRepository<Attendance> attendanceRepository,
     IDeviceUserService employeeService) : IAttendanceOperationService
 {
     // Field indices based on TFT protocol
@@ -125,10 +126,10 @@ public class AttendanceOperationService(
 
     private async Task<bool> IsDuplicateAttendanceAsync(Guid deviceId, AttendanceData attendanceData)
     {
-        return await attendanceService.LogExistsAsync(
-            deviceId,
-            attendanceData.PIN,
-            attendanceData.AttendanceTime);
+        return await attendanceRepository.ExistsAsync(a => 
+            a.DeviceId == deviceId && 
+            a.PIN == attendanceData.PIN && 
+            a.AttendanceTime == attendanceData.AttendanceTime);
     }
 
     private async Task<Attendance> CreateAttendanceRecordAsync(Guid deviceId, AttendanceData attendanceData)

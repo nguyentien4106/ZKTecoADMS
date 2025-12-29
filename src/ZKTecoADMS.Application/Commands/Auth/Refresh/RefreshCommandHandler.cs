@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ZKTecoADMS.Application.CQRS;
 using ZKTecoADMS.Application.DTOs.Auth;
 using ZKTecoADMS.Application.Interfaces.Auth;
-using ZKTecoADMS.Application.Models;
-using ZKTecoADMS.Domain.Entities;
-using ZKTecoADMS.Domain.Repositories;
 
 namespace ZKTecoADMS.Application.Commands.Auth.Refresh;
 

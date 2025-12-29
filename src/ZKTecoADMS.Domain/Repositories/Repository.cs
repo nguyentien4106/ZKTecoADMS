@@ -1,14 +1,24 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace ZKTecoADMS.Domain.Repositories;
 
 public abstract class Repository<TEntity> : IRepository<TEntity>
 {
-    public abstract Task<IEnumerable<TEntity>> GetAllAsync(
+    public abstract Task<List<TEntity>> GetAllAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string[]? includeProperties = null,
         int? skip = null,
+        int? take = null,
+        CancellationToken cancellationToken = default
+    );
+
+    public abstract Task<List<TEntity>> GetAllWithIncludeAsync(
+        Expression<Func<TEntity, bool>>? filter = null, 
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, 
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null,
+        int? skip = null, 
         int? take = null,
         CancellationToken cancellationToken = default
     );
@@ -59,4 +69,6 @@ public abstract class Repository<TEntity> : IRepository<TEntity>
         string[]? includeProperties = null, 
         CancellationToken cancellationToken = default
     );
+
+    public abstract Task<int> CountAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default);
 }

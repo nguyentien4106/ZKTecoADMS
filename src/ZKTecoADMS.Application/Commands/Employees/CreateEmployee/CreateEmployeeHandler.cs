@@ -7,6 +7,16 @@ public class CreateEmployeeHandler(
 {
     public async Task<AppResponse<Guid>> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
     {
+        var employeeCount = await employeeRepository.CountAsync(
+            e => e.ManagerId == request.ManagerId,
+            cancellationToken: cancellationToken
+        );
+
+        if(employeeCount >= 30)
+        {
+            return AppResponse<Guid>.Error("Manager has reached the maximum number of employees (30). Cannot add more employees.");
+        }
+
         // Check if employee code already exists
         var existingEmployee = await employeeRepository.GetSingleAsync(
             e => e.EmployeeCode == request.EmployeeCode || e.CompanyEmail == request.CompanyEmail,

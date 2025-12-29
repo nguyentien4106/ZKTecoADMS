@@ -22,11 +22,10 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
     public DbSet<Shift> Shifts => Set<Shift>();
     public DbSet<ShiftTemplate> ShiftTemplates => Set<ShiftTemplate>();
     public DbSet<Leave> Leaves => Set<Leave>();
-    public DbSet<SalaryProfile> SalaryProfiles => Set<SalaryProfile>();
-    public DbSet<EmployeeSalaryProfile> EmployeeSalaryProfiles => Set<EmployeeSalaryProfile>();
+    public DbSet<Benefit> Benefits => Set<Benefit>();
+    public DbSet<EmployeeBenefit> EmployeeBenefits => Set<EmployeeBenefit>();
     public DbSet<Payslip> Payslips => Set<Payslip>();
     public DbSet<Holiday> Holidays => Set<Holiday>();
-    public DbSet<EmployeeWorkingInfo> EmployeeWorkingInfos => Set<EmployeeWorkingInfo>();
     public DbSet<Employee> Employees => Set<Employee>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

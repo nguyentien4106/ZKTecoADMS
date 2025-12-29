@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using ZKTecoADMS.Domain.Entities.Base;
 using ZKTecoADMS.Domain.Repositories;
@@ -16,7 +17,7 @@ public class EfRepository<TEntity>(
 
     public DbSet<TEntity> DbSet => dbSet;
 
-    public override async Task<IEnumerable<TEntity>> GetAllAsync(
+    public override async Task<List<TEntity>> GetAllAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string[]? includeProperties = null,
@@ -51,7 +52,62 @@ public class EfRepository<TEntity>(
                 query = query.Take(take.Value);
             }
 
-            IEnumerable<TEntity> result;
+            List<TEntity> result;
+            if (orderBy != null)
+            {
+                result = await orderBy(query).ToListAsync(cancellationToken);
+            }
+            else
+            {
+                result = await query.ToListAsync(cancellationToken);
+            }
+
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving all entities of type {EntityType}", typeof(TEntity).Name);
+            throw;
+        }
+    }
+
+    public override async Task<List<TEntity>> GetAllWithIncludeAsync(
+        Expression<Func<TEntity, bool>>? filter = null, 
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, 
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null, 
+        int? skip = null, 
+        int? take = null,
+        CancellationToken cancellationToken = default)
+    {
+        logger.LogDebug("Getting all entities of type {EntityType} with filter: {HasFilter}, orderBy: {HasOrderBy}, includes: {Includes}",
+            typeof(TEntity).Name, filter != null, orderBy != null, includes != null);
+
+        try
+        {
+            IQueryable<TEntity> query = dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (includes != null)
+            {
+                query = includes(query);
+            }
+            
+            if (skip.HasValue)
+            {
+                query = query.Skip(skip.Value);
+            }
+
+            if (take.HasValue)
+            {
+                query = query.Take(take.Value);
+            }
+
+            List<TEntity> result;
             if (orderBy != null)
             {
                 result = await orderBy(query).ToListAsync(cancellationToken);
@@ -439,4 +495,23 @@ public class EfRepository<TEntity>(
         }
     }
 
+    public override async Task<int> CountAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (filter != null)
+            {
+                return await dbSet.CountAsync(filter, cancellationToken);
+            }
+            else
+            {
+                return await dbSet.CountAsync(cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error counting entities of type {EntityType}", typeof(TEntity).Name);
+            throw;
+        }
+    }
 }

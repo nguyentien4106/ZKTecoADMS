@@ -87,8 +87,10 @@ public class Employee : AuditableEntity<Guid>
     public Guid ManagerId {get;set; }
     public virtual ApplicationUser Manager {get;set; } = null!;
 
+    // Many-to-many relationship with Benefits through EmployeeBenefit
+    public virtual ICollection<EmployeeBenefit> EmployeeBenefits { get; set; } = new List<EmployeeBenefit>();
+    public virtual ICollection<Benefit> Benefits { get; set; } = new List<Benefit>();
+    
     public virtual ICollection<DeviceUser> DeviceUsers { get; set; } = new List<DeviceUser>();
-
-    public virtual ICollection<EmployeeSalaryProfile>? EmployeeSalaryProfiles { get; set; } = new List<EmployeeSalaryProfile>();
     
 }

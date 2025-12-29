@@ -154,7 +154,6 @@ public static class DependencyInjectionExtensions
         services.AddScoped(typeof(Repository<>), typeof(EfRepository<>));
         
         // Salary profile repositories
-        services.AddScoped<ISalaryProfileRepository, SalaryProfileRepository>();
         services.AddScoped<IEmployeeSalaryProfileRepository, EmployeeSalaryProfileRepository>();
         services.AddScoped<IPayslipRepository, PayslipRepository>();
         

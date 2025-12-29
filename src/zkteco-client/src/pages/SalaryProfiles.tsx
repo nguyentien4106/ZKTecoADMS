@@ -6,16 +6,16 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SalaryProfileTable } from "@/components/salary-profile/SalaryProfileTable";
-import { EmployeeSalaryProfileTable } from "@/components/salary-profile/EmployeeSalaryProfileTable";
-import { CreateSalaryProfileDialog } from "@/components/salary-profile/CreateSalaryProfileDialog";
-import { EditSalaryProfileDialog } from "@/components/salary-profile/EditSalaryProfileDialog";
-import { AssignSalaryToEmployeeDialog } from "@/components/salary-profile/AssignSalaryToEmployeeDialog";
-import { SalaryProfileProvider, useSalaryProfileContext } from "@/contexts/SalaryProfileContext";
+import { SalaryProfileTable } from "@/components/benefit/dialogs/BenefitsTable";
+import { EmployeeSalaryProfileTable } from "@/components/benefit/employees-benefit/EmployeeSalaryProfileTable";
+import { CreateSalaryProfileDialog } from "@/components/benefit/dialogs/CreateBenefitDialog";
+import { EditSalaryProfileDialog } from "@/components/benefit/dialogs/EditBenefitDialog";
+import { AssignSalaryToEmployeeDialog } from "@/components/benefit/employees-benefit/AssignSalaryToEmployeeDialog";
+import { SalaryProfileProvider, useSalaryProfileContext } from "@/contexts/BenefitContext";
 
-const SalaryProfilesContent = () => {
+const BenefitsContent = () => {
   const {
-    profiles,
+    benefits: profiles,
     showActiveOnly,
     setShowActiveOnly,
     handleOpenCreateDialog,
@@ -26,13 +26,12 @@ const SalaryProfilesContent = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Salary Profiles"
-        description="Manage salary profiles and employee assignments"
+        title="Benefit Profiles"
         action={
           activeTab === "profiles" && (
             <Button onClick={handleOpenCreateDialog}>
               <Plus className="w-4 h-4 mr-2" />
-              Create Profile
+              Create Benefit Profile
             </Button>
           )
         }
@@ -40,8 +39,8 @@ const SalaryProfilesContent = () => {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="profiles">Salary Profiles</TabsTrigger>
-          <TabsTrigger value="assignments">Employee Assignments</TabsTrigger>
+          <TabsTrigger value="profiles">Benefits</TabsTrigger>
+          <TabsTrigger value="assignments">Employee Benefits</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profiles" className="mt-6">
@@ -80,10 +79,10 @@ const SalaryProfilesContent = () => {
   );
 };
 
-export const SalaryProfiles = () => {
+export const Benefits = () => {
   return (
     <SalaryProfileProvider>
-      <SalaryProfilesContent />
+      <BenefitsContent />
     </SalaryProfileProvider>
   );
 };

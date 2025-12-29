@@ -38,7 +38,7 @@ const navItems = [
   { to: '/shifts', icon: CalendarCheck, label: 'Shifts' },
   { to: '/leaves', icon: CalendarCheck, label: 'Leaves' },
   { to: '/payslips', icon: Receipt, label: 'Payslips' },
-  { to: '/salary-profiles', icon: Settings, label: 'Salary Profiles' },
+  { to: '/salary-profiles', icon: Settings, label: 'Benefits' },
 ]
 
 export const Sidebar = () => {

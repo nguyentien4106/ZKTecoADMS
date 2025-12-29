@@ -35,6 +35,5 @@ public class DeviceUser : AuditableEntity<Guid>
     public virtual ICollection<FingerprintTemplate> FingerprintTemplates { get; set; } = new List<FingerprintTemplate>();
     public virtual ICollection<FaceTemplate> FaceTemplates { get; set; } = new List<FaceTemplate>();
     public virtual ICollection<Attendance> AttendanceLogs { get; set; } = new List<Attendance>();
-    public virtual ICollection<EmployeeSalaryProfile> SalaryProfiles { get; set; } = new List<EmployeeSalaryProfile>();
 }
 

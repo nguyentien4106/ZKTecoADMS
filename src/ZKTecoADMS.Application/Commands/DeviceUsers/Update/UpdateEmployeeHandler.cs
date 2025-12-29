@@ -31,7 +31,7 @@ public class UpdateDeviceUserHandler(
             Command = ClockCommandBuilder.BuildAddOrUpdateEmployeeCommand(employee),
             Priority = 10,
             Status = CommandStatus.Created,
-            CommandType = DeviceCommandTypes.UpdateEmployee,
+            CommandType = DeviceCommandTypes.UpdateDeviceUser,
             ObjectReferenceId = employee.Id,
         };
         await deviceCmdRepository.AddAsync(cmd, cancellationToken);
