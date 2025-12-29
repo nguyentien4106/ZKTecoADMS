@@ -4,9 +4,9 @@ namespace ZKTecoADMS.Application.Commands.Benefits.Create;
 
 public class CreateSalaryProfileHandler(
     IRepository<Benefit> repository
-    ) : ICommandHandler<CreateSalaryProfileCommand, AppResponse<BenefitDto>>
+    ) : ICommandHandler<CreateBenefitCommand, AppResponse<BenefitDto>>
 {
-    public async Task<AppResponse<BenefitDto>> Handle(CreateSalaryProfileCommand request, CancellationToken cancellationToken)
+    public async Task<AppResponse<BenefitDto>> Handle(CreateBenefitCommand request, CancellationToken cancellationToken)
     {
         // Check if name is unique
         

@@ -51,7 +51,6 @@ public class UpdateEmployeeHandler(
         employee.Department = request.Department;
         employee.Position = request.Position;
         employee.Level = request.Level;
-        employee.EmploymentType = request.EmploymentType;
         employee.JoinDate = request.JoinDate;
         employee.ProbationEndDate = request.ProbationEndDate;
         employee.WorkStatus = request.WorkStatus;

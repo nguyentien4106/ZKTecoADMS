@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useEmployeeBenefits } from "@/hooks/useBenefits";
 import { useState } from "react";
-import { EmployeeSalaryProfileDetailDialog } from "./EmployeeSalaryProfileDetailDialog";
+import { EmployeeSalaryProfileDetailDialog } from "./EmployeeBenefitDetailDialog";
 import { useSalaryProfileContext } from "@/contexts/BenefitContext";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { EmployeeBenefit, SalaryRateType } from "@/types/benefit";
@@ -77,7 +77,7 @@ export const EmployeeSalaryProfileTable = () => {
                 </TableCell>
                 <TableCell>{benefit.employee?.employeeCode || '-'}</TableCell>
                 <TableCell>{benefit.benefit?.name || '-'}</TableCell>
-                <TableCell>{getRateTypeLabel(benefit.benefit?.rateType || SalaryRateType.Monthly)}</TableCell>
+                <TableCell>{getRateTypeLabel(benefit.employee?.employmentType)}</TableCell>
                 <TableCell>{formatDate(benefit.effectiveDate)}</TableCell>
                 <TableCell>{benefit.notes || '-'}</TableCell>
                 <TableCell>

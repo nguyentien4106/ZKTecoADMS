@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SalaryProfileTable } from "@/components/benefit/dialogs/BenefitsTable";
-import { EmployeeSalaryProfileTable } from "@/components/benefit/employees-benefit/EmployeeSalaryProfileTable";
+import { EmployeeSalaryProfileTable } from "@/components/benefit/employees-benefit/EmployeeBenefitsTable";
 import { CreateSalaryProfileDialog } from "@/components/benefit/dialogs/CreateBenefitDialog";
 import { EditSalaryProfileDialog } from "@/components/benefit/dialogs/EditBenefitDialog";
 import { AssignSalaryToEmployeeDialog } from "@/components/benefit/employees-benefit/AssignSalaryToEmployeeDialog";

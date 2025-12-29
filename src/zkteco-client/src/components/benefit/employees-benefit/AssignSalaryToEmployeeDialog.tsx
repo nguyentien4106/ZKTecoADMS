@@ -19,13 +19,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import {
-  AssignSalaryProfileRequest,
-} from "@/services/benefitService";
 import { useSalaryProfileContext } from "@/contexts/BenefitContext";
 import { useEmployees } from "@/hooks/useEmployee";
 import { format } from 'date-fns';
 import { useAssignEmployee, useBenefits } from '@/hooks/useBenefits';
+import { AssignSalaryProfileRequest } from '@/types/benefit';
 
 const defaultFormData: AssignSalaryProfileRequest = {
   employeeId: '',
@@ -47,7 +45,6 @@ export const AssignSalaryToEmployeeDialog = () => {
   
   // Fetch salary profiles based on employee's employment type
   const { data: salaryProfilesData } = useBenefits(
-    true, // activeOnly
     employmentType !== undefined ? employmentType : undefined
   );
 
@@ -164,7 +161,6 @@ export const AssignSalaryToEmployeeDialog = () => {
               <div className="text-sm space-y-1">
                 <div>Name: {selectedProfile.name}</div>
                 <div>Rate: {selectedProfile.rate.toLocaleString()} {selectedProfile.currency}</div>
-                <div>Type: {selectedProfile.rateTypeName}</div>
                 {selectedProfile.overtimeMultiplier && (
                   <div>Overtime: {selectedProfile.overtimeMultiplier}x</div>
                 )}

@@ -2,7 +2,7 @@ using ZKTecoADMS.Application.DTOs.Benefits;
 
 namespace ZKTecoADMS.Application.Commands.Benefits.Update;
 
-public class UpdateSalaryProfileCommand : ICommand<AppResponse<BenefitDto>>
+public class UpdateBenefitCommand : ICommand<AppResponse<BenefitDto>>
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

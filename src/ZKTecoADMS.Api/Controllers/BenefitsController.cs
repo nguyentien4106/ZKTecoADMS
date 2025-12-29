@@ -50,7 +50,7 @@ public class BenefitsController(IMediator mediator) : AuthenticatedControllerBas
     [Authorize(Policy = PolicyNames.AtLeastManager)]
     public async Task<ActionResult<AppResponse<BenefitDto>>> CreateProfile([FromBody] CreateBenefitRequest request)
     {
-        var command = request.Adapt<CreateSalaryProfileCommand>();
+        var command = request.Adapt<CreateBenefitCommand>();
         
         var result = await mediator.Send(command);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
@@ -63,7 +63,7 @@ public class BenefitsController(IMediator mediator) : AuthenticatedControllerBas
     [Authorize(Policy = PolicyNames.AtLeastManager)]
     public async Task<ActionResult<AppResponse<BenefitDto>>> UpdateProfile(Guid id, [FromBody] UpdateSalaryProfileRequest request)
     {
-        var command = request.Adapt<UpdateSalaryProfileCommand>();
+        var command = request.Adapt<UpdateBenefitCommand>();
         command.Id = id;
                 
         var result = await mediator.Send(command);
@@ -77,7 +77,7 @@ public class BenefitsController(IMediator mediator) : AuthenticatedControllerBas
     [Authorize(Policy = PolicyNames.AtLeastManager)]
     public async Task<ActionResult<AppResponse<bool>>> DeleteProfile(Guid id)
     {
-        var command = new DeleteSalaryProfileCommand(id);
+        var command = new DeleteBenefitCommand(id);
         var result = await mediator.Send(command);
         return result.IsSuccess ? Ok(result) : BadRequest(result);
     }

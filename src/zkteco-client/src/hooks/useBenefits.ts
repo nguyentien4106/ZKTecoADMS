@@ -4,10 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { toast } from 'sonner';
 
-export const useBenefits = (showActiveOnly: boolean = false, salaryRateType?: number) => {
+export const useBenefits = (salaryRateType?: number) => {
   return useQuery({
-    queryKey: ['benefits', showActiveOnly, salaryRateType],
-    queryFn: () => benefitService.getBenefits(showActiveOnly, salaryRateType),
+    queryKey: ['benefits', salaryRateType],
+    queryFn: () => benefitService.getBenefits(salaryRateType),
   });
 };
 

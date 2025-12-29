@@ -82,3 +82,9 @@ export interface UpdateEmployeeRequest extends CreateEmployeeRequest {
   resignationDate?: string | null;
   resignationReason?: string | null;
 }
+
+
+export enum EmploymentTypes {
+  Hourly = 0,
+  Monthly = 1,
+}

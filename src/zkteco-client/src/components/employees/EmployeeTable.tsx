@@ -10,6 +10,8 @@ import { EmployeeStatusBadge } from "./EmployeeStatusBadge";
 import { DeleteEmployeeDialog } from "./dialogs/DeleteEmployeeDialog";
 import { SortingHeader } from "../SortingHeader";
 import { useEmployeeContext } from "@/contexts/EmployeeContext";
+import { EmploymentTypes } from "@/constants";
+import { Button } from "../ui/button";
 
 export const EmployeeTable = () => {
   const {
@@ -44,9 +46,11 @@ export const EmployeeTable = () => {
       cell: ({ row }) => row.getValue("department") || "-",
     },
     {
-      accessorKey: "position",
-      header: "Position",
-      cell: ({ row }) => row.getValue("position") || "-",
+      accessorKey: "employmentType",
+      header: "Employment Type",
+      cell: ({ row }) => (
+        <Button variant="default" >{EmploymentTypes[row.getValue("employmentType") as keyof typeof EmploymentTypes]}</Button>
+      ),
     },
     {
       accessorKey: "workStatus",

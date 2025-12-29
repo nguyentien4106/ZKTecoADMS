@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace ZKTecoADMS.Application.Commands.Benefits.Create;
 
-public class CreateSalaryProfileValidator : AbstractValidator<CreateSalaryProfileCommand>
+public class CreateSalaryProfileValidator : AbstractValidator<CreateBenefitCommand>
 {
     public CreateSalaryProfileValidator()
     {

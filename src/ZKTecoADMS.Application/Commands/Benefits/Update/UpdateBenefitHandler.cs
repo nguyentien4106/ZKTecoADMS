@@ -2,11 +2,11 @@ using ZKTecoADMS.Application.DTOs.Benefits;
 
 namespace ZKTecoADMS.Application.Commands.Benefits.Update;
 
-public class UpdateSalaryProfileHandler(
+public class UpdateBenefitHandler(
     IRepository<Benefit> repository
-    ) : ICommandHandler<UpdateSalaryProfileCommand, AppResponse<BenefitDto>>
+    ) : ICommandHandler<UpdateBenefitCommand, AppResponse<BenefitDto>>
 {
-    public async Task<AppResponse<BenefitDto>> Handle(UpdateSalaryProfileCommand request, CancellationToken cancellationToken)
+    public async Task<AppResponse<BenefitDto>> Handle(UpdateBenefitCommand request, CancellationToken cancellationToken)
     {
         var salaryProfile = await repository.GetByIdAsync(request.Id, cancellationToken: cancellationToken);
         if (salaryProfile == null)

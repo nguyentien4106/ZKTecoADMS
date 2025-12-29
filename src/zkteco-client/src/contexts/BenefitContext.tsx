@@ -62,7 +62,7 @@ export const BenefitProvider = ({ children }: BenefitProviderProps) => {
   const [preSelectedEmployeeId, setPreSelectedEmployeeId] = useState<string | null>(null);
   
   // Hooks
-  const { data: benefits, isLoading } = useBenefits(showActiveOnly);
+  const { data: benefits, isLoading } = useBenefits();
   const createProfileMutation = useCreateBenefit();
   const updateProfileMutation = useUpdateBenefit();
   const deleteProfileMutation = useDeleteBenefit();

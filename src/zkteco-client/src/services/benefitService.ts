@@ -3,9 +3,8 @@ import { AssignSalaryProfileRequest, Benefit, CreateBenefitRequest, EmployeeBene
 
 const benefitService = {
   // Get all salary profiles
-  getBenefits: async (activeOnly?: boolean, salaryRateType?: number): Promise<Benefit[]> => {
+  getBenefits: async ( salaryRateType?: number): Promise<Benefit[]> => {
     const params = new URLSearchParams();
-    if (activeOnly !== undefined) params.append('activeOnly', activeOnly.toString());
     if (salaryRateType !== undefined) params.append('salaryRateType', salaryRateType.toString());
 
     const queryString = params.toString();
