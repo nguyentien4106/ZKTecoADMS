@@ -24,57 +24,8 @@ public class GetAttendanceStatsHandler(
 
         var (startDate, endDate) = GetDateRange(request.Period);
         
-        var shifts = await shiftRepository.GetAllAsync(cancellationToken: cancellationToken);
-        var attendances = await attendanceRepository.GetAllAsync(cancellationToken: cancellationToken);
-
-        var workShifts = shifts
-            .Where(s => s.EmployeeUserId == user.Id)
-            .Where(s => s.Status == ShiftStatus.Approved)
-            .Where(s => s.StartTime.Date >= startDate && s.StartTime.Date <= endDate)
-            .OrderBy(s => s.StartTime)
-            .ToList();
-
-        var totalWorkDays = workShifts.Count;
-        if (totalWorkDays == 0)
-        {
-            return AppResponse<AttendanceStatsDto>.Success(new AttendanceStatsDto
-            {
-                Period = request.Period,
-                TotalWorkDays = 0
-            });
-        }
-
-       
-
-        int presentDays = 0;
-        int lateCheckIns = 0;
-        int earlyCheckOuts = 0;
-        double totalWorkHours = 0;
-
-        foreach (var shift in workShifts)
-        {
-            var shiftDate = shift.StartTime.Date;
-        }
-
-        int absentDays = totalWorkDays - presentDays;
-        double attendanceRate = totalWorkDays > 0 ? (presentDays * 100.0 / totalWorkDays) : 0;
-        double punctualityRate = presentDays > 0 ? ((presentDays - lateCheckIns) * 100.0 / presentDays) : 100;
-        string avgWorkHours = presentDays > 0 ? (totalWorkHours / presentDays).ToString("F1") : "0.0";
-
-        var dto = new AttendanceStatsDto
-        {
-            TotalWorkDays = totalWorkDays,
-            PresentDays = presentDays,
-            AbsentDays = absentDays,
-            LateCheckIns = lateCheckIns,
-            EarlyCheckOuts = earlyCheckOuts,
-            AttendanceRate = Math.Round(attendanceRate, 2),
-            PunctualityRate = Math.Round(punctualityRate, 2),
-            AverageWorkHours = avgWorkHours,
-            Period = request.Period
-        };
-
-        return AppResponse<AttendanceStatsDto>.Success(dto);
+      
+        return AppResponse<AttendanceStatsDto>.Success(null);
     }
 
     private static (DateTime startDate, DateTime endDate) GetDateRange(string period)

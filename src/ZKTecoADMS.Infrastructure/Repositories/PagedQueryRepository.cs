@@ -3,11 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using ZKTecoADMS.Domain.Entities.Base;
-using ZKTecoADMS.Domain.Repositories;
 using ZKTecoADMS.Application.Interfaces;
 using ZKTecoADMS.Application.Models;
-using ZKTecoADMS.Domain.Exceptions;
-using System.Globalization;
 
 namespace ZKTecoADMS.Infrastructure.Repositories;
 

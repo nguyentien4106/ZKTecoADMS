@@ -8,9 +8,7 @@ using ZKTecoADMS.Domain.Repositories;
 namespace ZKTecoADMS.Application.Queries.Dashboard.GetDashboardData;
 
 public class GetDashboardDataHandler(
-    IDeviceUserService employeeService,
     IDeviceService deviceService,
-    IAttendanceService attendanceService,
     IRepository<DeviceUser> employeeRepository,
     IRepository<Attendance> attendanceRepository
     ) : IQueryHandler<GetDashboardDataQuery, AppResponse<DashboardDataDto>>

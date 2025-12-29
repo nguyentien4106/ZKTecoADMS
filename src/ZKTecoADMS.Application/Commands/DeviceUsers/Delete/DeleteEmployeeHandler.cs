@@ -25,7 +25,7 @@ public class DeleteDeviceUserHandler(
             DeviceId = employee.DeviceId,
             Command = ClockCommandBuilder.BuildDeleteEmployeeCommand(employee.Pin),
             Status = CommandStatus.Created,
-            CommandType = DeviceCommandTypes.DeleteEmployee,
+            CommandType = DeviceCommandTypes.DeleteDeviceUser,
             ObjectReferenceId = employee.Id
         };
         

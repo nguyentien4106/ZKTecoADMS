@@ -12,7 +12,6 @@ namespace ZKTecoADMS.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class AttendancesController(
-    IAttendanceService attendanceService, 
     IMediator bus
     )
     : AuthenticatedControllerBase
@@ -33,8 +32,7 @@ public class AttendancesController(
         [FromQuery] DateTime? startDate, 
         [FromQuery] DateTime? endDate)
     {
-        var logs = await attendanceService.GetAttendanceByEmployeeAsync(deviceId, userId, startDate, endDate);
-        return Ok(logs);
+        return Ok(null);
     }
 
     [HttpPost("monthly-summary")]

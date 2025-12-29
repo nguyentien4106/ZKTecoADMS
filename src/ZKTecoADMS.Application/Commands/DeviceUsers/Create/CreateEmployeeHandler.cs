@@ -28,7 +28,7 @@ public class CreateDeviceUserHandler(
             DeviceId = employeeEntity.DeviceId,
             Command = ClockCommandBuilder.BuildAddOrUpdateEmployeeCommand(employeeEntity),
             Priority = 10,
-            CommandType = DeviceCommandTypes.AddEmployee,
+            CommandType = DeviceCommandTypes.AddDeviceUser,
             ObjectReferenceId = employeeEntity.Id
         };
         await deviceCmdRepository.AddAsync(cmd, cancellationToken);

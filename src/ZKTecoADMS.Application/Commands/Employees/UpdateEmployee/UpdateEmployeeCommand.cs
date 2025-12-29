@@ -32,7 +32,6 @@ public class UpdateEmployeeCommand : IRequest<AppResponse<bool>>
     public string? Department { get; set; }
     public string? Position { get; set; }
     public string? Level { get; set; }
-    public EmploymentType EmploymentType { get; set; }
     public DateTime? JoinDate { get; set; }
     public DateTime? ProbationEndDate { get; set; }
     public EmployeeWorkStatus WorkStatus { get; set; }

@@ -2,15 +2,13 @@ namespace ZKTecoADMS.Domain.Enums;
 
 public enum DeviceCommandTypes
 {
-    AddEmployee,
-    DeleteEmployee,
-    UpdateEmployee,
-    InitialAttendances,
-    InitialEmployees,
+    AddDeviceUser,
+    DeleteDeviceUser,
+    UpdateDeviceUser,
     ClearAttendances,
-    ClearEmployees,
+    ClearDeviceUsers,
     ClearData,
     RestartDevice,
     SyncAttendances,
-    SyncEmployees,
+    SyncDeviceUsers,
 }

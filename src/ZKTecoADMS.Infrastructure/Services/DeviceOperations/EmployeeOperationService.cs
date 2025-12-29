@@ -151,7 +151,7 @@ public class EmployeeOperationService(ILogger<EmployeeOperationService> logger) 
                 GroupId = ExtractIntField(fields, GROUP_KEY, 1),
                 Privilege = ExtractIntField(fields, PRI_KEY),
                 DeviceId = deviceId,
-                IsActive = true
+                IsActive = true,
             };
             return employee;
         }

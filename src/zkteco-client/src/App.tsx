@@ -24,7 +24,7 @@ import { Profile } from './pages/Profile'
 import { UserRole } from './constants/roles'
 import EmployeeDashboardDemo from './pages/EmployeeDashboardDemo'
 import { MonthlyAttendanceSummary } from './pages/MonthlyAttendanceSummary'
-import { SalaryProfiles } from './pages/SalaryProfiles'
+import { Benefits } from './pages/Benifits'
 import { Payslips } from './pages/Payslips'
 import Employees from './pages/Employees'
 
@@ -124,7 +124,7 @@ function App() {
           path="salary-profiles"
           element={
             <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
-              <SalaryProfiles />
+              <Benefits />
             </RoleProtectedRoute>
           }
         />

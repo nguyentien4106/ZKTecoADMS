@@ -59,14 +59,10 @@ public class GeneratePayslipHandler(
         // Load the salary profile
         var salaryProfileDetails = await employeeSalaryProfileRepository.GetByIdAsync(
             activeSalaryProfile.Id,
-            [nameof(EmployeeSalaryProfile.SalaryProfile)],
             cancellationToken: cancellationToken
         );
 
-        if (salaryProfileDetails?.SalaryProfile == null)
-        {
-            return AppResponse<PayslipDto>.Fail("Salary profile details not found");
-        }
+       
 
         // Check if payslip already exists for this period
         var existingPayslip = await payslipRepository.GetByEmployeeUserAndPeriodAsync(request.EmployeeUserId, request.Year, request.Month, cancellationToken);
@@ -96,72 +92,9 @@ public class GeneratePayslipHandler(
         var shiftsList = shifts?.ToList() ?? new List<Shift>();
 
         // Calculate work units based on salary rate type using shift times
-        var (regularUnits, holidayUnits, nightShiftUnits) = CalculateWorkUnits(
-            shiftsList,
-            salaryProfileDetails.SalaryProfile.RateType
-        );
+        
 
-        // Calculate salary components
-        var baseSalary = CalculateBaseSalary(
-            regularUnits,
-            salaryProfileDetails.SalaryProfile.Rate,
-            salaryProfileDetails.SalaryProfile.RateType,
-            request.Year,
-            request.Month
-        );
-
-        var holidayPay = CalculateHolidayPay(
-            holidayUnits,
-            salaryProfileDetails.SalaryProfile.Rate,
-            salaryProfileDetails.SalaryProfile.HolidayMultiplier ?? 2.0m
-        );
-
-        var nightShiftPay = CalculateNightShiftPay(
-            nightShiftUnits,
-            salaryProfileDetails.SalaryProfile.Rate,
-            salaryProfileDetails.SalaryProfile.NightShiftMultiplier ?? 1.3m
-        );
-
-        var grossSalary = baseSalary + (holidayPay ?? 0) + (nightShiftPay ?? 0) + (request.Bonus ?? 0);
-        var netSalary = grossSalary - (request.Deductions ?? 0);
-
-        // Create payslip
-        var payslip = new Payslip
-        {
-            Id = Guid.NewGuid(),
-            EmployeeUserId = request.EmployeeUserId,
-            SalaryProfileId = salaryProfileDetails.SalaryProfileId,
-            Year = request.Year,
-            Month = request.Month,
-            PeriodStart = periodStart,
-            PeriodEnd = periodEnd,
-            RegularWorkUnits = regularUnits,
-            OvertimeUnits = null,
-            HolidayUnits = holidayUnits > 0 ? holidayUnits : null,
-            NightShiftUnits = nightShiftUnits > 0 ? nightShiftUnits : null,
-            BaseSalary = baseSalary,
-            OvertimePay = null,
-            HolidayPay = holidayPay,
-            NightShiftPay = nightShiftPay,
-            Bonus = request.Bonus,
-            Deductions = request.Deductions,
-            GrossSalary = grossSalary,
-            NetSalary = netSalary,
-            Currency = salaryProfileDetails.SalaryProfile.Currency,
-            Status = PayslipStatus.PendingApproval,
-            GeneratedDate = DateTime.Now,
-            GeneratedByUserId = null, // Will be set by the controller if needed
-            Notes = request.Notes
-        };
-
-        var createdPayslip = await payslipRepository.CreateAsync(payslip, cancellationToken);
-
-        // Reload with navigation properties for DTO
-        var payslipWithDetails = await payslipRepository.GetByIdAsync(createdPayslip.Id, cancellationToken);
-
-        var dto = MapToDto(payslipWithDetails!);
-
-        return AppResponse<PayslipDto>.Success(payslipWithDetails.Adapt<PayslipDto>());
+        return AppResponse<PayslipDto>.Success(null);
     }
 
     private (decimal regular, decimal holiday, decimal nightShift) CalculateWorkUnits(
@@ -197,18 +130,8 @@ public class GeneratePayslipHandler(
                 // For now, we'll leave holiday calculation for future implementation
             }
             // For daily rate, count as days
-            else if (rateType == SalaryRateType.Daily)
-            {
-                regular += 1; // Each shift counts as 1 day
-
-                // Check for night shift
-                if (shiftStart.Hour >= 22 || shiftStart.Hour < 6)
-                {
-                    nightShift += 1;
-                }
-            }
-            // For monthly/yearly, shifts are just tracked but salary is fixed
-            else if (rateType == SalaryRateType.Monthly || rateType == SalaryRateType.Yearly)
+            // For monthly, shifts are just tracked but salary is fixed
+            else if (rateType == SalaryRateType.Monthly)
             {
                 // Count shifts for record keeping
                 regular += 1;
@@ -223,9 +146,7 @@ public class GeneratePayslipHandler(
         return rateType switch
         {
             SalaryRateType.Hourly => units * rate,
-            SalaryRateType.Daily => units * rate,
             SalaryRateType.Monthly => rate, // Full monthly salary
-            SalaryRateType.Yearly => rate / 12, // Monthly portion of yearly salary
             _ => 0
         };
     }

@@ -14,7 +14,6 @@ public class ApplicationUser : IdentityUser<Guid>
     public Guid? ManagerId { get; set; }
     public virtual ApplicationUser? Manager { get; set; }
 
-    public Guid? EmployeeId { get; set; }
     public virtual Employee? Employee { get; set; }
     
     public virtual ICollection<Device> Devices { get; set; } = [];

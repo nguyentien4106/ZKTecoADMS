@@ -33,7 +33,7 @@ public static class DependencyInjectionExtensions
         
         // Register Salary Profile Strategies
         RegisterSalaryProfileStrategies(services);
-        services.AddScoped<SalaryProfileStrategyFactory>();
+        services.AddScoped<BenefitAssignmentStrategyFactory>();
     }
     
     private static void RegisterDeviceCommandStrategies(IServiceCollection services)
@@ -51,7 +51,7 @@ public static class DependencyInjectionExtensions
     
     private static void RegisterSalaryProfileStrategies(IServiceCollection services)
     {
-        var strategyType = typeof(ISalaryProfileAssignmentStrategy);
+        var strategyType = typeof(IBenefitAssignmentStrategy);
         var strategies = Assembly.GetExecutingAssembly()
             .GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract && strategyType.IsAssignableFrom(t));

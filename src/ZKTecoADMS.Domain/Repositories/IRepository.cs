@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace ZKTecoADMS.Domain.Repositories;
 
@@ -19,10 +20,19 @@ public interface IRepository<TEntity>
         CancellationToken cancellationToken = default
     );
 
-    Task<IEnumerable<TEntity>> GetAllAsync(
+    Task<List<TEntity>> GetAllAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string[]? includeProperties = null,
+        int? skip = null,
+        int? take = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<List<TEntity>> GetAllWithIncludeAsync(
+        Expression<Func<TEntity, bool>>? filter = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = null,
         int? skip = null,
         int? take = null,
         CancellationToken cancellationToken = default
@@ -58,4 +68,6 @@ public interface IRepository<TEntity>
     Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default);
     
     Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default);
+
+    Task<int> CountAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default);
 }

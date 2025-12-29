@@ -19,6 +19,7 @@ public class DeviceUserConfiguration : IEntityTypeConfiguration<DeviceUser>
         builder.HasOne(i => i.Employee)
             .WithMany(e => e.DeviceUsers)
             .HasForeignKey(i => i.EmployeeId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired(false);
     }
 }

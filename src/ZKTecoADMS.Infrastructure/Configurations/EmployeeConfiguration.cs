@@ -44,18 +44,6 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.Property(e => e.EmploymentType)
             .HasConversion<int>();
 
-        // Relationships
-        
-        // // One-to-One relationship with ApplicationUser (optional)
-        // // An Employee can have one ApplicationUser account (for login)
-        // // An ApplicationUser can be associated with one Employee record
-        // builder.HasOne(e => e.ApplicationUser)
-        //     .WithOne(u => u.Employee)
-        //     .HasForeignKey<Employee>(e => e.ApplicationUserId)
-        //     .OnDelete(DeleteBehavior.SetNull)
-        //     .IsRequired(false);
-
-        // Many-to-One relationship with Manager (ApplicationUser)
         // One manager (ApplicationUser) can manage many employees
         // Each employee must have a manager
         builder.HasOne(e => e.Manager)
@@ -64,11 +52,12 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .OnDelete(DeleteBehavior.Restrict) // Prevent cascade delete of employees when manager is deleted
             .IsRequired(true);
 
-        // One-to-Many relationship with DeviceUsers
-        builder.HasMany(e => e.DeviceUsers)
-            .WithOne()
-            .HasForeignKey(du => du.EmployeeId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .IsRequired(false);
+        // DeviceUser relationship is configured in DeviceUserConfiguration.cs
+
+        // Configure many-to-many relationship with Benefits through EmployeeBenefit
+        builder.HasMany(e => e.EmployeeBenefits)
+            .WithOne(eb => eb.Employee)
+            .HasForeignKey(eb => eb.EmployeeId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

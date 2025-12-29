@@ -12,7 +12,7 @@ public class Payslip : AuditableEntity<Guid>
 
     [Required]
     public Guid SalaryProfileId { get; set; }
-    public virtual SalaryProfile SalaryProfile { get; set; } = null!;
+    public virtual Benefit SalaryProfile { get; set; } = null!;
 
     /// <summary>
     /// Year of the payslip (e.g., 2024)
