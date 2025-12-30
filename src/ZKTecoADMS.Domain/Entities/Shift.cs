@@ -7,19 +7,15 @@ namespace ZKTecoADMS.Domain.Entities;
 public class Shift : AuditableEntity<Guid>
 {
     [Required]
-    public Guid EmployeeUserId { get; set; }
+    public Guid EmployeeId { get; set; }
+    
+    public virtual Employee Employee { get; set; } = null!;
     
     [Required]
     public DateTime StartTime { get; set; }
     
     [Required]
     public DateTime EndTime { get; set; }
-
-    [Required]
-    public int MaximumAllowedLateMinutes { get; set; } = 30;
-
-    [Required]
-    public int MaximumAllowedEarlyLeaveMinutes { get; set; } = 30;
 
     [Required]
     public int BreakTimeMinutes { get; set; } = 60;
@@ -42,7 +38,6 @@ public class Shift : AuditableEntity<Guid>
     public virtual Attendance? CheckOutAttendance { get; set; }
     
     // Navigation Properties
-    public virtual ApplicationUser EmployeeUser { get; set; } = null!;
 
     public virtual Leave? Leave { get; set; }
 }

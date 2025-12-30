@@ -19,16 +19,16 @@ public class ShiftService(
     {
         return await repository.GetSingleAsync(
             s => s.Id == id,
-            includeProperties: [nameof(Shift.EmployeeUser)],
+            includeProperties: [nameof(Shift.Employee)],
             cancellationToken: cancellationToken);
     }
 
     public async Task<List<Shift>> GetShiftsByManagerAsync(Guid managerId, CancellationToken cancellationToken = default)
     {
         var shifts = await repository.GetAllAsync(
-            filter: s => s.EmployeeUser != null && s.EmployeeUser.ManagerId == managerId,
+            filter: s => s.Employee != null && s.Employee.ManagerId == managerId,
             orderBy: query => query.OrderByDescending(s => s.CreatedAt),
-            includeProperties: new[] { nameof(Shift.EmployeeUser) },
+            includeProperties: new[] { nameof(Shift.Employee) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
@@ -39,7 +39,7 @@ public class ShiftService(
         var shifts = await repository.GetAllAsync(
             filter: s => s.Status == ShiftStatus.Pending,
             orderBy: query => query.OrderBy(s => s.StartTime),
-            includeProperties: new[] { nameof(Shift.EmployeeUser) },
+            includeProperties: new[] { nameof(Shift.Employee) },
             cancellationToken: cancellationToken);
 
         return shifts.ToList();
@@ -121,7 +121,7 @@ public class ShiftService(
     {
         var shift = await repository.GetSingleAsync(
             s => s.Id == shiftId,
-            includeProperties: [nameof(Shift.EmployeeUser), nameof(Shift.CheckInAttendance), nameof(Shift.CheckOutAttendance)],
+            includeProperties: [nameof(Shift.Employee), nameof(Shift.CheckInAttendance), nameof(Shift.CheckOutAttendance)],
             cancellationToken: cancellationToken);
             
         if (shift == null)
@@ -138,12 +138,12 @@ public class ShiftService(
 
         // Get employee to find PIN
         var employee = await employeeRepository.GetSingleAsync(
-            e => e.DeviceId == shift.EmployeeUserId,
+            e => e.DeviceId == shift.EmployeeId,
             cancellationToken: cancellationToken);
 
         if (employee == null)
         {
-            throw new InvalidOperationException($"Employee not found for user {shift.EmployeeUserId}");
+            throw new InvalidOperationException($"Employee not found for user {shift.Employee}");
         }
 
         // Update or create check-in attendance
@@ -215,7 +215,7 @@ public class ShiftService(
     public async Task<(Shift? CurrentShift, Shift? NextShift)> GetTodayShiftAndNextShiftAsync(Guid employeeUserId, CancellationToken cancellationToken = default)
     {
         var currentShift = await repository.GetSingleAsync(
-            s => s.EmployeeUserId == employeeUserId &&
+            s => s.EmployeeId == employeeUserId &&
                  s.StartTime.Date == DateTime.Now.Date &&
                  s.Status == ShiftStatus.Approved,
             includeProperties: [nameof(Shift.CheckInAttendance), nameof(Shift.CheckOutAttendance)],
@@ -223,7 +223,7 @@ public class ShiftService(
 
         var nextShift = await repository.GetFirstOrDefaultAsync(
             s => s.StartTime,
-            filter: s => s.EmployeeUserId == employeeUserId &&
+            filter: s => s.EmployeeId == employeeUserId &&
                  s.StartTime > DateTime.Now &&
                  s.Status == ShiftStatus.Approved,
             includeProperties: [nameof(Shift.CheckInAttendance), nameof(Shift.CheckOutAttendance)],
@@ -235,7 +235,7 @@ public class ShiftService(
     public async Task<Shift?> GetShiftByDateAsync(Guid employeeUserId, DateTime date, CancellationToken cancellationToken = default)
     {
         return await repository.GetSingleAsync(
-            s => s.EmployeeUserId == employeeUserId &&
+            s => s.EmployeeId == employeeUserId &&
                  s.StartTime.Date == date.Date &&
                  s.Status == ShiftStatus.Approved,
             cancellationToken: cancellationToken);

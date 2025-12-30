@@ -13,8 +13,8 @@ public class GetPendingShiftsHandler(
     {
         var pagedResult = await repository.GetPagedResultWithIncludesAsync(
             request.PaginationRequest,
-            filter: s => request.ManagerId == s.EmployeeUser.ManagerId && s.Status == ShiftStatus.Pending,
-            includes: q => q.Include(i => i.EmployeeUser),
+            filter: s => request.ManagerId == s.Employee.ManagerId && s.Status == ShiftStatus.Pending,
+            includes: q => q.Include(i => i.Employee),
             cancellationToken: cancellationToken
         );
         

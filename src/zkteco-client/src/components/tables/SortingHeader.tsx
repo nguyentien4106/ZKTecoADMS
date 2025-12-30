@@ -1,5 +1,5 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 export const SortingHeader = ({ column, title }: { column: any; title: string }) => {
     return (

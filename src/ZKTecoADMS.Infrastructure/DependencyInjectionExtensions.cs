@@ -85,6 +85,12 @@ public static class DependencyInjectionExtensions
             options.AddPolicy(PolicyNames.AdminOnly,
                     policy => policy.RequireRole(nameof(Roles.Admin)));
 
+            options.AddPolicy(PolicyNames.AdminOnly,
+                    policy => policy.RequireRole(nameof(Roles.Admin)));
+
+            options.AddPolicy(PolicyNames.EmployeeOnly,
+                    policy => policy.RequireRole(nameof(Roles.Employee)));
+
             options.AddPolicy(PolicyNames.AtLeastManager,
                     policy => policy.RequireRole(nameof(Roles.Admin), nameof(Roles.Manager)));
             

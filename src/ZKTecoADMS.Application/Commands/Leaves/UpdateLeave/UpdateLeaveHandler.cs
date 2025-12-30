@@ -12,7 +12,7 @@ public class UpdateLeaveHandler(
     {
         try
         {
-            var leave = await leaveRepository.GetByIdAsync(request.LeaveId, [nameof(Leave.Shift), $"{nameof(Leave.Shift)}.{nameof(Shift.EmployeeUser)}"], cancellationToken: cancellationToken);
+            var leave = await leaveRepository.GetByIdAsync(request.LeaveId, [nameof(Leave.Shift), $"{nameof(Leave.Shift)}.{nameof(Shift.Employee)}"], cancellationToken: cancellationToken);
             if (leave == null)
             {
                 return AppResponse<LeaveDto>.Error("Leave request not found");
@@ -34,7 +34,7 @@ public class UpdateLeaveHandler(
             // Managers can edit any leave regardless of status
 
             // Validate the new shift
-            var shift = await shiftRepository.GetByIdAsync(request.ShiftId, [nameof(Shift.EmployeeUser)], cancellationToken: cancellationToken);
+            var shift = await shiftRepository.GetByIdAsync(request.ShiftId, [nameof(Shift.Employee)], cancellationToken: cancellationToken);
             if (shift == null)
             {
                 return AppResponse<LeaveDto>.Error("Invalid shift");
@@ -46,7 +46,7 @@ public class UpdateLeaveHandler(
             }
 
             // For non-managers, ensure the shift belongs to them
-            if (!request.IsManager && shift.EmployeeUserId != request.CurrentUserId)
+            if (!request.IsManager && shift.EmployeeId != request.CurrentUserId)
             {
                 return AppResponse<LeaveDto>.Error("You can only create leave requests for your own shifts");
             }

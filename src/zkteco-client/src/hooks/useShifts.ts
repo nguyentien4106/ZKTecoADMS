@@ -8,10 +8,10 @@ import { CreateShiftRequest, UpdateShiftRequest, UpdateShiftTimesRequest, Reject
 import { PaginationRequest } from '@/types';
 
 // Query hooks
-export const useMyShifts = (paginationRequest: PaginationRequest, status?: ShiftStatus, employeeUserId?: string) => {
+export const useMyShifts = (month: number, year: number, status?: ShiftStatus | 'all') => {
   return useQuery({
-    queryKey: ['shifts', 'my-shifts', paginationRequest, status, employeeUserId],
-    queryFn: () => shiftService.getMyShifts(paginationRequest, status, employeeUserId),
+    queryKey: ['shifts', 'my-shifts', month, year, status],
+    queryFn: () => shiftService.getMyShifts(month, year, status === 'all' ? undefined : status),
   });
 };
 

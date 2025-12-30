@@ -20,11 +20,10 @@ public class EmployeesController(IMediator mediator) : AuthenticatedControllerBa
 {
     [HttpGet]
     [Authorize(Policy = PolicyNames.AtLeastManager)]
-    public async Task<IActionResult> GetEmployees([FromQuery] PaginationRequest request, [FromQuery] string? searchTerm, [FromQuery] string? employmentType, [FromQuery] string? workStatus)
+    public async Task<ActionResult<AppResponse<List<EmployeeDto>>>> GetEmployees([FromQuery] string? searchTerm, [FromQuery] string? employmentType, [FromQuery] string? workStatus)
     {
         var query = new GetEmployeesQuery
         {
-            PaginationRequest = request,
             SearchTerm = searchTerm,
             EmploymentType = employmentType,
             WorkStatus = workStatus,

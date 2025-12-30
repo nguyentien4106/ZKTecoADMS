@@ -2,16 +2,16 @@
 // src/components/employees/EmployeeInfoTable.tsx
 // ==========================================
 import { Employee } from "@/types/employee";
-import { PaginationTable } from "../PaginationTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { EmployeeActions } from "./EmployeeActions";
 import { EmployeeStatusBadge } from "./EmployeeStatusBadge";
 import { DeleteEmployeeDialog } from "./dialogs/DeleteEmployeeDialog";
-import { SortingHeader } from "../SortingHeader";
 import { useEmployeeContext } from "@/contexts/EmployeeContext";
 import { EmploymentTypes } from "@/constants";
 import { Button } from "../ui/button";
+import { SortingHeader } from "../tables/SortingHeader";
+import { Table } from "../tables/Table";
 
 export const EmployeeTable = () => {
   const {
@@ -20,8 +20,6 @@ export const EmployeeTable = () => {
     isDeletePending,
     deleteDialogOpen,
     employeeToDelete,
-    queryParams,
-    setQueryParams,
     handleConfirmDelete,
     setDeleteDialogOpen,
   } = useEmployeeContext();
@@ -86,40 +84,20 @@ export const EmployeeTable = () => {
     },
   ];
 
-  const handlePaginationChange = (pageNumber: number, pageSize: number) => {
-    setQueryParams({
-      ...queryParams,
-      pageNumber,
-      pageSize,
-    });
-  };
-
   if (!employees) {
     return null;
   }
 
   return (
     <>
-      <PaginationTable<Employee>
+      <Table
         columns={columns}
-        data={employees.items || []}
-        paginationRequest={{
-          pageNumber: queryParams.pageNumber || 1,
-          pageSize: queryParams.pageSize || 10,
-          sortBy: undefined,
-          sortOrder: "asc",
-        }}
-        totalCount={employees.totalCount || 0}
-        pageNumber={employees.pageNumber || 1}
-        pageSize={employees.pageSize || 10}
+        data={employees || []}
         isLoading={isLoading}
-        onPaginationChange={handlePaginationChange}
-        manualSorting={true}
-        manualFiltering={true}
+        enableSorting={true}
         emptyMessage="No employees found"
         containerHeight="calc(100vh - 320px)"
       />
-
       <DeleteEmployeeDialog
         open={deleteDialogOpen}
         employee={employeeToDelete}
@@ -127,7 +105,6 @@ export const EmployeeTable = () => {
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
       />
-      {/* <DeviceUserRequestDialog/> */}
     </>
   );
 };

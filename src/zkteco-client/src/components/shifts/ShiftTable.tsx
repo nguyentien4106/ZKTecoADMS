@@ -1,12 +1,11 @@
 import { Shift } from '@/types/shift';
-import { PaginationTable } from '../PaginationTable';
 import { ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
-import { ShowingDateTimeFormat } from '@/constants';
 import { StatusBadge } from './StatusBadge';
 import { ShiftActions } from './ShiftActions';
 import { PaginatedResponse, PaginationRequest } from '@/types';
-import { SortingHeader } from '../SortingHeader';
+import { formatDate } from '@/lib/utils';
+import { SortingHeader } from '../tables/SortingHeader';
+import { PaginationTable } from '../tables/PaginationTable';
 
 interface ShiftTableProps {
     paginatedShifts: PaginatedResponse<Shift>;
@@ -45,45 +44,48 @@ export const ShiftTable = ({
                 accessorKey: 'employeeName', 
                 header: ({ column }: any) => <SortingHeader column={column} title="Employee" />,
                 enableSorting: true
+            },
+            { 
+                accessorKey: 'employeeCode', 
+                header: ({ column }: any) => <SortingHeader column={column} title="Employee Code" />,
+                enableSorting: true
             }] : []),
+        {
+            accessorKey: 'date',
+            header: ({ column }) => <SortingHeader column={column} title="Date" />,
+            cell: ({ row }) => formatDate(new Date(row.getValue('date'))),
+            enableSorting: true,
+        },
         { 
             accessorKey: 'startTime', 
             header: ({ column }) => <SortingHeader column={column} title="Start Time" />,
-            cell: ({ row }) => format(new Date(row.getValue('startTime')), ShowingDateTimeFormat),
+            cell: ({ row }) => row.getValue('startTime'),
             enableSorting: true,
             sortDescFirst: true
         },
         { 
             accessorKey: 'endTime', 
             header: ({ column }) => <SortingHeader column={column} title="End Time" />,
-            cell: ({ row }) => format(new Date(row.getValue('endTime')), ShowingDateTimeFormat),
+            cell: ({ row }) => row.getValue('endTime'),
             enableSorting: true,
-        },
-        {
-            accessorKey: 'checkInTime',
-            header: 'Check-In',
-            cell: ({ row }) => {
-                const checkInTime = row.getValue('checkInTime') as string | undefined;
-                return checkInTime ? format(new Date(checkInTime), ShowingDateTimeFormat) : '-';
-            },
-            enableSorting: true,
-        },
-        {
-            accessorKey: 'checkOutTime',
-            header: "Check-Out",
-            cell: ({ row }) => {
-                const checkOutTime = row.getValue('checkOutTime') as string | undefined;
-                return checkOutTime ? format(new Date(checkOutTime), ShowingDateTimeFormat) : '-    ';
-            },
-            enableSorting: true,    
         },
         { 
             accessorKey: 'totalHours', 
-            header: 'Total Hours'
+            header: 'Total Hours',
+            cell: ({ row }) => `${row.getValue('totalHours')}h`
+        },
+        { 
+            accessorKey: 'breakTimeMinutes', 
+            header: 'Break Time',
+            cell: ({ row }) => `${row.getValue('breakTimeMinutes')} min`
         },
         { 
             accessorKey: 'description', 
-            header: 'Description'
+            header: 'Description',
+            cell: ({ row }) => {
+                const description = row.getValue('description') as string | undefined;
+                return description || '-';
+            }
         },  
         { 
             accessorKey: 'status', 
@@ -92,12 +94,6 @@ export const ShiftTable = ({
                 const status = row.getValue('status') as Shift['status'];
                 return <StatusBadge status={status} rejectionReason={row.original.rejectionReason} />
             },
-            enableSorting: true,
-        },
-        { 
-            accessorKey: 'createdAt', 
-            header: ({ column }) => <SortingHeader column={column} title="Submitted" />,
-            cell: ({ row }) => format(new Date(row.getValue('createdAt')), ShowingDateTimeFormat),
             enableSorting: true,
         },
         ...(showActions ? [{ 

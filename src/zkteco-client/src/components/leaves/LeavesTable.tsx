@@ -1,5 +1,4 @@
 import { LeaveRequest, getLeaveTypeLabel } from '@/types/leave';
-import { PaginationTable } from '../PaginationTable';
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { ShowingDateTimeFormat } from '@/constants';
@@ -8,6 +7,7 @@ import { formatDateTime } from '@/lib/utils';
 import { LeaveStatusBadge } from './LeaveStatusBadge';
 import { LeaveActions } from './LeaveActions';
 import { PaginatedResponse, PaginationRequest } from '@/types';
+import { PaginationTable } from '../tables/PaginationTable';
 
 interface LeavesTableProps {
   paginationRequest: PaginationRequest;

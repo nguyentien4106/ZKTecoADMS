@@ -92,5 +92,10 @@ public class Employee : AuditableEntity<Guid>
     public virtual ICollection<Benefit> Benefits { get; set; } = new List<Benefit>();
     
     public virtual ICollection<DeviceUser> DeviceUsers { get; set; } = new List<DeviceUser>();
+
+    public string GetFullName()
+    {
+        return $"{FirstName} {LastName}".Trim();
+    }
     
 }

@@ -56,9 +56,7 @@ export const MapToEmployeeDialog = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: employeesData, isLoading } = useEmployees({
-    pageNumber: 1,
-    pageSize: 100,
+  const { data: employees = [], isLoading } = useEmployees({
     searchTerm: searchTerm || undefined,
   });
 
@@ -90,7 +88,6 @@ export const MapToEmployeeDialog = ({
     }
   };
 
-  const employees = employeesData?.items || [];
   const selectedEmployee = employees.find(
     (emp) => emp.id === form.watch("employeeId")
   );

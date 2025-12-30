@@ -13,7 +13,7 @@ public class CreateLeaveHandler(
     {
         try
         {
-            var shift = await shiftRepository.GetByIdAsync(request.ShiftId, [nameof(Shift.EmployeeUser)], cancellationToken: cancellationToken);
+            var shift = await shiftRepository.GetByIdAsync(request.ShiftId, [nameof(Shift.Employee)], cancellationToken: cancellationToken);
             if (shift == null)
             {
                 return AppResponse<LeaveDto>.Error("Invalid shift for the specified employee");

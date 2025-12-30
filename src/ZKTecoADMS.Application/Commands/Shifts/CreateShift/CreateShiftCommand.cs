@@ -4,11 +4,12 @@ using ZKTecoADMS.Application.DTOs.Shifts;
 
 namespace ZKTecoADMS.Application.Commands.Shifts.CreateShift;
 
-public record CreateShiftCommand(
-    Guid EmployeeUserId,
-    List<WorkingDay> WorkingDays,
-    int MaximumAllowedLateMinutes = 30,
-    int MaximumAllowedEarlyLeaveMinutes = 30,
-    int BreakTimeMinutes = 60,
-    string? Description = null,
-    bool IsManager = false) : ICommand<AppResponse<ShiftDto>>;
+public class CreateShiftCommand : ICommand<AppResponse<ShiftDto>>
+{
+    public Guid EmployeeId { get; set; }
+    public List<WorkingDay> WorkingDays { get; set; } = [];
+
+    public int BreakTimeMinutes { get; set; } = 60;
+    
+    public string? Description { get; set; }
+}

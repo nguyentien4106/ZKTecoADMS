@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, UserPlus } from "lucide-react";
 import { ShiftTable } from '@/components/shifts/ShiftTable';
-import { ShiftFilterBar } from '@/components/shifts/ShiftFilterBar';
+import { ManagementShiftFilterBar } from '@/components/shifts/ManagementShiftFilterBar';
 import { ApproveShiftDialog } from '@/components/dialogs/ApproveShiftDialog';
 import { RejectShiftDialog } from '@/components/dialogs/RejectShiftDialog';
 import { EditShiftDialog } from '@/components/dialogs/EditShiftDialog';
@@ -13,7 +13,14 @@ import { AssignShiftDialog } from '@/components/dialogs/AssignShiftDialog';
 import { ShiftManagementProvider, useShiftManagementContext } from '@/contexts/ShiftManagementContext';
 import { useCallback, useEffect, useState } from "react";
 import { ShiftTemplateList } from "@/components/shiftTemplates/ShiftTemplateList";
+import { ShiftManagementFilter } from "@/types/shift";
 
+const defaultFilter: ShiftManagementFilter = {
+    employeeIds: [],
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
+};
+const today = new Date();
 const ShiftManagementHeader = () => {
     return (
         <PageHeader
@@ -32,6 +39,8 @@ const ShiftManagementTabs = () => {
         templates,
         isLoading,
         employees,
+        filters,
+        setFilters,
         handleApproveClick,
         handleRejectClick,
         handleEditShiftClick,
@@ -85,6 +94,42 @@ const ShiftManagementTabs = () => {
         }));
     }, [setAllPaginationRequest]);
 
+    const handleMonthChange = (date: Date | undefined) => {
+        if (date) {
+            setFilters(prev => ({
+                ...prev,
+                month: date.getMonth() + 1,
+                year: date.getFullYear(),
+            }));
+        }
+    };
+
+    const handleEmployeeIdsChange = (employeeIds: string[]) => {
+        setFilters(prev => ({
+            ...prev,
+            employeeIds,
+        }));
+    };
+
+    const handleApplyFilters = () => {
+        setAllPaginationRequest(prev => ({
+            ...prev,
+            pageNumber: 1, // Reset to first page when applying filters
+        }));
+    };
+
+    const handleClearFilters = () => {
+        setFilters({
+            employeeIds: [],
+            month: today.getMonth() + 1,
+            year: today.getFullYear(),
+        });
+        setAllPaginationRequest(prev => ({
+            ...prev,
+            pageNumber: 1,
+        }));
+    };
+
     return (
         <div className="mt-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -130,8 +175,14 @@ const ShiftManagementTabs = () => {
 
                 <TabsContent value="all" className="mt-6">
                     <div className="mb-6 space-y-4">
-                        <ShiftFilterBar
+                        <ManagementShiftFilterBar
+                            selectedMonth={new Date(filters.year, filters.month - 1, 1)}
+                            selectedEmployeeIds={filters.employeeIds}
                             employees={employees}
+                            onMonthChange={handleMonthChange}
+                            onEmployeeIdsChange={handleEmployeeIdsChange}
+                            onApplyFilters={handleApplyFilters}
+                            onClearFilters={handleClearFilters}
                             isLoading={isLoading}
                         />
                         

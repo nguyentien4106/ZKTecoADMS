@@ -13,7 +13,7 @@ public abstract class AuthenticatedControllerBase : ControllerBase
     
     protected string CurrentUserRole => GetCurrentUserRole();
 
-    protected Guid? EmployeeId => GetEmployeeId();
+    protected Guid EmployeeId => GetEmployeeId();
     
     protected Guid? ManagerId => GetManagerId();
 
@@ -43,12 +43,12 @@ public abstract class AuthenticatedControllerBase : ControllerBase
         return roleClaim;
     }
 
-    private Guid? GetEmployeeId()
+    private Guid GetEmployeeId()
     {
         var employeeIdClaim = User.FindFirst(ClaimTypeNames.EmployeeId)?.Value;
         if (string.IsNullOrEmpty(employeeIdClaim) || !Guid.TryParse(employeeIdClaim, out var employeeId))
         {
-            return null;
+            return Guid.Empty;
         }
         return employeeId;
     }

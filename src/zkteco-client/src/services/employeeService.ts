@@ -1,10 +1,7 @@
 import { apiService } from './api';
 import { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '@/types/employee';
-import { PaginatedResponse } from '@/types';
 
 export interface GetEmployeesParams {
-  pageNumber?: number;
-  pageSize?: number;
   searchTerm?: string;
   employmentType?: string;
   workStatus?: string;
@@ -12,7 +9,7 @@ export interface GetEmployeesParams {
 
 export const employeeService = {
   getEmployees: async (params: GetEmployeesParams = {}) => {
-    return apiService.get<PaginatedResponse<Employee>>('/api/employees', params);
+    return apiService.get<Employee[]>('/api/employees', params);
   },
 
   getEmployeeById: async (id: string) => {

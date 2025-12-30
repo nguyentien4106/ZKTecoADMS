@@ -2,7 +2,7 @@ import { LeaveDialogState, LeaveStatus, LeaveType } from '@/types/leave';
 import { CreateDeviceRequest, PaginationRequest } from "@/types";
 import { AttendancesFilterParams } from "@/types/attendance";
 import { CreateShiftTemplateRequest, CreatShiftDialog, ShiftManagementFilter } from "@/types/shift";
-import { format, startOfMonth, subMonths } from "date-fns";
+import { format, subMonths } from "date-fns";
 import { DateTimeFormat } from ".";
 
 export const defaultNewDevice: CreateDeviceRequest = {
@@ -53,10 +53,8 @@ export const defaultNewShiftTemplate: CreateShiftTemplateRequest = {
 
 export const defaultShiftManagementFilter: ShiftManagementFilter = {
     employeeIds: [],
-    dateRange: {
-        from: startOfMonth(new Date()),
-        to: today,
-    },
+    month: today.getMonth() + 1,
+    year: today.getFullYear(),
 };
 
 const now = new Date();

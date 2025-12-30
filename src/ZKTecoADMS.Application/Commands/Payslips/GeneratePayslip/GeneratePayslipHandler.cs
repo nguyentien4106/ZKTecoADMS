@@ -79,7 +79,7 @@ public class GeneratePayslipHandler(
         // Get approved shifts for the period
         var shifts = await shiftRepository.GetAllAsync(
             filter: s => 
-                s.EmployeeUserId == request.EmployeeUserId &&
+                s.EmployeeId == request.EmployeeUserId &&
                 s.Status == ShiftStatus.Approved &&
                 s.CheckInAttendanceId != null &&
                 s.CheckOutAttendanceId != null &&

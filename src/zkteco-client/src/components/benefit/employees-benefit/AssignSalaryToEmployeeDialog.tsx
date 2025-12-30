@@ -34,13 +34,13 @@ const defaultFormData: AssignSalaryProfileRequest = {
 
 export const AssignSalaryToEmployeeDialog = () => {
   const { assignDialogOpen, setAssignDialogOpen, preSelectedEmployeeId } = useSalaryProfileContext();
-  const { data: employeesData } = useEmployees({ pageSize: 1000 });
+  const { data: employees = [] } = useEmployees();
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<AssignSalaryProfileRequest>(defaultFormData);
   const assignSalaryProfile = useAssignEmployee();
   
   // Get selected employee to determine employment type
-  const selectedEmployee = employeesData?.items?.find(e => e.id === formData.employeeId);
+  const selectedEmployee = employees?.find(e => e.id === formData.employeeId);
   const employmentType = selectedEmployee?.employmentType;
   
   // Fetch salary profiles based on employee's employment type
@@ -109,7 +109,7 @@ export const AssignSalaryToEmployeeDialog = () => {
                 <SelectValue placeholder="Select an employee" />
               </SelectTrigger>
               <SelectContent>
-                {employeesData?.items?.map((employee) => (
+                {employees?.map((employee) => (
                   <SelectItem key={employee.id} value={employee.id}>
                     {employee.fullName} - {employee.employeeCode} ({employee.employmentType === 0 ? 'Hourly' : 'Monthly'})
                   </SelectItem>

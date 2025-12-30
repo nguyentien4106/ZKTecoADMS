@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select"
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { PaginationRequest } from "@/types"
-import { LoadingSpinner } from "./LoadingSpinner"
+import { LoadingSpinner } from "../LoadingSpinner"
 
 interface PaginationTableProps<TData> {
   columns: ColumnDef<TData>[]

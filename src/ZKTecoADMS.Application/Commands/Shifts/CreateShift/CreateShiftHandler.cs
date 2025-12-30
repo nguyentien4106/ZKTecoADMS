@@ -12,7 +12,7 @@ public class CreateShiftHandler(IRepository<Shift> shiftRepository)
         {
             var workingDates = request.WorkingDays.Select(i => i.StartTime.Date);
             var existingShifts = await shiftRepository.GetAllAsync(
-                s => s.EmployeeUserId == request.EmployeeUserId &&
+                s => s.EmployeeId == request.EmployeeId &&
                      workingDates.Contains(s.StartTime.Date) &&
                      s.Status == ShiftStatus.Approved,
                 cancellationToken: cancellationToken);
@@ -23,20 +23,15 @@ public class CreateShiftHandler(IRepository<Shift> shiftRepository)
                     string.Join(", ", existingShifts.Select(s => s.StartTime.Date.ToString("yyyy-MM-dd"))));
             }
 
-            var shifts = request.WorkingDays.Select(day =>
+            var shifts = request.WorkingDays.Select(day => new Shift
             {
-                return new Shift
-                {
-                    EmployeeUserId = request.EmployeeUserId,
-                    StartTime = day.StartTime,
-                    EndTime = day.EndTime,
-                    MaximumAllowedLateMinutes = request.MaximumAllowedLateMinutes,
-                    MaximumAllowedEarlyLeaveMinutes = request.MaximumAllowedEarlyLeaveMinutes,
-                    BreakTimeMinutes = request.BreakTimeMinutes,
-                    Description = request.IsManager ? "Assigned by manager. " + request.Description : request.Description,
-                    Status = request.IsManager ? ShiftStatus.Approved : ShiftStatus.Pending,
-                    IsActive = true
-                };
+                EmployeeId = request.EmployeeId,
+                StartTime = day.StartTime,
+                EndTime = day.EndTime,
+                BreakTimeMinutes = request.BreakTimeMinutes,
+                Description = request.Description,
+                Status = ShiftStatus.Pending,
+                IsActive = true
             }).ToList();
 
 

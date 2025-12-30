@@ -1,7 +1,7 @@
 // ==========================================
 // src/contexts/ShiftManagementContext.tsx
 // ==========================================
-import { createContext, useContext, useState, ReactNode, Dispatch } from 'react';
+import { createContext, useContext, useState, ReactNode, Dispatch, useEffect } from 'react';
 import { CreateShiftRequest, Shift, ShiftTemplate, UpdateShiftTemplateRequest, CreateShiftTemplateRequest, ShiftManagementFilter } from '@/types/shift';
 import { 
   usePendingShifts, 
@@ -18,9 +18,8 @@ import {
 } from '@/hooks/useShiftTemplate';
 import { PaginatedResponse, PaginationRequest } from '@/types';
 import { defaultShiftManagementFilter, defaultShiftPaginationRequest } from '@/constants/defaultValue';
-import { useEmployeesByManager } from '@/hooks/useAccount';
-import { ShiftFilters } from '@/components/shifts/ShiftFilterBar';
-import { de } from 'date-fns/locale';
+import { Employee } from '@/types/employee';
+import { useEmployees } from '@/hooks/useEmployee';
 
 interface ShiftManagementContextValue {
   // State
@@ -30,7 +29,7 @@ interface ShiftManagementContextValue {
   allPaginatedShifts: PaginatedResponse<Shift> | undefined;
   templates: ShiftTemplate[];
   isLoading: boolean;
-  employees: Array<{ id: string; firstName: string; lastName: string; email: string }>;
+  employees: Employee[];
   filters: ShiftManagementFilter;
 
   setPendingPaginationRequest: Dispatch<React.SetStateAction<PaginationRequest>>;
@@ -86,6 +85,12 @@ interface ShiftManagementProviderProps {
   children: ReactNode;
 }
 
+const defaultFilter: ShiftManagementFilter = {
+    employeeIds: [],
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
+};
+
 export const ShiftManagementProvider = ({ children }: ShiftManagementProviderProps) => {
   // Dialog states
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
@@ -98,14 +103,21 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
   const [editShiftDialogOpen, setEditShiftDialogOpen] = useState(false);
   const [pendingPaginationRequest, setPendingPaginationRequest] = useState(defaultShiftPaginationRequest);
   const [allPaginationRequest, setAllPaginationRequest] = useState(defaultShiftPaginationRequest);
-  const [filters, setFilters] = useState<ShiftManagementFilter>(defaultShiftManagementFilter);
+  const [filters, setFilters] = useState<ShiftManagementFilter>(defaultFilter);
 
   // Hooks
   const { data: pendingPaginatedShifts, isLoading: isPendingLoading } = usePendingShifts(pendingPaginationRequest);
   const { data: allPaginatedShifts, isLoading: isAllLoading } = useManagedShifts(allPaginationRequest, filters);
   const { data: templates = [], isLoading: isTemplatesLoading } = useShiftTemplates();
-  const { data: employees = [], isLoading: isEmployeesLoading } = useEmployeesByManager();
+  const { data: employees = [], isLoading: isEmployeesLoading } = useEmployees({ employmentType: "0" }); // Hourly
 
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      employeeIds: employees.map(emp => emp.id),
+    }));
+  }, [employees])
+  
   const approveShiftMutation = useApproveShift();
   const rejectShiftMutation = useRejectShift();
   const createTemplateMutation = useCreateShiftTemplate();

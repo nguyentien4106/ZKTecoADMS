@@ -16,7 +16,7 @@ public class GetNextShiftHandler(IRepository<Shift> shiftRepository)
         var shifts = await shiftRepository.GetAllAsync(cancellationToken: cancellationToken);
         
         var nextShift = shifts
-            .Where(s => s.EmployeeUserId == request.UserId)
+            .Where(s => s.EmployeeId == request.UserId)
             .Where(s => s.StartTime > now)
             .Where(s => s.Status == ShiftStatus.Approved)
             .OrderBy(s => s.StartTime)

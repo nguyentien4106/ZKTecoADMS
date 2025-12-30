@@ -1,24 +1,27 @@
 // ==========================================
 // src/contexts/ShiftContext.tsx
 // ==========================================
-import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction, useMemo, useCallback } from 'react';
-import { Shift, CreateShiftRequest, UpdateShiftRequest } from '@/types/shift';
+import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction, useCallback } from 'react';
+import { Shift, CreateShiftRequest, UpdateShiftRequest, ShiftStatus } from '@/types/shift';
 import { 
   useMyShifts, 
   useCreateShift, 
   useUpdateShift, 
   useDeleteShift 
 } from '@/hooks/useShifts';
-import { defaultShiftPaginationRequest } from '@/constants/defaultValue';
-import { PaginatedResponse, PaginationRequest } from '@/types';
 
 interface ShiftContextValue {
   // State
   isLoading: boolean;
-  paginatedShifts: PaginatedResponse<Shift>
+  shifts: Shift[];
 
-  paginationRequest: PaginationRequest;
-  setPaginationRequest: Dispatch<SetStateAction<PaginationRequest>>;
+  // Filter state
+  selectedMonth: Date;
+  selectedStatus: ShiftStatus | 'all';
+  setSelectedMonth: Dispatch<SetStateAction<Date>>;
+  setSelectedStatus: Dispatch<SetStateAction<ShiftStatus | 'all'>>;
+  applyFilters: () => void;
+  clearFilters: () => void;
 
   // Dialog states
   dialogMode: 'create' | 'edit' | null;
@@ -50,13 +53,36 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
   // Dialog states
   const [dialogMode, setDialogMode] = useState<'create' | 'edit' | null>(null);
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
-  const [paginationRequest, setPaginationRequest] = useState(defaultShiftPaginationRequest);
+  
+  // Filter states
+  const currentDate = new Date();
+  const [selectedMonth, setSelectedMonth] = useState<Date>(currentDate);
+  const [selectedStatus, setSelectedStatus] = useState<ShiftStatus | 'all'>('all');
+  const [appliedMonth, setAppliedMonth] = useState<Date>(currentDate);
+  const [appliedStatus, setAppliedStatus] = useState<ShiftStatus | 'all'>('all');
 
   // Hooks
-  const { data: paginatedShifts, isLoading } = useMyShifts(paginationRequest);
+  const { data: shifts, isLoading } = useMyShifts(
+    appliedMonth.getMonth() + 1, // getMonth() returns 0-11, backend expects 1-12
+    appliedMonth.getFullYear(),
+    appliedStatus
+  );
   const createShiftMutation = useCreateShift();
   const updateShiftMutation = useUpdateShift();
   const deleteShiftMutation = useDeleteShift();
+
+  const applyFilters = useCallback(() => {
+    setAppliedMonth(selectedMonth);
+    setAppliedStatus(selectedStatus);
+  }, [selectedMonth, selectedStatus]);
+
+  const clearFilters = useCallback(() => {
+    const now = new Date();
+    setSelectedMonth(now);
+    setSelectedStatus('all');
+    setAppliedMonth(now);
+    setAppliedStatus('all');
+  }, []);
 
   const handleCreate = useCallback(async (data: CreateShiftRequest) => {
     await createShiftMutation.mutateAsync(data);
@@ -78,24 +104,20 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
     setDialogMode('edit');
   }, []);
 
-  // Memoize the default empty paginated response
-  const emptyPaginatedResponse = useMemo<PaginatedResponse<Shift>>(() => ({ 
-    items: [], 
-    totalCount: 0, 
-    pageNumber: 1, 
-    pageSize: 10, 
-    totalPages: 0,
-    hasPreviousPage: false,
-    hasNextPage: false
-  }), []);
-
   // Memoize the context value
   const value: ShiftContextValue = {
     // State
-    paginatedShifts: paginatedShifts || emptyPaginatedResponse,
+    shifts: shifts || [],
     isLoading,
-    paginationRequest,
-    setPaginationRequest,
+    
+    // Filter state
+    selectedMonth,
+    selectedStatus,
+    setSelectedMonth,
+    setSelectedStatus,
+    applyFilters,
+    clearFilters,
+    
     // Dialog states
     dialogMode,
     setDialogMode,

@@ -1,3 +1,4 @@
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Commands.Shifts.CreateShift;
@@ -5,25 +6,31 @@ using ZKTecoADMS.Application.Commands.Shifts.DeleteShift;
 using ZKTecoADMS.Application.Commands.Shifts.ApproveShift;
 using ZKTecoADMS.Application.Commands.Shifts.RejectShift;
 using ZKTecoADMS.Application.Commands.Shifts.UpdateShift;
-using ZKTecoADMS.Application.Queries.Shifts.GetShiftsByEmployee;
 using ZKTecoADMS.Application.Queries.Shifts.GetPendingShifts;
 using ZKTecoADMS.Application.Queries.Shifts.GetShiftsByManager;
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Shifts;
 using ZKTecoADMS.Application.Models;
 using ZKTecoADMS.Domain.Enums;
+using ZKTecoADMS.Application.Queries.Shifts.GetMyShifts;
 
 namespace ZKTecoADMS.Api.Controllers;
-
 [ApiController]
 [Route("api/[controller]")]
 public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
 {
     [HttpGet("my-shifts")]
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
-    public async Task<ActionResult<AppResponse<List<ShiftDto>>>> GetMyShifts([FromQuery]ShiftStatus? status, [FromQuery]Guid? employeeUserId, [FromQuery]PaginationRequest request)
+    public async Task<ActionResult<AppResponse<List<ShiftDto>>>> GetMyShifts([FromQuery] int Month, [FromQuery] int Year, [FromQuery] ShiftStatus? Status)
     {
-        var query = new GetShiftsByEmployeeQuery(request, employeeUserId ?? CurrentUserId, status);
+        var query = new GetMyShiftsQuery()
+        {
+            EmployeeId = EmployeeId,
+            Month = Month,
+            Year = Year,
+            Status = Status
+        };
+
         var result = await mediator.Send(query);
         return Ok(result);
     }
@@ -32,22 +39,15 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
     [Authorize(Policy = PolicyNames.HourlyEmployeeOnly)]
     public async Task<ActionResult<AppResponse<ShiftDto>>> CreateShift([FromBody] CreateShiftRequest request)
     {
-        var command = new CreateShiftCommand(
-            request.EmployeeUserId ?? CurrentUserId,
-            request.WorkingDays,
-            request.MaximumAllowedLateMinutes,
-            request.MaximumAllowedEarlyLeaveMinutes,
-            request.BreakTimeMinutes,
-            request.Description,
-            IsManager
-        );
+        var command = request.Adapt<CreateShiftCommand>();
+        command.EmployeeId = EmployeeId;
         
         var result = await mediator.Send(command);
         return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
+    [Authorize(Policy = PolicyNames.HourlyEmployeeOnly)]
     public async Task<ActionResult<AppResponse<bool>>> DeleteShift(Guid id)
     {
         var command = new DeleteShiftCommand(id);
@@ -65,11 +65,11 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
         return Ok(result);
     }
 
-    [HttpGet("managed")]
+    [HttpPost("managed")]
     [Authorize(Policy = PolicyNames.AtLeastManager)]
-    public async Task<ActionResult<AppResponse<PagedResult<ShiftDto>>>> GetManagedShifts([FromQuery] PaginationRequest request)
+    public async Task<ActionResult<AppResponse<PagedResult<ShiftDto>>>> GetManagedShifts([FromQuery] PaginationRequest request, [FromBody]GetManagedShiftRequest filter)
     {
-        var query = new GetShiftsByManagerQuery(CurrentUserId, request);
+        var query = new GetShiftsByManagerQuery(CurrentUserId, request, filter);
         var result = await mediator.Send(query);
         return Ok(result);
     }

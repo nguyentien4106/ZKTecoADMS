@@ -4,10 +4,8 @@ using ZKTecoADMS.Application.Models;
 
 namespace ZKTecoADMS.Application.Queries.Employees.GetEmployees;
 
-public class GetEmployeesQuery : IRequest<AppResponse<PagedResult<EmployeeDto>>>
+public class GetEmployeesQuery : IRequest<AppResponse<List<EmployeeDto>>>
 {
-    public PaginationRequest PaginationRequest {get;set;}
-    
     public string? SearchTerm { get; set; }
     public string? EmploymentType { get; set; }
     public string? WorkStatus { get; set; }

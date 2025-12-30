@@ -6,13 +6,11 @@ namespace ZKTecoADMS.Application.Queries.Employees.GetEmployees;
 
 public class GetEmployeesHandler(
     IRepositoryPagedQuery<Employee> employeeRepository
-    ) 
-    : IRequestHandler<GetEmployeesQuery, AppResponse<PagedResult<EmployeeDto>>>
+    ) : IRequestHandler<GetEmployeesQuery, AppResponse<List<EmployeeDto>>>
 {
-    public async Task<AppResponse<PagedResult<EmployeeDto>>> Handle(GetEmployeesQuery request, CancellationToken cancellationToken)
+    public async Task<AppResponse<List<EmployeeDto>>> Handle(GetEmployeesQuery request, CancellationToken cancellationToken)
     {
-        var pagedResult = await employeeRepository.GetPagedResultAsync(
-            request.PaginationRequest,
+        var employees = await employeeRepository.GetAllAsync(
             filter: e => e.ManagerId == request.ManagerId && 
                     (string.IsNullOrEmpty(request.SearchTerm) || 
                     e.EmployeeCode.Contains(request.SearchTerm) ||
@@ -24,9 +22,6 @@ public class GetEmployeesHandler(
                     (string.IsNullOrEmpty(request.WorkStatus) || (int)e.WorkStatus == int.Parse(request.WorkStatus))
         );
 
-        var result = new PagedResult<EmployeeDto>(pagedResult.Items.Adapt<List<EmployeeDto>>(), pagedResult.TotalCount, pagedResult.PageNumber, pagedResult.PageSize);
-
-        
-        return AppResponse<PagedResult<EmployeeDto>>.Success(result);
+        return AppResponse<List<EmployeeDto>>.Success(employees.Adapt<List<EmployeeDto>>());
     }
 }

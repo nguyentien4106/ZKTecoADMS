@@ -86,15 +86,13 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   const [employeeForAccount, setEmployeeForAccount] = useState<Employee | null>(null);
   const [employeeForUpdateAccount, setEmployeeForUpdateAccount] = useState<Employee | null>(null);
   const [queryParams, setQueryParams] = useState<GetEmployeesParams>({
-    pageNumber: 1,
-    pageSize: 10,
     searchTerm: '',
     workStatus: '',
     employmentType: '',
   });
   
   // Hooks
-  const { data: employees, isLoading } = useEmployees(queryParams);
+  const { data: employees = [], isLoading } = useEmployees(queryParams);
   const deleteEmployeeMutation = useDeleteEmployee();
   const createEmployeeMutation = useCreateEmployee();
   const updateEmployeeMutation = useUpdateEmployee();

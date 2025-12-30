@@ -12,9 +12,13 @@ import type {
 
 export const shiftService = {
     // Employee endpoints
-    getMyShifts: async (paginationRequest: PaginationRequest, status?: ShiftStatus, employeeUserId?: string) => {
-        const queryString = buildQueryParams({ ...paginationRequest, status, employeeUserId });
-        return await apiService.get<PaginatedResponse<Shift>>('/api/shifts/my-shifts' + (queryString ? `?${queryString}` : ''));
+    getMyShifts: async (month: number, year: number, status?: ShiftStatus) => {
+        const params: any = { Month: month, Year: year };
+        if (status !== undefined && status !== 'all' as any) {
+            params.Status = status;
+        }
+        const queryString = buildQueryParams(params);
+        return await apiService.get<Shift[]>('/api/shifts/my-shifts' + (queryString ? `?${queryString}` : ''));
     },
 
     createShift: async (data: CreateShiftRequest) => {
@@ -36,9 +40,8 @@ export const shiftService = {
     },
 
     getManagedShifts: async (paginationRequest: PaginationRequest, filters: ShiftManagementFilter) => {
-        console.log('Filters in service:', filters);
-        const queryString = buildQueryParams({...paginationRequest, ...filters });
-        return await apiService.get<PaginatedResponse<Shift>>('/api/shifts/managed' + (queryString ? `?${queryString}` : ''));
+        const queryString = buildQueryParams({...paginationRequest });
+        return await apiService.post<PaginatedResponse<Shift>>('/api/shifts/managed' + (queryString ? `?${queryString}` : ''), filters);
     },
 
     approveShift: async (id: string) => {

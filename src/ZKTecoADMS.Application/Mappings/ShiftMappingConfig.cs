@@ -7,9 +7,11 @@ public class ShiftMappingConfig : IRegister
     public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<Shift, ShiftDto>()
-            .Map(dest => dest.EmployeeName, src => src.EmployeeUser != null ? $"{src.EmployeeUser.FirstName} {src.EmployeeUser.LastName}".Trim() : null )
-            .Map(dest => dest.CheckInTime, src => src.CheckInAttendance != null ? src.CheckInAttendance.AttendanceTime : (DateTime?)null)
-            .Map(dest => dest.CheckOutTime, src => src.CheckOutAttendance != null ? src.CheckOutAttendance.AttendanceTime : (DateTime?)null)
+            .Map(dest => dest.EmployeeCode, src => src.Employee.EmployeeCode)
+            .Map(dest => dest.EmployeeName, src => src.Employee.GetFullName())
+            .Map(dest => dest.StartTime, src => TimeOnly.FromDateTime(src.StartTime))
+            .Map(dest => dest.EndTime, src => TimeOnly.FromDateTime(src.EndTime))
+            .Map(dest => dest.Date, src => src.StartTime.Date)
             .Map(dest => dest, src => src);
 
     }

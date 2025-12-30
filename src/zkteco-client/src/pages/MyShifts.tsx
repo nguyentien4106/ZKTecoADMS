@@ -2,46 +2,62 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ShiftTable } from '@/components/shifts/ShiftTable';
+import { MyShiftsFilterBar } from '@/components/shifts/MyShiftsFilterBar';
 import { ShiftRequestDialog } from '@/components/dialogs/ShiftRequestDialog';
 import { ShiftProvider, useShiftContext } from '@/contexts/ShiftContext';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAuth } from "@/contexts/AuthContext";
 
 const MyShiftsContent = () => {
     const { 
-        paginatedShifts,
-        paginationRequest,
+        shifts,
         isLoading, 
         setDialogMode,
         handleEdit,
         handleDelete,
-        setPaginationRequest
+        selectedMonth,
+        selectedStatus,
+        setSelectedMonth,
+        setSelectedStatus,
+        applyFilters,
+        clearFilters,
     } = useShiftContext();
     
-    const onPaginationChange = useCallback((pageNumber: number, pageSize: number) => {
-        setPaginationRequest(prev => ({
-            ...prev,
-            pageNumber: pageNumber,
-            pageSize: pageSize
-        }));
-    }, [setPaginationRequest]);
+    const { isHourlyEmployee } = useAuth();
 
-    const onSortingChange = useCallback((sorting: any) => {
-        setPaginationRequest(prev => ({
-            ...prev,
-            sortBy: sorting.length > 0 ? sorting[0].id : undefined,
-            sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
-            pageNumber: 1, // Reset to first page when sorting changes
-        }));
-    }, [setPaginationRequest]);
+    // Convert shifts array to paginated format for the table
+    const paginatedShifts = useMemo(() => ({
+        items: shifts,
+        totalCount: shifts.length,
+        pageNumber: 1,
+        pageSize: shifts.length,
+        totalPages: 1,
+        hasPreviousPage: false,
+        hasNextPage: false
+    }), [shifts]);
 
-    const onFiltersChange = useCallback((filters: any) => {
-        // Implement filters change logic if needed
-        console.log("Filters changed:", filters);
-    }, []); 
-    const {
-        isHourlyEmployee
-    } = useAuth();  
+    const paginationRequest = useMemo(() => ({
+        pageNumber: 1,
+        pageSize: shifts.length,
+    }), [shifts.length]);
+
+    const onPaginationChange = useCallback(() => {
+        // Pagination disabled for this view since we show all shifts for the month
+    }, []);
+
+    const onSortingChange = useCallback(() => {
+        // Sorting handled client-side if needed
+    }, []);
+
+    const onFiltersChange = useCallback(() => {
+        // Filters handled by filter bar
+    }, []);
+
+    const handleMonthChange = useCallback((date: Date | undefined) => {
+        if (date) {
+            setSelectedMonth(date);
+        }
+    }, [setSelectedMonth]);
 
     return (
         <div>
@@ -57,7 +73,17 @@ const MyShiftsContent = () => {
                     )
                 }
             />
-             <div className="mt-6">
+
+            <MyShiftsFilterBar
+                selectedMonth={selectedMonth}
+                selectedStatus={selectedStatus}
+                onMonthChange={handleMonthChange}
+                onStatusChange={setSelectedStatus}
+                onApplyFilters={applyFilters}
+                onClearFilters={clearFilters}
+            />
+
+            <div className="mt-6">
                 <ShiftTable
                     paginatedShifts={paginatedShifts}
                     paginationRequest={paginationRequest}

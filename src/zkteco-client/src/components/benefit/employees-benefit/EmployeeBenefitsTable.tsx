@@ -83,7 +83,7 @@ export const EmployeeSalaryProfileTable = () => {
                 <TableCell>
                   <div className="flex items-center gap-2">
                     {
-                      benefit.benefit ? (
+                      benefit.benefit && (
                         <Button
                           variant="outline"
                           size="sm"
@@ -92,8 +92,9 @@ export const EmployeeSalaryProfileTable = () => {
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
                         </Button>
-                      ) : (
-                        <Button
+                      )
+                    }
+                    <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleOpenAssignDialog(benefit.employeeId)}
@@ -101,9 +102,6 @@ export const EmployeeSalaryProfileTable = () => {
                           <UserPlus className="mr-2 h-4 w-4" />
                           Assign Benefit
                         </Button>
-                      )
-                    }
-                    
                   </div>
                 </TableCell>
               </TableRow>
