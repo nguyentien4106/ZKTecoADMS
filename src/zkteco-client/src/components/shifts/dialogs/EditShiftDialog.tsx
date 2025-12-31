@@ -21,16 +21,17 @@ export function EditShiftDialog({ open, onOpenChange, shift }: EditShiftDialogPr
     checkOutTime: string;
   }>();
   
+  console.log("EditShiftDialog render with shift:", shift);
   const updateShiftTimes = useUpdateShiftTimes();
 
   useEffect(() => {
     if (shift && open) {
       // Format existing times for datetime-local input (YYYY-MM-DDTHH:mm)
-      const checkInValue = shift.checkInTime 
-        ? format(new Date(shift.checkInTime), "yyyy-MM-dd'T'HH:mm")
+      const checkInValue = shift.startTime 
+        ? format(new Date(shift.startTime), "yyyy-MM-dd'T'HH:mm")
         : '';
-      const checkOutValue = shift.checkOutTime 
-        ? format(new Date(shift.checkOutTime), "yyyy-MM-dd'T'HH:mm")
+      const checkOutValue = shift.endTime 
+        ? format(new Date(shift.endTime), "yyyy-MM-dd'T'HH:mm")
         : '';
       
       reset({

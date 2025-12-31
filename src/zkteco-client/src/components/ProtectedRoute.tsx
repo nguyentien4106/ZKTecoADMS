@@ -5,6 +5,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingSpinner } from './LoadingSpinner';
+import { PATHS } from '@/constants/path';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -23,7 +24,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to={PATHS.LOGIN} state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

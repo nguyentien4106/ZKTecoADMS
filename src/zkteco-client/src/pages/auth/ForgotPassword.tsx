@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { authService } from '@/services/authService';
 import { toast } from 'sonner';
+import { PATHS } from '@/constants/path';
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -73,7 +74,7 @@ export const ForgotPassword = () => {
             </div>
 
             <div className="text-center">
-              <Link to="/login">
+              <Link to={PATHS.LOGIN}>
                 <Button variant="ghost" className="gap-2">
                   <ArrowLeft className="w-4 h-4" />
                   Back to Login
@@ -128,7 +129,7 @@ export const ForgotPassword = () => {
             </Button>
 
             <div className="text-center">
-              <Link to="/login">
+              <Link to={PATHS.LOGIN}>
                 <Button variant="ghost" className="gap-2">
                   <ArrowLeft className="w-4 h-4" />
                   Back to Login

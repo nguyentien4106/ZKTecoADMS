@@ -1,14 +1,17 @@
 // ==========================================
 // src/contexts/ShiftManagementContext.tsx
 // ==========================================
-import { createContext, useContext, useState, ReactNode, Dispatch, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, Dispatch, useEffect, useMemo } from 'react';
 import { CreateShiftRequest, Shift, ShiftTemplate, UpdateShiftTemplateRequest, CreateShiftTemplateRequest, ShiftManagementFilter } from '@/types/shift';
 import { 
   usePendingShifts, 
   useManagedShifts, 
-  useApproveShift, 
+  useApproveShift,
+  useApproveShifts, 
   useRejectShift,
+  useRejectShifts,
   useCreateShift,
+  useAssignShift,
 } from '@/hooks/useShifts';
 import {
   useShiftTemplates,
@@ -17,7 +20,7 @@ import {
   useDeleteShiftTemplate
 } from '@/hooks/useShiftTemplate';
 import { PaginatedResponse, PaginationRequest } from '@/types';
-import { defaultShiftManagementFilter, defaultShiftPaginationRequest } from '@/constants/defaultValue';
+import { defaultShiftPaginationRequest } from '@/constants/defaultValue';
 import { Employee } from '@/types/employee';
 import { useEmployees } from '@/hooks/useEmployee';
 
@@ -53,6 +56,8 @@ interface ShiftManagementContextValue {
   handleReject: (id: string, rejectionReason: string) => Promise<void>;
   handleApproveClick: (shift: Shift) => void;
   handleRejectClick: (shift: Shift) => void;
+  handleApproveSelected: (ids: string[]) => Promise<void>;
+  handleRejectSelected: (ids: string[], rejectionReason: string) => Promise<void>;
   
   // Template actions
   setCreateTemplateDialogOpen: (open: boolean) => void;
@@ -69,6 +74,8 @@ interface ShiftManagementContextValue {
   // Edit shift actions
   setEditShiftDialogOpen: (open: boolean) => void;
   handleEditShiftClick: (shift: Shift) => void;
+
+  handleAssignShift: (data: CreateShiftRequest & { employeeId: string }) => Promise<void>;
 }
 
 const ShiftManagementContext = createContext<ShiftManagementContextValue | undefined>(undefined);
@@ -107,23 +114,39 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
 
   // Hooks
   const { data: pendingPaginatedShifts, isLoading: isPendingLoading } = usePendingShifts(pendingPaginationRequest);
-  const { data: allPaginatedShifts, isLoading: isAllLoading } = useManagedShifts(allPaginationRequest, filters);
   const { data: templates = [], isLoading: isTemplatesLoading } = useShiftTemplates();
   const { data: employees = [], isLoading: isEmployeesLoading } = useEmployees({ employmentType: "0" }); // Hourly
 
+  // Memoize employee IDs to prevent unnecessary re-renders
+  const employeeIds = useMemo(() => employees.map(emp => emp.id), [employees]);
+
+  // Update filters when employee IDs change
   useEffect(() => {
-    setFilters((prev) => ({
-      ...prev,
-      employeeIds: employees.map(emp => emp.id),
-    }));
-  }, [employees])
+    setFilters((prev) => {
+      // Only update if employee IDs have actually changed
+      const prevIds = prev.employeeIds.sort().join(',');
+      const newIds = employeeIds.sort().join(',');
+      if (prevIds !== newIds) {
+        return {
+          ...prev,
+          employeeIds: employeeIds,
+        };
+      }
+      return prev;
+    });
+  }, [employeeIds]);
+
+  const { data: allPaginatedShifts, isLoading: isAllLoading } = useManagedShifts(allPaginationRequest, filters)
   
   const approveShiftMutation = useApproveShift();
   const rejectShiftMutation = useRejectShift();
+  const approveShiftsMutation = useApproveShifts();
+  const rejectShiftsMutation = useRejectShifts();
   const createTemplateMutation = useCreateShiftTemplate();
   const updateTemplateMutation = useUpdateShiftTemplate();
   const deleteTemplateMutation = useDeleteShiftTemplate();
   const createShiftMutation = useCreateShift();
+  const assignShiftMutation = useAssignShift();
   
   const isLoading = isPendingLoading || isAllLoading || isTemplatesLoading || isEmployeesLoading;
 
@@ -147,6 +170,14 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
   const handleRejectClick = (shift: Shift) => {
     setSelectedShift(shift);
     setRejectDialogOpen(true);
+  };
+
+  const handleApproveSelected = async (ids: string[]) => {
+    await approveShiftsMutation.mutateAsync(ids);
+  };
+
+  const handleRejectSelected = async (ids: string[], rejectionReason: string) => {
+    await rejectShiftsMutation.mutateAsync({ ids, rejectionReason });
   };
 
   const handleCreateTemplate = async (data: { name: string; startTime: string; endTime: string }) => {
@@ -173,6 +204,11 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
     await createShiftMutation.mutateAsync(data);
     setAssignShiftDialogOpen(false);
   };
+
+  const handleAssignShift = async (data: CreateShiftRequest & { employeeId: string }) => {
+    await assignShiftMutation.mutateAsync(data);
+    setAssignShiftDialogOpen(false);
+  }
 
   const handleEditShiftClick = (shift: Shift) => {
     setSelectedShift(shift);
@@ -211,6 +247,8 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
     handleReject,
     handleApproveClick,
     handleRejectClick,
+    handleApproveSelected,
+    handleRejectSelected,
     
     // Template actions
     setCreateTemplateDialogOpen,
@@ -227,6 +265,8 @@ export const ShiftManagementProvider = ({ children }: ShiftManagementProviderPro
     // Edit shift actions
     setEditShiftDialogOpen,
     handleEditShiftClick,
+
+    handleAssignShift
   };
 
   return (

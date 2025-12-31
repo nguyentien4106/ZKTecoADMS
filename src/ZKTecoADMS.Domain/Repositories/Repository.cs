@@ -5,6 +5,8 @@ namespace ZKTecoADMS.Domain.Repositories;
 
 public abstract class Repository<TEntity> : IRepository<TEntity>
 {
+    public abstract IQueryable<TEntity> GetQuery();
+    
     public abstract Task<List<TEntity>> GetAllAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,

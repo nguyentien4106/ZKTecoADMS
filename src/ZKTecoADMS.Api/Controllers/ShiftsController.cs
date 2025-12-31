@@ -4,6 +4,8 @@ using ZKTecoADMS.Api.Controllers.Base;
 using ZKTecoADMS.Application.Commands.Shifts.CreateShift;
 using ZKTecoADMS.Application.Commands.Shifts.DeleteShift;
 using ZKTecoADMS.Application.Commands.Shifts.ApproveShift;
+using ZKTecoADMS.Application.Commands.Shifts.ApproveShifts;
+using ZKTecoADMS.Application.Commands.Shifts.AssignShift;
 using ZKTecoADMS.Application.Commands.Shifts.RejectShift;
 using ZKTecoADMS.Application.Commands.Shifts.UpdateShift;
 using ZKTecoADMS.Application.Queries.Shifts.GetPendingShifts;
@@ -45,6 +47,16 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
         var result = await mediator.Send(command);
         return Ok(result);
     }
+    
+    [HttpPost("assign")]
+    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    public async Task<ActionResult<AppResponse<ShiftDto>>> AssignShift([FromBody] AssignShiftRequest request)
+    {
+        var command = request.Adapt<AssignShiftCommand>();
+        
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
 
     [HttpDelete("{id}")]
     [Authorize(Policy = PolicyNames.HourlyEmployeeOnly)]
@@ -79,6 +91,15 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
     public async Task<ActionResult<AppResponse<ShiftDto>>> ApproveShift(Guid id)
     {
         var command = new ApproveShiftCommand(id, CurrentUserId);
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("{id}/approve-multiple")]
+    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    public async Task<ActionResult<AppResponse<ShiftDto>>> ApproveShifts([FromBody] List<Guid> ids)
+    {
+        var command = new ApproveShiftsCommand(ids);
         var result = await mediator.Send(command);
         return Ok(result);
     }

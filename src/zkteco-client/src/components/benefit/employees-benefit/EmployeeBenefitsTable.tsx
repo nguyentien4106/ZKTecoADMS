@@ -45,7 +45,6 @@ export const EmployeeSalaryProfileTable = () => {
     );
   }
 
-  console.log("Employee Benefits:", employeeBenefits);
   return (
     <>
       <Table>

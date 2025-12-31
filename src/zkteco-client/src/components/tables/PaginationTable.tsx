@@ -7,6 +7,7 @@ import {
   PaginationState,
   SortingState,
   ColumnFiltersState,
+  RowSelectionState,
 } from "@tanstack/react-table"
 import {
   Table,
@@ -24,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { PaginationRequest } from "@/types"
 import { LoadingSpinner } from "../LoadingSpinner"
@@ -44,6 +46,11 @@ interface PaginationTableProps<TData> {
   emptyMessage?: string
   className?: string
   containerHeight?: string
+  // Row selection props
+  enableRowSelection?: boolean
+  onRowSelectionChange?: (selectedRows: TData[]) => void
+  rowSelection?: RowSelectionState
+  getRowId?: (row: TData, index: number) => string
 }
 
 export function PaginationTable<TData>({
@@ -62,12 +69,17 @@ export function PaginationTable<TData>({
   emptyMessage = "No results found.",
   className,
   containerHeight = "calc(100vh - 270px)",
+  enableRowSelection = false,
+  onRowSelectionChange,
+  rowSelection: controlledRowSelection,
+  getRowId,
 }: PaginationTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>(paginationRequest.sortBy ? [{
     id: paginationRequest.sortBy,
     desc: paginationRequest.sortOrder === "desc"
   }] : []);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   // Calculate total pages
   const totalPages = Math.ceil(totalCount / pageSize)
@@ -127,22 +139,73 @@ export function PaginationTable<TData>({
     }
   }, [columnFilters, onFiltersChange])
 
+  // Handle row selection change
+  React.useEffect(() => {
+    if (enableRowSelection && onRowSelectionChange) {
+      const selectedRows = Object.keys(rowSelection)
+        .filter(key => rowSelection[key])
+        .map(key => {
+          const index = parseInt(key)
+          return data[index]
+        })
+        .filter(Boolean)
+      
+      onRowSelectionChange(selectedRows)
+    }
+  }, [rowSelection, enableRowSelection, onRowSelectionChange, data])
+
+  // Create selection column
+  const selectionColumn: ColumnDef<TData> = React.useMemo(() => ({
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  }), [])
+
+  // Combine columns with selection column if enabled
+  const tableColumns = React.useMemo(
+    () => enableRowSelection ? [selectionColumn, ...columns] : columns,
+    [enableRowSelection, selectionColumn, columns]
+  )
+
   const table = useReactTable({
     data,
-    columns,
+    columns: tableColumns,
     pageCount: totalPages,
     state: {
       pagination,
       sorting,
       columnFilters,
+      rowSelection: controlledRowSelection ?? rowSelection,
     },
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
     manualSorting,
     manualFiltering,
+    enableRowSelection,
+    getRowId,
   })
 
   return (
@@ -155,7 +218,7 @@ export function PaginationTable<TData>({
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id}>
+                      <TableHead key={header.id} className="whitespace-nowrap">
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -172,12 +235,12 @@ export function PaginationTable<TData>({
               {isLoading ? (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={tableColumns.length}
                     className="h-64 text-center"
                   >
                     <div className="flex flex-col items-center justify-center py-12 space-y-3">
                       <LoadingSpinner />
-                      <p className="text-sm text-muted-foreground">Loading data...</p>
+                      <span className="text-sm text-muted-foreground">Loading data...</span>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -188,7 +251,7 @@ export function PaginationTable<TData>({
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="whitespace-nowrap">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -200,7 +263,7 @@ export function PaginationTable<TData>({
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={tableColumns.length}
                     className="h-24 text-center"
                   >
                     {emptyMessage}
@@ -213,13 +276,26 @@ export function PaginationTable<TData>({
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex items-center justify-between px-2">
-        <div className="flex-1 text-sm text-muted-foreground">
-          Showing {data.length > 0 ? (pageNumber - 1) * pageSize + 1 : 0} to{" "}
-          {Math.min(pageNumber * pageSize, totalCount)} of {totalCount} results
+      <div className="flex flex-col gap-4 px-2 sm:flex-row sm:items-center sm:justify-between">
+        {/* Info Section */}
+        <div className="flex-1 text-sm text-muted-foreground order-2 sm:order-1">
+          {enableRowSelection && table.getFilteredSelectedRowModel().rows.length > 0 ? (
+            <span>
+              {table.getFilteredSelectedRowModel().rows.length} of{" "}
+              {table.getFilteredRowModel().rows.length} row(s) selected.
+            </span>
+          ) : (
+            <span className="hidden sm:inline">
+              Showing {data.length > 0 ? (pageNumber - 1) * pageSize + 1 : 0} to{" "}
+              {Math.min(pageNumber * pageSize, totalCount)} of {totalCount} results
+            </span>
+          )}
         </div>
-        <div className="flex items-center space-x-6 lg:space-x-8">
-          <div className="flex items-center space-x-2">
+
+        {/* Controls Section */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6 lg:gap-8 order-1 sm:order-2">
+          {/* Rows per page - Mobile optimized */}
+          <div className="flex items-center justify-between sm:justify-start gap-2">
             <p className="text-sm font-medium">Rows per page</p>
             <Select
               value={`${pageSize}`}
@@ -239,46 +315,53 @@ export function PaginationTable<TData>({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {pageNumber} of {totalPages || 1}
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage() || isLoading}
-            >
-              <span className="sr-only">Go to first page</span>
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage() || isLoading}
-            >
-              <span className="sr-only">Go to previous page</span>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage() || isLoading}
-            >
-              <span className="sr-only">Go to next page</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(totalPages - 1)}
-              disabled={!table.getCanNextPage() || isLoading}
-            >
-              <span className="sr-only">Go to last page</span>
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
+
+          {/* Page info and navigation - Mobile optimized */}
+          <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-6">
+            {/* Page indicator */}
+            <div className="flex items-center justify-center text-sm font-medium min-w-[100px]">
+              Page {pageNumber} of {totalPages || 1}
+            </div>
+
+            {/* Navigation buttons */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Button
+                variant="outline"
+                className="hidden h-8 w-8 p-0 lg:flex"
+                onClick={() => table.setPageIndex(0)}
+                disabled={!table.getCanPreviousPage() || isLoading}
+              >
+                <span className="sr-only">Go to first page</span>
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="h-8 w-8 p-0"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage() || isLoading}
+              >
+                <span className="sr-only">Go to previous page</span>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="h-8 w-8 p-0"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage() || isLoading}
+              >
+                <span className="sr-only">Go to next page</span>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="hidden h-8 w-8 p-0 lg:flex"
+                onClick={() => table.setPageIndex(totalPages - 1)}
+                disabled={!table.getCanNextPage() || isLoading}
+              >
+                <span className="sr-only">Go to last page</span>
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

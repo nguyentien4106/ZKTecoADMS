@@ -14,12 +14,6 @@ namespace ZKTecoADMS.Domain.Entities
         public TimeSpan EndTime { get; set; }
         
         // public int BreakDurationInMinutes { get; set; } = 0;
-        
-        [Required]
-        public int MaximumAllowedLateMinutes { get; set; } = 30;
-        
-        [Required]
-        public int MaximumAllowedEarlyLeaveMinutes { get; set; } = 30;
 
         [Required]
         public int BreakTimeMinutes { get; set; } = 60;

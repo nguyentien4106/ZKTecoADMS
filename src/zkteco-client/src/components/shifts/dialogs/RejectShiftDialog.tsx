@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Shift } from '@/types/shift';
-import { formatDateTime } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 
 interface RejectShiftDialogProps {
     open: boolean;
@@ -39,10 +39,13 @@ export const RejectShiftDialog = ({ open, onOpenChange, shift, onSubmit }: Rejec
                                 <span className="font-medium">Employee:</span> {shift.employeeName}
                             </div>
                             <div>
-                                <span className="font-medium">Start Time:</span> {formatDateTime(shift.startTime)}
+                                <span className="font-medium">Requested On:</span> {formatDate(shift.date)}
                             </div>
                             <div>
-                                <span className="font-medium">End Time:</span> {formatDateTime(shift.endTime)}
+                                <span className="font-medium">Start Time:</span> {shift.startTime}
+                            </div>
+                            <div>
+                                <span className="font-medium">End Time:</span> {shift.endTime}
                             </div>
                             {shift.description && (
                                 <div>

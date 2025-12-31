@@ -7,6 +7,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { ShiftTemplateRow } from './ShiftTemplateRow';
+import { LoadingSpinner } from '../LoadingSpinner';
 
 interface ShiftTemplateListProps {
     templates: ShiftTemplate[];
@@ -22,7 +23,9 @@ export const ShiftTemplateList = ({
     onDelete
 }: ShiftTemplateListProps) => {
     if (isLoading) {
-        return <div className="text-center py-8">Loading templates...</div>;
+        return <div className="text-center py-8">
+            <LoadingSpinner></LoadingSpinner>
+        </div>;
     }
 
     if (templates.length === 0) {
@@ -38,11 +41,7 @@ export const ShiftTemplateList = ({
                         <TableHead>Start Time</TableHead>
                         <TableHead>End Time</TableHead>
                         <TableHead>Total Hours</TableHead>
-                        <TableHead className="text-center">Max Late (min)</TableHead>
-                        <TableHead className="text-center">Max Early Leave (min)</TableHead>
                         <TableHead className="text-center">Break Time (min)</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Created At</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>

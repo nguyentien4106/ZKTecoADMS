@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Shift } from '@/types/shift';
-import { formatDateTime } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 
 interface ApproveShiftDialogProps {
     open: boolean;
@@ -11,6 +11,7 @@ interface ApproveShiftDialogProps {
 }
 
 export const ApproveShiftDialog = ({ open, onOpenChange, shift, onConfirm }: ApproveShiftDialogProps) => {
+    console.log(shift)
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
@@ -26,10 +27,13 @@ export const ApproveShiftDialog = ({ open, onOpenChange, shift, onConfirm }: App
                         <span className="font-medium">Employee:</span> {shift.employeeName}
                     </div>
                     <div>
-                        <span className="font-medium">Start Time:</span> {formatDateTime(shift.startTime)}
+                        <span className="font-medium">Date:</span> {formatDate(shift.date)}
                     </div>
                     <div>
-                        <span className="font-medium">End Time:</span> {formatDateTime(shift.endTime)}
+                        <span className="font-medium">Start Time:</span> {shift.startTime}
+                    </div>
+                    <div>
+                        <span className="font-medium">End Time:</span> {shift.endTime}
                     </div>
                     {shift.description && (
                         <div>

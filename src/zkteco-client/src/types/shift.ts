@@ -27,8 +27,6 @@ export interface CreateShiftRequest {
         startTime: string;
         endTime: string;
     }[];
-    maximumAllowedLateMinutes?: number;
-    maximumAllowedEarlyLeaveMinutes?: number;
     breakTimeMinutes?: number;
     description?: string;
 }
@@ -69,8 +67,6 @@ export interface ShiftTemplate {
     name: string;
     startTime: string;
     endTime: string;
-    maximumAllowedLateMinutes: number;
-    maximumAllowedEarlyLeaveMinutes: number;
     breakTimeMinutes: number;
     totalHours: number;
     isActive: boolean;

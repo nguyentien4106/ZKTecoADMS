@@ -99,6 +99,24 @@ export const useApproveShift = () => {
   });
 };
 
+export const useApproveShifts = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (ids: string[]) => shiftService.approveShifts(ids),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      toast.success('Selected shifts approved successfully');
+    },
+    onError: (error: any) => {
+      toast.error('Failed to approve selected shifts', {
+        description: error.message || 'An error occurred',
+      });
+    },
+  });
+};
+
+
 export const useRejectShift = () => {
   const queryClient = useQueryClient();
 
@@ -111,6 +129,24 @@ export const useRejectShift = () => {
     },
     onError: (error: any) => {
       toast.error('Failed to reject shift', {
+        description: error.message || 'An error occurred',
+      });
+    },
+  });
+};
+
+export const useRejectShifts = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ ids, rejectionReason }: { ids: string[]; rejectionReason: string }) =>
+      shiftService.rejectShifts(ids, rejectionReason),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      toast.success('Selected shifts rejected successfully');
+    },
+    onError: (error: any) => {
+      toast.error('Failed to reject selected shifts', {
         description: error.message || 'An error occurred',
       });
     },
@@ -139,7 +175,7 @@ export const useAssignShift = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateShiftRequest & { employeeUserId: string }) =>
+    mutationFn: (data: CreateShiftRequest & { employeeId: string }) =>
       shiftService.assignShift(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shifts'] });

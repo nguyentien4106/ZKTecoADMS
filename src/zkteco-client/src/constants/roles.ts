@@ -2,6 +2,8 @@
 // src/constants/roles.ts
 // ==========================================
 
+import { PATHS } from "./path"
+
 export enum UserRole {
   ADMIN = 'Admin',
   MANAGER = 'Manager',
@@ -14,44 +16,53 @@ export const ROLE_HIERARCHY = {
   [UserRole.EMPLOYEE]: 1
 }
 
+
 // Define which routes are accessible by each role
 export const ROLE_PERMISSIONS = {
   [UserRole.ADMIN]: [
-    '/dashboard',
-    '/devices',
-    '/device-commands',
-    '/employees',
-    '/attendance',
-    '/reports',
-    '/settings',
-    '/shifts',
-    '/leaves',
-    '/leave-management',
-    '/salary-profiles',
-    '/payslips'
+    PATHS.DASHBOARD,
+    PATHS.DEVICES,
+    PATHS.DEVICE_COMMANDS,
+    PATHS.EMPLOYEES,
+    PATHS.ATTENDANCE,
+    PATHS.REPORTS,
+    PATHS.SETTINGS,
+    PATHS.SHIFTS,
+    PATHS.SHIFT_TEMPLATES,
+    PATHS.LEAVES,
+    PATHS.BENEFITS,
+    PATHS.PAYSLIPS
   ],
   [UserRole.MANAGER]: [
-    '/shifts',
-    '/device-commands',
-    '/devices',
-    '/employees',
-    '/device-users',
-    '/dashboard',
-    '/attendance',
-    '/reports',
-    '/settings',
-    '/leaves',
-    '/leave-management',
-    '/salary-profiles',
-    '/payslips'
+    PATHS.DASHBOARD,
+
+    PATHS.EMPLOYEES,
+    PATHS.EMPLOYEE_BENEFITS,
+    
+    PATHS.DEVICES,
+    PATHS.DEVICE_COMMANDS,
+    PATHS.DEVICE_USERS,
+
+    PATHS.ATTENDANCE,
+    PATHS.ATTENDANCE_SUMMARY,
+
+    PATHS.SHIFTS,
+    PATHS.SHIFT_TEMPLATES,
+    PATHS.PENDING_SHIFTS,
+
+    PATHS.REPORTS,
+    PATHS.SETTINGS,
+    PATHS.LEAVES,
+    PATHS.BENEFITS,
+    PATHS.PAYSLIPS
   ],
   [UserRole.EMPLOYEE]: [
-    '/dashboard',
-    '/attendance',
-    '/settings',
-    '/employees',
-    '/my-shifts',
-    '/leaves',
-    '/payslips'
+    PATHS.DASHBOARD,
+    PATHS.ATTENDANCE,
+    PATHS.SETTINGS,
+    PATHS.EMPLOYEES,
+    PATHS.MY_SHIFTS,
+    PATHS.LEAVES,
+    PATHS.PAYSLIPS
   ]
 }

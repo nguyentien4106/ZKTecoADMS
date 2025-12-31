@@ -11,18 +11,18 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { CalendarIcon, Clock, User } from 'lucide-react';
 import { DateTimeFormat } from '@/constants';
-import { useEmployeesByManager } from '@/hooks/useAccount';
 import { CreateShiftRequest } from '@/types/shift';
+import { useEmployees } from '@/hooks/useEmployee';
 
 interface AssignShiftDialogState {
-    employeeUserId: string;
+    employeeId: string;
     templateId: string;
     dates: Date[];
     description: string;
 }
 
 const defaultDialogState: AssignShiftDialogState = {
-    employeeUserId: '',
+    employeeId: '',
     templateId: '',
     dates: [],
     description: '',
@@ -31,7 +31,7 @@ const defaultDialogState: AssignShiftDialogState = {
 type AssignShiftDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSubmit: (data: CreateShiftRequest) => Promise<void>;
+    onSubmit: (data: CreateShiftRequest & { employeeId: string }) => Promise<void>;
 };
 
 const getDateString = (time: string, dateStr: Date) => {
@@ -47,17 +47,16 @@ export const AssignShiftDialog = ({
     onSubmit,
 }: AssignShiftDialogProps) => {
     const { data: templates = [], isLoading: templatesLoading } = useShiftTemplates();
-    const { data: employees = [], isLoading: employeesLoading } = useEmployeesByManager();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees({ employmentType: "0" });
     const [dialogState, setDialogState] = useState<AssignShiftDialogState>({ ...defaultDialogState });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const hasTemplates = templates.length > 0;
-    const { employeeUserId, templateId, dates, description } = dialogState;
+    const { employeeId, templateId, dates, description } = dialogState;
 
     // Get selected template and employee
     const selectedTemplate = templates.find(t => t.id === templateId);
-    const selectedEmployee = employees.find(e => e.id === employeeUserId);
-
+    const selectedEmployee = employees.find(e => e.id === employeeId);
     const handleClose = () => {
         onOpenChange(false);
         setDialogState({ ...defaultDialogState });
@@ -65,7 +64,7 @@ export const AssignShiftDialog = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!templateId || !dates.length || !employeeUserId || !selectedTemplate) {
+        if (!templateId || !dates.length || !employeeId || !selectedTemplate) {
             return;
         }
 
@@ -77,18 +76,23 @@ export const AssignShiftDialog = ({
             endTime: getDateString(selectedTemplate.endTime, date),
         }));
 
-        const data: CreateShiftRequest = {
-            employeeUserId: employeeUserId,
+        const data: CreateShiftRequest & { employeeId: string } = {
+            employeeId: employeeId,
             workingDays,
-            maximumAllowedLateMinutes: selectedTemplate.maximumAllowedLateMinutes,
-            maximumAllowedEarlyLeaveMinutes: selectedTemplate.maximumAllowedEarlyLeaveMinutes,
             breakTimeMinutes: selectedTemplate.breakTimeMinutes,
             description: description,
         };
 
-        await onSubmit(data);
-        handleClose();
-        setIsSubmitting(false);
+        try {
+            await onSubmit(data);
+            handleClose();
+
+        } catch (error) {
+            console.error("Failed to assign shift:", error);
+        }
+        finally {
+            setIsSubmitting(false);
+        }   
     };
 
     const updateDialogState = (updates: Partial<AssignShiftDialogState>) => {
@@ -121,8 +125,8 @@ export const AssignShiftDialog = ({
                             <div className="text-sm text-muted-foreground">No employees available.</div>
                         ) : (
                             <Select
-                                value={employeeUserId}
-                                onValueChange={(value) => updateDialogState({ employeeUserId: value })}
+                                value={employeeId}
+                                onValueChange={(value) => updateDialogState({ employeeId: value })}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select an employee..." />
@@ -212,14 +216,6 @@ export const AssignShiftDialog = ({
                                     <span className="text-muted-foreground">End:</span>{' '}
                                     {selectedTemplate.endTime.substring(0, 5)}
                                 </div>
-                                <div>
-                                    <span className="text-muted-foreground">Max Late:</span>{' '}
-                                    {selectedTemplate.maximumAllowedLateMinutes} min
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">Max Early:</span>{' '}
-                                    {selectedTemplate.maximumAllowedEarlyLeaveMinutes} min
-                                </div>
                                 <div className="col-span-2">
                                     <span className="text-muted-foreground">Total Hours:</span>{' '}
                                     {selectedTemplate.totalHours}h
@@ -285,7 +281,7 @@ export const AssignShiftDialog = ({
                             type="submit" 
                             disabled={
                                 isSubmitting || 
-                                !employeeUserId || 
+                                !employeeId || 
                                 !templateId || 
                                 !dates.length || 
                                 !hasTemplates

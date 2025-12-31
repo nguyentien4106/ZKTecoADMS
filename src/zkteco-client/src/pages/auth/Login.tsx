@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import { PATHS } from '@/constants/path';
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const from = (location.state as any)?.from?.pathname || '/dashboard';
+  const from = (location.state as any)?.from?.pathname || PATHS.DASHBOARD;
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -107,7 +108,7 @@ export const Login = () => {
                 <input type="checkbox" className="rounded border-gray-300" />
                 <span className="text-muted-foreground">Remember me</span>
               </label>
-              <Link to="/forgot-password">
+              <Link to={PATHS.FORGOT_PASSWORD}>
                 <Button variant="link" className="px-0" type="button">
                   Forgot password?
                 </Button>

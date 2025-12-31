@@ -5,7 +5,8 @@ namespace ZKTecoADMS.Domain.Repositories;
 
 public interface IRepository<TEntity>
 {
-    
+    IQueryable<TEntity> GetQuery();
+
     Task<TEntity?> GetLastOrDefaultAsync(
         Expression<Func<TEntity, object>> keySelector,
         Expression<Func<TEntity, bool>>? filter = null,

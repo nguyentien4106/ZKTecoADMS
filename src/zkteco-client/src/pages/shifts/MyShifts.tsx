@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ShiftTable } from '@/components/shifts/ShiftTable';
 import { MyShiftsFilterBar } from '@/components/shifts/MyShiftsFilterBar';
-import { ShiftRequestDialog } from '@/components/dialogs/ShiftRequestDialog';
+import { ShiftRequestDialog } from '@/components/shifts/dialogs/ShiftRequestDialog';
 import { ShiftProvider, useShiftContext } from '@/contexts/ShiftContext';
 import { useCallback, useMemo } from 'react';
 import { useAuth } from "@/contexts/AuthContext";

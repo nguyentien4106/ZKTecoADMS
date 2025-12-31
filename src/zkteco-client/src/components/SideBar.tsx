@@ -8,7 +8,6 @@ import {
   Monitor, 
   Users, 
   Clock, 
-  FileText, 
   Settings,
   X,
   Terminal,

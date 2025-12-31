@@ -4,6 +4,7 @@
 import { Navigate } from 'react-router-dom'
 import { useRoleAccess } from '@/hooks/useRoleAccess'
 import { UserRole } from '@/constants/roles'
+import { PATHS } from '@/constants/path'
 
 interface RoleProtectedRouteProps {
   children: React.ReactNode
@@ -20,17 +21,17 @@ export const RoleProtectedRoute: React.FC<RoleProtectedRouteProps> = ({
   const userRole = getUserRole()
 
   if (!userRole) {
-    return <Navigate to="/login" replace />
+    return <Navigate to={PATHS.LOGIN} replace />
   }
 
   // Check if user has one of the allowed roles
   if (allowedRoles && !allowedRoles.includes(userRole)) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={PATHS.DASHBOARD} replace />
   }
 
   // Check if user has minimum required role
   if (requiredRole && !hasMinimumRole(requiredRole)) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={PATHS.DASHBOARD} replace />
   }
 
   return <>{children}</>

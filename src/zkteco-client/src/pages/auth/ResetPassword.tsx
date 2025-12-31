@@ -12,6 +12,7 @@ import { Lock, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
 import { authService } from '@/services/authService';
 import { toast } from 'sonner';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { PATHS } from '@/constants/path';
 
 export const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -76,7 +77,7 @@ export const ResetPassword = () => {
       });
       
       setTimeout(() => {
-        navigate('/login');
+        navigate(PATHS.LOGIN);
       }, 3000);
     } catch (error: any) {
       toast.error('Failed to reset password', { 
@@ -111,12 +112,12 @@ export const ResetPassword = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Link to="/forgot-password">
+            <Link to={PATHS.FORGOT_PASSWORD}>
               <Button className="w-full">
                 Request New Reset Link
               </Button>
             </Link>
-            <Link to="/login">
+            <Link to={PATHS.LOGIN}>
               <Button variant="outline" className="w-full">
                 Back to Login
               </Button>
@@ -143,7 +144,7 @@ export const ResetPassword = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link to="/login">
+            <Link to={PATHS.LOGIN}>
               <Button className="w-full">
                 Go to Login
               </Button>
@@ -238,7 +239,7 @@ export const ResetPassword = () => {
             </Button>
 
             <div className="text-center">
-              <Link to="/login">
+              <Link to={PATHS.LOGIN}>
                 <Button variant="ghost">
                   Back to Login
                 </Button>

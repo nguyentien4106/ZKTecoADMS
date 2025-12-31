@@ -35,7 +35,7 @@ export const ShiftActions = ({
     return (
         <div className="flex justify-end gap-2">
             {/* Edit button - show for all shifts if onEdit callback is provided */}
-            {isManager && onEdit && (
+            {isManager && shift.status === ShiftStatus.Approved && onEdit && (
                 <Button
                     size="sm"
                     variant="outline"

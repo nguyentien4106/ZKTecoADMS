@@ -1,7 +1,7 @@
 // ==========================================
 // src/components/Header.tsx (Updated with Logout)
 // ==========================================
-import { Bell, Moon, Sun, LogOut, User, Settings, Menu } from 'lucide-react'
+import { Bell, Moon, Sun, LogOut, User, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -11,21 +11,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 import { useDarkMode } from '@/hooks/useDarkMode'
 import { useAuth } from '@/contexts/AuthContext'
-import { useSidebar } from '@/contexts/SidebarContext'
 import { useNavigate } from 'react-router-dom'
 import { JWT_CLAIMS } from '@/constants/auth'
+import { PATHS } from '@/constants/path'
 
 export const Header = () => {
   const { isDark, toggleDark } = useDarkMode()
   const { user, logout } = useAuth()
-  const { toggleSidebar } = useSidebar()
   const navigate = useNavigate()
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
+    navigate(PATHS.LOGIN)
   }
 
   const getInitials = (name: string) => {
@@ -40,14 +40,7 @@ export const Header = () => {
   return (
     <header className="h-16 border-b border-border bg-card px-4 md:px-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={toggleSidebar}
-          className="shrink-0"
-        >
-          <Menu className="w-5 h-5" />
-        </Button>
+        <SidebarTrigger />
       </div>
       
       <div className="flex items-center gap-1 md:gap-2">
@@ -80,11 +73,11 @@ export const Header = () => {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate('/profile')}>
+            <DropdownMenuItem onClick={() => navigate(PATHS.PROFILE)}>
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/settings')}>
+            <DropdownMenuItem onClick={() => navigate(PATHS.SETTINGS)}>
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </DropdownMenuItem>

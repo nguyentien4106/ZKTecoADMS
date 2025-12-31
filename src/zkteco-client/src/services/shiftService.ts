@@ -48,16 +48,24 @@ export const shiftService = {
         return await apiService.post<Shift>(`/api/shifts/${id}/approve`, {});
     },
 
+    approveShifts: async (ids: string[]) => {
+        return await apiService.post<Shift[]>('/api/shifts/approve-multiple', { ids });
+    },
+
     rejectShift: async (id: string, data: RejectShiftRequest) => {
         return await apiService.post<Shift>(`/api/shifts/${id}/reject`, data);
+    },
+
+    rejectShifts: async (ids: string[], rejectionReason: string) => {
+        return await apiService.post<Shift[]>('/api/shifts/reject-multiple', { ids, rejectionReason });
     },
 
     updateShiftTimes: async (id: string, data: UpdateShiftTimesRequest) => {
         return await apiService.put<Shift>(`/api/shifts/${id}/times`, data);
     },
 
-    assignShift: async (data: CreateShiftRequest & { employeeUserId: string }) => {
-        return await apiService.post<Shift>('/api/shifts', data);
+    assignShift: async (data: CreateShiftRequest & { employeeId: string }) => {
+        return await apiService.post<Shift>('/api/shifts/assign', data);
     },
 
 };

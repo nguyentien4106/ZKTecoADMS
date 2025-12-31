@@ -17,6 +17,11 @@ public class EfRepository<TEntity>(
 
     public DbSet<TEntity> DbSet => dbSet;
 
+    public override IQueryable<TEntity> GetQuery()
+    {
+        return dbSet.AsQueryable();
+    }
+    
     public override async Task<List<TEntity>> GetAllAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,

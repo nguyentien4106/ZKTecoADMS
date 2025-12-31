@@ -40,8 +40,6 @@ export const ShiftTemplateDialog = () => {
         name: '',
         startTime: '09:00',
         endTime: '17:00',
-        maximumAllowedLateMinutes: 30,
-        maximumAllowedEarlyLeaveMinutes: 30,
         breakTimeMinutes: 60,
         isActive: true,
     });
@@ -52,8 +50,6 @@ export const ShiftTemplateDialog = () => {
                 name: selectedTemplate.name,
                 startTime: extractTime(selectedTemplate.startTime),
                 endTime: extractTime(selectedTemplate.endTime),
-                maximumAllowedLateMinutes: selectedTemplate.maximumAllowedLateMinutes ?? 30,
-                maximumAllowedEarlyLeaveMinutes: selectedTemplate.maximumAllowedEarlyLeaveMinutes ?? 30,
                 breakTimeMinutes: selectedTemplate.breakTimeMinutes ?? 60,
                 isActive: selectedTemplate.isActive,
             });
@@ -63,8 +59,6 @@ export const ShiftTemplateDialog = () => {
                 name: defaultNewShiftTemplate.name || '',
                 startTime: defaultNewShiftTemplate.startTime || '09:00',
                 endTime: defaultNewShiftTemplate.endTime || '17:00',
-                maximumAllowedLateMinutes: defaultNewShiftTemplate.maximumAllowedLateMinutes ?? 30,
-                maximumAllowedEarlyLeaveMinutes: defaultNewShiftTemplate.maximumAllowedEarlyLeaveMinutes ?? 30,
                 breakTimeMinutes: 60,
                 isActive: true,
             });
@@ -100,8 +94,6 @@ export const ShiftTemplateDialog = () => {
                 name: formData.name,
                 startTime,
                 endTime,
-                maximumAllowedLateMinutes: formData.maximumAllowedLateMinutes,
-                maximumAllowedEarlyLeaveMinutes: formData.maximumAllowedEarlyLeaveMinutes,
                 breakTimeMinutes: formData.breakTimeMinutes,
                 isActive: formData.isActive,
             });
@@ -110,8 +102,6 @@ export const ShiftTemplateDialog = () => {
                 name: formData.name,
                 startTime,
                 endTime,
-                maximumAllowedLateMinutes: formData.maximumAllowedLateMinutes,
-                maximumAllowedEarlyLeaveMinutes: formData.maximumAllowedEarlyLeaveMinutes,
                 breakTimeMinutes: formData.breakTimeMinutes,
             });
         }
@@ -175,31 +165,6 @@ export const ShiftTemplateDialog = () => {
                                     value={formData.endTime}
                                     onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                                     required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="maxLate">Max Late (minutes)</Label>
-                                <Input
-                                    id="maxLate"
-                                    type="number"
-                                    min="0"
-                                    value={formData.maximumAllowedLateMinutes}
-                                    onChange={(e) => setFormData({ ...formData, maximumAllowedLateMinutes: parseInt(e.target.value) || 0 })}
-                                    placeholder="30"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="maxEarlyLeave">Max Early Leave (minutes)</Label>
-                                <Input
-                                    id="maxEarlyLeave"
-                                    type="number"
-                                    min="0"
-                                    value={formData.maximumAllowedEarlyLeaveMinutes}
-                                    onChange={(e) => setFormData({ ...formData, maximumAllowedEarlyLeaveMinutes: parseInt(e.target.value) || 0 })}
-                                    placeholder="30"
                                 />
                             </div>
                         </div>

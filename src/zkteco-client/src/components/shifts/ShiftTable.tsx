@@ -6,7 +6,6 @@ import { PaginatedResponse, PaginationRequest } from '@/types';
 import { formatDate } from '@/lib/utils';
 import { SortingHeader } from '../tables/SortingHeader';
 import { PaginationTable } from '../tables/PaginationTable';
-
 interface ShiftTableProps {
     paginatedShifts: PaginatedResponse<Shift>;
     paginationRequest: PaginationRequest;
@@ -22,6 +21,8 @@ interface ShiftTableProps {
     onPaginationChange: (pageNumber: number, pageSize: number) => void;
     onSortingChange?: (sorting: any) => void;
     onFiltersChange?: (filters: any) => void;
+    enableRowSelection?: boolean;
+    onRowSelectionChange?: (selectedRows: Shift[]) => void;
 }
 
 export const ShiftTable = ({
@@ -36,7 +37,9 @@ export const ShiftTable = ({
     paginationRequest,
     onPaginationChange,
     onSortingChange,
-    onFiltersChange
+    onFiltersChange,
+    onRowSelectionChange,
+    enableRowSelection = false,
 }: ShiftTableProps) => {
     const columns : ColumnDef<Shift>[] = [
         ...(showEmployeeInfo ? [
@@ -126,7 +129,9 @@ export const ShiftTable = ({
             onFiltersChange={onFiltersChange}
             manualSorting={true}
             manualFiltering={true}
-            containerHeight={"calc(100vh - 320px)"}
+            containerHeight={"calc(100vh - 350px)"}
+            onRowSelectionChange={onRowSelectionChange}
+            enableRowSelection={enableRowSelection}   
         />
     );
 };
