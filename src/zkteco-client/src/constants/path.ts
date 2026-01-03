@@ -27,9 +27,13 @@ export const PATHS = {
   SHIFTS: '/shifts',
   PENDING_SHIFTS: '/pending-shifts',
   SHIFT_TEMPLATES: '/shift-templates',
+  SHIFT_EXCHANGE: '/shift-exchange',
 
   // Leaves
   LEAVES: '/leaves',
+  PENDING_LEAVES: '/pending-leaves',
+  MY_LEAVES: '/my-leaves',
+  ALL_LEAVES: '/all-leaves',
 
   // Payslips
   PAYSLIPS: '/payslips',

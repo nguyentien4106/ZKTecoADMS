@@ -1,4 +1,5 @@
-import { Shift } from '@/types/shift';
+import { ExchangeShiftRequest, Shift } from '@/types/shift';
+import { Employee } from '@/types/employee';
 import { ColumnDef } from '@tanstack/react-table';
 import { StatusBadge } from './StatusBadge';
 import { ShiftActions } from './ShiftActions';
@@ -23,6 +24,8 @@ interface ShiftTableProps {
     onFiltersChange?: (filters: any) => void;
     enableRowSelection?: boolean;
     onRowSelectionChange?: (selectedRows: Shift[]) => void;
+    onExchangeRequest?: (data: ExchangeShiftRequest) => void;
+    employees?: Employee[];
 }
 
 export const ShiftTable = ({
@@ -38,8 +41,9 @@ export const ShiftTable = ({
     onPaginationChange,
     onSortingChange,
     onFiltersChange,
-    onRowSelectionChange,
     enableRowSelection = false,
+    onRowSelectionChange,
+    onExchangeRequest,
 }: ShiftTableProps) => {
     const columns : ColumnDef<Shift>[] = [
         ...(showEmployeeInfo ? [
@@ -109,6 +113,7 @@ export const ShiftTable = ({
                     onReject={onReject}
                     onEdit={onEdit}
                     onDelete={onDelete}
+                    onExchangeRequest={onExchangeRequest}
                 />
             ),
             enableSorting: false,

@@ -188,4 +188,21 @@ export const useAssignShift = () => {
     },
   });
 };
-  
+
+export const useExchangeShift = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { shiftId: string; targetEmployeeId: string; reason: string }) =>
+      shiftService.exchangeShift(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      toast.success('Shift exchange request sent successfully');
+    },
+    onError: (error: any) => {
+      toast.error('Failed to send shift exchange request', {
+        description: error.message || 'An error occurred',
+      });
+    },
+  });
+};

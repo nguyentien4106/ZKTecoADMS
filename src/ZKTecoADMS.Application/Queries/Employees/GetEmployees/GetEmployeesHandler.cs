@@ -19,7 +19,9 @@ public class GetEmployeesHandler(
                     (e.PersonalEmail != null && e.PersonalEmail.Contains(request.SearchTerm)) ||
                     (e.CompanyEmail != null && e.CompanyEmail.Contains(request.SearchTerm))) && 
                     (string.IsNullOrEmpty(request.EmploymentType) || (int)e.EmploymentType == int.Parse(request.EmploymentType)) &&
-                    (string.IsNullOrEmpty(request.WorkStatus) || (int)e.WorkStatus == int.Parse(request.WorkStatus))
+                    (string.IsNullOrEmpty(request.WorkStatus) || (int)e.WorkStatus == int.Parse(request.WorkStatus)),
+            includeProperties: [nameof(Employee.Benefits), nameof(Employee.DeviceUsers)],
+            cancellationToken: cancellationToken
         );
 
         return AppResponse<List<EmployeeDto>>.Success(employees.Adapt<List<EmployeeDto>>());

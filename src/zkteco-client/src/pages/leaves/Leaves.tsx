@@ -1,7 +1,5 @@
 import { PageHeader } from "@/components/PageHeader";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Plus } from "lucide-react";
 import { LeavesTable } from '@/components/leaves/LeavesTable';
 import { LeaveRequestDialog } from '@/components/dialogs/LeaveRequestDialog';
@@ -18,8 +16,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { LeaveProvider, useLeaveContext } from '@/contexts/LeaveContext';
-import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useCallback } from "react";
 
 const LeavesHeader = () => {
   const { setDialogMode } = useLeaveContext();
@@ -38,110 +35,45 @@ const LeavesHeader = () => {
   );
 };
 
-const LeavesTabs = () => {
+const LeavesTableSection = () => {
   const {
     paginationRequest,
-    pendingPaginationRequest,
-    paginatedPendingLeaves,
     paginatedLeaves,
     isLoading,
-    setPaginationRequest,
-    setPendingPaginationRequest
+    setPaginationRequest
   } = useLeaveContext();
 
-  const { isManager } = useAuth();
-  const [activeTab, setActiveTab] = useState<string>("all");
-  
-  useEffect(() => {
-    if (paginatedPendingLeaves && paginatedPendingLeaves?.items.length > 0 && isManager) {
-      setActiveTab("pending");
-    }
-  }, [paginatedPendingLeaves, isManager]);
-
   const onPaginationChange = useCallback((pageNumber: number, pageSize: number) => {
-      setPaginationRequest(prev => ({
-          ...prev,
-          pageNumber: pageNumber,
-          pageSize: pageSize
-      }));
+    setPaginationRequest(prev => ({
+      ...prev,
+      pageNumber: pageNumber,
+      pageSize: pageSize
+    }));
   }, [setPaginationRequest]);
-
-  const onPendingPaginationChange = useCallback((pageNumber: number, pageSize: number) => {
-      setPendingPaginationRequest(prev => ({
-          ...prev,
-          pageNumber: pageNumber,
-          pageSize: pageSize
-      }));
-  }, [setPendingPaginationRequest]);
-
-  const onPendingSortingChange = useCallback((sorting: any) => {
-      setPendingPaginationRequest(prev => ({
-          ...prev,
-          sortBy: sorting.length > 0 ? sorting[0].id : undefined,
-          sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
-          pageNumber: 1, // Reset to first page when sorting changes
-      }));
-  }, [setPendingPaginationRequest]);
 
   const onAllSortingChange = useCallback((sorting: any) => {
-      setPaginationRequest(prev => ({
-          ...prev,
-          sortBy: sorting.length > 0 ? sorting[0].id : undefined,
-          sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
-          pageNumber: 1, // Reset to first page when sorting changes
-      }));
+    setPaginationRequest(prev => ({
+      ...prev,
+      sortBy: sorting.length > 0 ? sorting[0].id : undefined,
+      sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
+      pageNumber: 1,
+    }));
   }, [setPaginationRequest]);
 
-  if(!paginatedLeaves) {
+  if (!paginatedLeaves) {
     return null;
   }
 
   return (
     <div className="mt-6">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList>
-          {
-            isManager && (
-              <TabsTrigger value="pending">
-                Pending Leaves
-                {paginatedPendingLeaves && paginatedPendingLeaves.items.length > 0 && (
-                  <Badge className="ml-2 bg-yellow-500 text-white">{paginatedPendingLeaves.items.length}</Badge>
-                )}
-              </TabsTrigger>
-            ) 
-          }
-          <TabsTrigger value="all">
-            All Leaves
-          </TabsTrigger>
-        </TabsList>
-
-        {
-          isManager && (
-            <TabsContent value="pending" className="mt-6">
-              <LeavesTable
-                paginatedLeaves={paginatedPendingLeaves}
-                isLoading={isLoading}
-                showActions={true}
-                onPaginationChange={onPendingPaginationChange}
-                paginationRequest={pendingPaginationRequest}
-                onSortingChange={onPendingSortingChange}
-                
-              />
-            </TabsContent>
-          )
-        }
-
-        <TabsContent value="all" className="mt-6">
-          <LeavesTable
-            paginatedLeaves={paginatedLeaves}
-            isLoading={isLoading}
-            showActions={true}
-            onPaginationChange={onPaginationChange}
-            paginationRequest={paginationRequest}
-            onSortingChange={onAllSortingChange}
-          />
-        </TabsContent>
-      </Tabs>
+      <LeavesTable
+        paginatedLeaves={paginatedLeaves}
+        isLoading={isLoading}
+        showActions={true}
+        onPaginationChange={onPaginationChange}
+        paginationRequest={paginationRequest}
+        onSortingChange={onAllSortingChange}
+      />
     </div>
   );
 };
@@ -245,7 +177,7 @@ const LeavesContent = () => {
   return (
     <div>
       <LeavesHeader />
-      <LeavesTabs />
+      <LeavesTableSection />
       <LeavesDialogs />
     </div>
   );

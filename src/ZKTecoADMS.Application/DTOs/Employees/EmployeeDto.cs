@@ -1,4 +1,6 @@
+using ZKTecoADMS.Application.DTOs.Benefits;
 using ZKTecoADMS.Application.DTOs.Commons;
+using ZKTecoADMS.Application.DTOs.DeviceUsers;
 using ZKTecoADMS.Domain.Enums;
 
 namespace ZKTecoADMS.Application.DTOs.Employees;
@@ -45,8 +47,7 @@ public class EmployeeDto
     public Guid? DeviceId { get; set; }
     public Guid? ApplicationUserId { get; set; }
 
-    public AccountDto? Account {get;set;}
-
-    public bool HasAccount {get;set;}
-
+    public bool HasAccount { get; set;}
+    public bool HasDeviceUsers { get; set; }
+    public bool HasBenefits { get; set; }
 }

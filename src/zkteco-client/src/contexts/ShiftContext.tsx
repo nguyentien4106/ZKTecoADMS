@@ -2,12 +2,13 @@
 // src/contexts/ShiftContext.tsx
 // ==========================================
 import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction, useCallback } from 'react';
-import { Shift, CreateShiftRequest, UpdateShiftRequest, ShiftStatus } from '@/types/shift';
+import { Shift, CreateShiftRequest, UpdateShiftRequest, ShiftStatus, ExchangeShiftRequest } from '@/types/shift';
 import { 
   useMyShifts, 
   useCreateShift, 
   useUpdateShift, 
-  useDeleteShift 
+  useDeleteShift, 
+  useExchangeShift
 } from '@/hooks/useShifts';
 
 interface ShiftContextValue {
@@ -33,6 +34,8 @@ interface ShiftContextValue {
   handleUpdate: (id: string, data: UpdateShiftRequest) => Promise<void>;
   handleDelete: (id: string) => Promise<void>;
   handleEdit: (shift: Shift) => void;
+
+  handleExchangeShift: (data: ExchangeShiftRequest) => Promise<void>;
 }
 
 const ShiftContext = createContext<ShiftContextValue | undefined>(undefined);
@@ -70,6 +73,7 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
   const createShiftMutation = useCreateShift();
   const updateShiftMutation = useUpdateShift();
   const deleteShiftMutation = useDeleteShift();
+  const exchangeShiftMutation = useExchangeShift()
 
   const applyFilters = useCallback(() => {
     setAppliedMonth(selectedMonth);
@@ -104,6 +108,10 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
     setDialogMode('edit');
   }, []);
 
+  const handleExchangeShift = useCallback(async (data: ExchangeShiftRequest) => {
+    await exchangeShiftMutation.mutateAsync(data);
+  }, [exchangeShiftMutation]);
+
   // Memoize the context value
   const value: ShiftContextValue = {
     // State
@@ -128,6 +136,8 @@ export const ShiftProvider = ({ children }: ShiftProviderProps) => {
     handleUpdate,
     handleDelete,
     handleEdit,
+
+    handleExchangeShift
   }
 
   return (

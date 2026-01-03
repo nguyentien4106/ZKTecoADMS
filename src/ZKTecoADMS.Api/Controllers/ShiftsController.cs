@@ -6,10 +6,14 @@ using ZKTecoADMS.Application.Commands.Shifts.DeleteShift;
 using ZKTecoADMS.Application.Commands.Shifts.ApproveShift;
 using ZKTecoADMS.Application.Commands.Shifts.ApproveShifts;
 using ZKTecoADMS.Application.Commands.Shifts.AssignShift;
+using ZKTecoADMS.Application.Commands.Shifts.ExchangeShift;
+using ZKTecoADMS.Application.Commands.Shifts.ApproveExchangeRequest;
+using ZKTecoADMS.Application.Commands.Shifts.RejectExchangeRequest;
 using ZKTecoADMS.Application.Commands.Shifts.RejectShift;
 using ZKTecoADMS.Application.Commands.Shifts.UpdateShift;
 using ZKTecoADMS.Application.Queries.Shifts.GetPendingShifts;
 using ZKTecoADMS.Application.Queries.Shifts.GetShiftsByManager;
+using ZKTecoADMS.Application.Queries.Shifts.GetMyExchangeRequests;
 using ZKTecoADMS.Application.Constants;
 using ZKTecoADMS.Application.DTOs.Shifts;
 using ZKTecoADMS.Application.Models;
@@ -121,4 +125,59 @@ public class ShiftsController(IMediator mediator) : AuthenticatedControllerBase
         var result = await mediator.Send(command);
         return Ok(result);
     }
+    
+    [HttpPost("exchange")]
+    [Authorize(Policy = PolicyNames.HourlyEmployeeOnly)]
+    public async Task<ActionResult<AppResponse<bool>>> ExchangeShift([FromBody]ExchangeShiftRequest request)
+    {
+        var command = request.Adapt<ExchangeShiftCommand>();
+        command.CurrentEmployeeId = EmployeeId;
+        
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpGet("exchange/my-requests")]
+    [Authorize(Policy = PolicyNames.HourlyEmployeeOnly)]
+    public async Task<ActionResult<AppResponse<List<ShiftExchangeRequestDto>>>> GetMyExchangeRequests([FromQuery] bool incomingOnly = false)
+    {
+        var query = new GetMyExchangeRequestsQuery
+        {
+            EmployeeId = EmployeeId,
+            IncomingOnly = incomingOnly
+        };
+        
+        var result = await mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("exchange/{exchangeRequestId}/approve")]
+    [Authorize(Policy = PolicyNames.HourlyEmployeeOnly)]
+    public async Task<ActionResult<AppResponse<bool>>> ApproveExchangeRequest(Guid exchangeRequestId)
+    {
+        var command = new ApproveExchangeRequestCommand
+        {
+            ExchangeRequestId = exchangeRequestId,
+            TargetEmployeeId = EmployeeId
+        };
+        
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("exchange/{exchangeRequestId}/reject")]
+    [Authorize(Policy = PolicyNames.HourlyEmployeeOnly)]
+    public async Task<ActionResult<AppResponse<bool>>> RejectExchangeRequest(Guid exchangeRequestId, [FromBody] RejectExchangeRequestRequest request)
+    {
+        var command = new RejectExchangeRequestCommand
+        {
+            ExchangeRequestId = exchangeRequestId,
+            TargetEmployeeId = EmployeeId,
+            RejectionReason = request.RejectionReason
+        };
+        
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+    
 }

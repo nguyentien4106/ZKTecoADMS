@@ -19,7 +19,7 @@ namespace ZKTecoADMS.Api.Controllers;
 public class EmployeesController(IMediator mediator) : AuthenticatedControllerBase
 {
     [HttpGet]
-    [Authorize(Policy = PolicyNames.AtLeastManager)]
+    [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<AppResponse<List<EmployeeDto>>>> GetEmployees([FromQuery] string? searchTerm, [FromQuery] string? employmentType, [FromQuery] string? workStatus)
     {
         var query = new GetEmployeesQuery
@@ -27,7 +27,7 @@ public class EmployeesController(IMediator mediator) : AuthenticatedControllerBa
             SearchTerm = searchTerm,
             EmploymentType = employmentType,
             WorkStatus = workStatus,
-            ManagerId = CurrentUserId
+            ManagerId = IsManager ? CurrentUserId: ManagerId
         };
         
         var result = await mediator.Send(query);

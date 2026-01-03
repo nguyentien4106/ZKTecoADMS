@@ -21,6 +21,7 @@ const MyShiftsContent = () => {
         setSelectedStatus,
         applyFilters,
         clearFilters,
+        handleExchangeShift
     } = useShiftContext();
     
     const { isHourlyEmployee } = useAuth();
@@ -95,6 +96,7 @@ const MyShiftsContent = () => {
                     onPaginationChange={onPaginationChange}
                     onSortingChange={onSortingChange}
                     onFiltersChange={onFiltersChange}
+                    onExchangeRequest={handleExchangeShift}
                 />
             </div>
             

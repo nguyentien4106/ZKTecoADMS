@@ -73,8 +73,6 @@ export const ShiftRequestDialog = () => {
 
         const createData: CreateShiftRequest = {
             workingDays,
-            maximumAllowedLateMinutes: selectedTemplate.maximumAllowedLateMinutes,
-            maximumAllowedEarlyLeaveMinutes: selectedTemplate.maximumAllowedEarlyLeaveMinutes,
             breakTimeMinutes: selectedTemplate.breakTimeMinutes,
             description: description,
         };
@@ -177,14 +175,6 @@ export const ShiftRequestDialog = () => {
                                         <div>
                                             <span className="text-muted-foreground">End:</span>{' '}
                                             {selectedTemplate.endTime.substring(0, 5)}
-                                        </div>
-                                        <div>
-                                            <span className="text-muted-foreground">Max Late:</span>{' '}
-                                            {selectedTemplate.maximumAllowedLateMinutes} min
-                                        </div>
-                                        <div>
-                                            <span className="text-muted-foreground">Max Early:</span>{' '}
-                                            {selectedTemplate.maximumAllowedEarlyLeaveMinutes} min
                                         </div>
                                         <div className="col-span-2">
                                             <span className="text-muted-foreground">Total Hours:</span>{' '}

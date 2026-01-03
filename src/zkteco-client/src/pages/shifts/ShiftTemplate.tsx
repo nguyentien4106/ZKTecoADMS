@@ -1,18 +1,9 @@
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { ShiftTemplateDialog } from '@/components/shifts/dialogs/ShiftTemplateDialog';
+import { ShiftTemplateDialog } from '@/components/shiftTemplates/dialogs/ShiftTemplateDialog';
 import { ShiftManagementProvider, useShiftManagementContext } from '@/contexts/ShiftManagementContext';
 import { ShiftTemplateList } from "@/components/shiftTemplates/ShiftTemplateList";
-
-const ShiftTemplateHeader = () => {
-    return (
-        <PageHeader
-            title="Shift Templates"
-            description="Create and manage shift templates for quick assignment"
-        />
-    );
-};
 
 const ShiftTemplateContent = () => {
     const {
@@ -25,16 +16,18 @@ const ShiftTemplateContent = () => {
 
     return (
         <div>
-            <ShiftTemplateHeader />
-            
-            <div className="mt-6">
-                <div className="mb-4 flex justify-end">
+            {/* <ShiftTemplateHeader /> */}
+            <PageHeader 
+                title="Templates"
+                action={
                     <Button onClick={() => setCreateTemplateDialogOpen(true)}>
                         <Plus className="h-4 w-4 mr-2" />
                         Create Template
                     </Button>
-                </div>
-                
+                }
+            />
+            
+            <div className="mt-6">
                 <ShiftTemplateList
                     templates={templates}
                     isLoading={isLoading}

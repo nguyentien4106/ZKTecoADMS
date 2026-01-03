@@ -11,4 +11,5 @@ export const JWT_CLAIMS = {
     NAME: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
     EMAIL: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
     EMPLOYMENT_TYPE: 'employeeType',
+    EMPLOYEE_ID: 'employeeId',
 }

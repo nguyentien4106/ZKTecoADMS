@@ -32,7 +32,7 @@ public class LeavesController(IMediator mediator) : AuthenticatedControllerBase
     [Authorize(Policy = PolicyNames.AtLeastEmployee)]
     public async Task<ActionResult<AppResponse<LeaveDto>>> CreateLeave([FromBody] CreateLeaveRequest request)
     {
-        var managerId = request.EmployeeUserId.HasValue ? CurrentUserId : ManagerId.Value;
+        var managerId = request.EmployeeUserId.HasValue ? CurrentUserId : ManagerId;
         var employeeUserId = request.EmployeeUserId ?? CurrentUserId;
 
         var command = new CreateLeaveCommand(

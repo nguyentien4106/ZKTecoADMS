@@ -48,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const parseUserFromAccessToken = (token: string): void => {
     const currentUser = jwtDecode<AuthUser>(token);
+
     setUser(currentUser);
   }
 
@@ -73,6 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         applicationUserId: String(user?.[JWT_CLAIMS.NAME_IDENTIFIER]) || null,
         isManager: user?.[JWT_CLAIMS.ROLE] === 'Manager',
         isHourlyEmployee: user?.[JWT_CLAIMS.EMPLOYMENT_TYPE] === 'Hourly',
+        employeeId: String(user?.[JWT_CLAIMS.EMPLOYEE_ID]) || null,
       }}
     >
       {children}

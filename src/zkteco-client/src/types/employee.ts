@@ -42,7 +42,9 @@ export interface Employee {
   
   // Account Information
   hasAccount?: boolean;
-  account?: Account
+  hasDeviceUsers?: boolean;
+  hasBenefits?: boolean;
+  account?: Account;
 }
 
 export interface CreateEmployeeRequest {

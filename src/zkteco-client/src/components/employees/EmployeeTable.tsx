@@ -8,10 +8,10 @@ import { EmployeeActions } from "./EmployeeActions";
 import { EmployeeStatusBadge } from "./EmployeeStatusBadge";
 import { DeleteEmployeeDialog } from "./dialogs/DeleteEmployeeDialog";
 import { useEmployeeContext } from "@/contexts/EmployeeContext";
-import { EmploymentTypes } from "@/constants";
-import { Button } from "../ui/button";
+import { EmploymentTypes, HourlyEmployeeId } from "@/constants";
 import { SortingHeader } from "../tables/SortingHeader";
 import { Table } from "../tables/Table";
+import { Badge } from "../ui/badge";
 
 export const EmployeeTable = () => {
   const {
@@ -46,9 +46,11 @@ export const EmployeeTable = () => {
     {
       accessorKey: "employmentType",
       header: "Employment Type",
-      cell: ({ row }) => (
-        <Button variant="default" >{EmploymentTypes[row.getValue("employmentType") as keyof typeof EmploymentTypes]}</Button>
-      ),
+      cell: ({ row }) => {
+        const empType = row.getValue("employmentType") as keyof typeof EmploymentTypes;
+        const empTypeLabel = EmploymentTypes[empType] || empType;
+        return <Badge className="capitalize" variant={empType == 0 ? "default" : "outline"}>{empTypeLabel}</Badge>;
+      },
     },
     {
       accessorKey: "workStatus",
@@ -69,6 +71,36 @@ export const EmployeeTable = () => {
       cell: ({ row }) => {
         const joinDate = row.getValue("joinDate") as string | undefined;
         return joinDate ? format(new Date(joinDate), "MMM dd, yyyy") : "-";
+      },
+      enableSorting: true,
+    },
+    {
+      id: "setup",
+      header: "Configuration Status",
+      cell: ({ row }) => {
+        const hasAccount = row.original.hasAccount;
+        const hasDeviceUsers = row.original.hasDeviceUsers;
+        const hasBenefits = row.original.hasBenefits;
+        
+        return (
+          <div className="flex flex-col gap-1">
+            {
+              hasAccount === false ? (
+                <span className="text-sm text-red-500">No Account</span>
+              ) : null
+            }
+            {
+              hasDeviceUsers === false ? (
+                <span className="text-sm text-red-500">No Device Users</span>
+              ) : null
+            }
+            {
+              hasBenefits === false ? (
+                <span className="text-sm text-red-500">No Benefits</span>
+              ) : null
+            }
+          </div>
+        );
       },
       enableSorting: true,
     },

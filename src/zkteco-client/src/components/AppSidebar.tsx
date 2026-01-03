@@ -67,7 +67,7 @@ const navItems: MenuItem[] = [
     children: [
       { to: PATHS.DEVICES, label: 'Your Devices' },
       { to: PATHS.DEVICE_COMMANDS, label: 'Commands' },
-      { to: PATHS.DEVICE_USERS, label: 'Device\' Users' },
+      { to: PATHS.DEVICE_USERS, label: 'Device\'s Users' },
     ],
   },
   {
@@ -85,12 +85,22 @@ const navItems: MenuItem[] = [
     label: 'Shifts',
     children: [
       { to: PATHS.MY_SHIFTS, label: 'My Shifts' },
+      { to: PATHS.SHIFT_EXCHANGE, label: 'Exchange Shift' },
       { to: PATHS.PENDING_SHIFTS, label: 'Pending Shifts' },
       { to: PATHS.SHIFTS, label: 'All Shifts' },
       { to: PATHS.SHIFT_TEMPLATES, label: 'Templates' },
     ],
   },
-  { to: PATHS.LEAVES, icon: CalendarCheck, label: 'Leaves' },
+  { 
+    to: PATHS.LEAVES, 
+    icon: CalendarCheck, 
+    label: 'Leaves',
+    children: [
+      { to: PATHS.PENDING_LEAVES, label: 'Pending Leaves' },
+      { to: PATHS.MY_LEAVES, label: 'My Leaves' },
+      { to: PATHS.LEAVES, label: 'All Leaves' },
+    ]
+  },
   { to: PATHS.PAYSLIPS, icon: Receipt, label: 'Payslips' },
   { 
     to: PATHS.BENEFITS, 

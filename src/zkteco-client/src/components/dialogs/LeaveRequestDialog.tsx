@@ -19,6 +19,7 @@ import { LeaveStatusSelector } from '@/components/leaves/dialog/LeaveStatusSelec
 import { HalfShiftToggle } from '@/components/leaves/dialog/HalfShiftToggle';
 import { HalfShiftTypeSelector } from '@/components/leaves/dialog/HalfShiftTypeSelector';
 import { LeaveReasonInput } from '@/components/leaves/dialog/LeaveReasonInput';
+import { useEmployees } from '@/hooks/useEmployee';
 
 // Calculate half shift type from dates
 const calculateHalfShiftType = (start: Date, end: Date, isHalf: boolean): 'first' | 'second' | '' => {
@@ -54,24 +55,16 @@ export const LeaveRequestDialog = () => {
     reason 
   } = dialogState;
 
-  const { data: pagedApprovedShifts } = useMyShifts(
-    {
-      pageNumber: 1,
-      pageSize: 1000,
-      sortOrder: 'desc',
-      sortBy: 'StartTime',
-    },
-    ShiftStatus.Approved, 
-    isManager && employeeUserId ? employeeUserId : undefined
-  );
+  const now = new Date();
+  const { data: pagedApprovedShifts } = useMyShifts(now.getMonth() + 1, now.getFullYear(), 'all' );
 
-  const { data: employees = [] } = useEmployeesByManager();
+  const { data: employees = [] } = useEmployees();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEditMode = dialogMode == 'edit' && selectedLeave !== null;
 
   // Determine selected shift based on mode
-  const selectedShift = isEditMode ? selectedLeave?.shift : pagedApprovedShifts?.items.find(s => s.id === shiftId);
+  const selectedShift = isEditMode ? selectedLeave?.shift : pagedApprovedShifts?.find(s => s.id === shiftId);
 
   // Handler to close dialog
   const handleClose = () => {
@@ -208,7 +201,7 @@ export const LeaveRequestDialog = () => {
           <ShiftSelector
             shiftId={shiftId}
             selectedShift={selectedShift}
-            approvedShifts={pagedApprovedShifts?.items || []}
+            approvedShifts={pagedApprovedShifts || []}
             isEditMode={isEditMode}
             onShiftChange={updateDialogState}
           />

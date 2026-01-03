@@ -52,4 +52,5 @@ export interface AuthContextType {
   applicationUserId: string | null;
   isManager: boolean;
   isHourlyEmployee: boolean;
+  employeeId?: string | null;
 }

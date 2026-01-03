@@ -7,7 +7,9 @@ import type {
     RejectShiftRequest,
     Shift,
     ShiftStatus,
-    ShiftManagementFilter
+    ShiftManagementFilter,
+    ExchangeShiftRequest,
+    ShiftExchangeRequestDto
 } from '@/types/shift';
 
 export const shiftService = {
@@ -68,4 +70,20 @@ export const shiftService = {
         return await apiService.post<Shift>('/api/shifts/assign', data);
     },
 
+    exchangeShift: async (data: ExchangeShiftRequest) => {
+        return await apiService.post<boolean>('/api/shifts/exchange', data);
+    },
+
+    getMyExchangeRequests: async (incomingOnly: boolean = false) => {
+        const queryString = buildQueryParams({ incomingOnly });
+        return await apiService.get<ShiftExchangeRequestDto[]>('/api/shifts/exchange/my-requests' + (queryString ? `?${queryString}` : ''));
+    },
+
+    approveExchangeRequest: async (exchangeRequestId: string) => {
+        return await apiService.post<boolean>(`/api/shifts/exchange/${exchangeRequestId}/approve`, {});
+    },
+
+    rejectExchangeRequest: async (exchangeRequestId: string, rejectionReason: string) => {
+        return await apiService.post<boolean>(`/api/shifts/exchange/${exchangeRequestId}/reject`, { rejectionReason });
+    }
 };

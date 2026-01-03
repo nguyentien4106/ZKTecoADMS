@@ -16,7 +16,7 @@ import { CreateEmployeeAccountRequest } from '@/types/account';
 
 interface EmployeeContextValue {
   // State
-  employees: any | undefined;
+  employees: Employee[] | undefined;
   isLoading: boolean;
   queryParams: GetEmployeesParams;
   

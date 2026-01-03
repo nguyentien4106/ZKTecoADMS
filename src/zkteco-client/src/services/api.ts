@@ -190,6 +190,7 @@ class ApiService {
   async get<T>(url: string, params?: any): Promise<T> {
     const response = await this.client.get<AppResponse<T>>(url, { params });
     if(response.data.isSuccess === false){
+      toast.error('Failed to fetch data', { description: response.data.errors.join(', '), duration: 15000 });
       throw new Error(response.data.errors.join(', '));
     }
     return response.data.data;

@@ -51,6 +51,12 @@ export interface UpdateShiftRequest {
     description?: string;
 }
 
+export interface ExchangeShiftRequest {
+    shiftId: string;
+    targetEmployeeId: string;
+    reason: string;
+}
+
 export interface UpdateShiftTimesRequest {
     checkInTime?: string;
     checkOutTime?: string;
@@ -120,4 +126,26 @@ export interface ShiftManagementFilter {
     employeeIds: string[];
     month: number;
     year: number;
+}
+
+export enum ShiftExchangeStatus {
+    Pending = 'Pending',
+    Approved = 'Approved',
+    Rejected = 'Rejected',
+    Cancelled = 'Cancelled'
+}
+
+export interface ShiftExchangeRequestDto {
+    id: string;
+    shiftId: string;
+    shift?: Shift;
+    requesterId: string;
+    requesterName: string;
+    targetEmployeeId: string;
+    targetEmployeeName: string;
+    reason: string;
+    status: ShiftExchangeStatus;
+    rejectionReason?: string;
+    respondedAt?: string;
+    createdAt: string;
 }

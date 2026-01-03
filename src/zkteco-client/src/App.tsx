@@ -18,10 +18,12 @@ import { DeviceCommands } from './pages/devices/DeviceCommands'
 import { ForgotPassword } from './pages/auth/ForgotPassword'
 import { ResetPassword } from './pages/auth/ResetPassword'
 import { MyShifts } from './pages/shifts/MyShifts'
-import { Leaves } from './pages/Leaves'
+import { Leaves } from './pages/leaves/Leaves'
+import { PendingLeave } from './pages/leaves/PendingLeave'
 import { AllShifts } from './pages/shifts/AllShifts'
 import { PendingShifts } from './pages/shifts/PendingShifts'
 import { ShiftTemplate } from './pages/shifts/ShiftTemplate'
+import { ShiftExchange } from './pages/shifts/ShiftExchange'
 import { Profile } from './pages/Profile'
 import { UserRole } from './constants/roles'
 import { PATHS } from './constants/path'
@@ -70,6 +72,15 @@ function App() {
         />
 
         <Route
+          path="shift-exchange"
+          element={
+            <RoleProtectedRoute requiredRole={UserRole.EMPLOYEE}>
+              <ShiftExchange />
+            </RoleProtectedRoute>
+          }
+        />
+
+        <Route
           path="leaves"
           element={
             <RoleProtectedRoute requiredRole={UserRole.EMPLOYEE}>
@@ -107,6 +118,22 @@ function App() {
             </RoleProtectedRoute>
           }
         />
+        <Route
+          path="pending-leaves"
+          element={
+            <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
+              <PendingLeave />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="leaves"
+          element={
+            <RoleProtectedRoute requiredRole={UserRole.MANAGER}>
+              <Leaves />
+            </RoleProtectedRoute>
+          }
+        />  
         <Route
           path="devices"
           element={

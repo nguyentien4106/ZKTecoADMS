@@ -7,7 +7,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { EmptyState } from '@/components/EmptyState'
 import { useDevices } from '@/hooks/useDevices'
 import { Monitor, Plus } from 'lucide-react'
-import { CreateDeviceDialog } from '@/components/dialogs/CreateDeviceDialog'
+import { CreateDeviceDialog } from '@/components/devices/dialogs/CreateDeviceDialog'
 import { DevicesContent, DeviceInfoDialog } from '@/components/devices'
 import { DeviceProvider, useDeviceContext } from '@/contexts/DeviceContext'
 

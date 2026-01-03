@@ -21,6 +21,7 @@ public class ZKTecoDbContext(DbContextOptions<ZKTecoDbContext> options) : Identi
     public DbSet<DeviceInfo> DeviceInfos => Set<DeviceInfo>();
     public DbSet<Shift> Shifts => Set<Shift>();
     public DbSet<ShiftTemplate> ShiftTemplates => Set<ShiftTemplate>();
+    public DbSet<ShiftExchangeRequest> ShiftExchangeRequests => Set<ShiftExchangeRequest>();
     public DbSet<Leave> Leaves => Set<Leave>();
     public DbSet<Benefit> Benefits => Set<Benefit>();
     public DbSet<EmployeeBenefit> EmployeeBenefits => Set<EmployeeBenefit>();

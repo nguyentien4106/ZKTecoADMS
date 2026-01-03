@@ -15,7 +15,7 @@ public abstract class AuthenticatedControllerBase : ControllerBase
 
     protected Guid EmployeeId => GetEmployeeId();
     
-    protected Guid? ManagerId => GetManagerId();
+    protected Guid ManagerId => GetManagerId();
 
     protected bool IsAdmin => CurrentUserRole.Equals(nameof(Roles.Admin), StringComparison.OrdinalIgnoreCase);
     
@@ -53,12 +53,12 @@ public abstract class AuthenticatedControllerBase : ControllerBase
         return employeeId;
     }
 
-    private Guid? GetManagerId()
+    private Guid GetManagerId()
     {
         var managerIdClaim = User.FindFirst(ClaimTypeNames.ManagerId)?.Value;
         if (string.IsNullOrEmpty(managerIdClaim) || !Guid.TryParse(managerIdClaim, out var managerId))
         {
-            return null;
+            return Guid.Empty;
         }
         return managerId;
     }
